@@ -9,7 +9,7 @@ export default function ImportantLinks({ links }: { links?: Link[] }) {
 
   return (
     <section className="my-6 border border-slate-200 rounded-lg overflow-hidden">
-      <h2 className="bg-brand-navy text-white px-4 py-2 font-semibold">Important Links</h2>
+      <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">Important Links</h2>
       <div className="divide-y divide-slate-100">
         {links.map((link, idx) => (
           <a
@@ -20,7 +20,7 @@ export default function ImportantLinks({ links }: { links?: Link[] }) {
             className="flex items-center justify-between px-4 py-3 hover:bg-slate-50 transition"
           >
             <span className="font-medium text-slate-700">{link.label}</span>
-            <span className="text-xs text-brand-saffron font-semibold">{link.linkType} →</span>
+            <span className="text-xs text-brand-pinkAccent font-semibold">{link.linkType} →</span>
           </a>
         ))}
       </div>
