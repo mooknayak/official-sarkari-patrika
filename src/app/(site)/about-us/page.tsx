@@ -2,37 +2,38 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'About Us',
-  description: 'Official Sarkari Patrika के बारे में — हमारा मिशन और प्रतिबद्धता',
+  description: 'About Official Sarkari Patrika — our mission and commitment',
 }
 
 export default function AboutUsPage() {
   return (
     <div className="prose max-w-none">
-      <h1>हमारे बारे में (About Us)</h1>
-      <p>Official Sarkari Patrika में आपका स्वागत है।</p>
+      <h1>About Us</h1>
+      <p>Welcome to Official Sarkari Patrika.</p>
 
-      <h2>हमारा मिशन</h2>
+      <h2>Our Mission</h2>
       <p>
-        हमारा उद्देश्य देश के युवाओं, विद्यार्थियों और श्रमिक वर्ग तक सरकारी नौकरियों, प्रवेश पत्रों
-        और परिणामों की जानकारी को सरल, सटीक और समय पर पहुँचाना है — विशेष रूप से उन लोगों तक जिनके
-        पास जटिल सरकारी वेबसाइटों को समझने के लिए समय या संसाधन सीमित हैं।
+        Our mission is to deliver accurate and timely information about government jobs, admit
+        cards, and results to the youth, students, and working population of India — especially
+        those who have limited time or resources to navigate complex government websites.
       </p>
 
-      <h2>हम क्या करते हैं</h2>
+      <h2>What We Do</h2>
       <p>
-        हमारी टीम प्रतिदिन विभिन्न सरकारी विभागों (केंद्र व राज्य स्तर) की आधिकारिक अधिसूचनाओं पर नज़र
-        रखती है और उन्हें सरल हिंदी/अंग्रेज़ी भाषा में, सुव्यवस्थित रूप में इस पोर्टल पर प्रस्तुत करती
-        है — जिससे उपयोगकर्ता को महत्वपूर्ण तिथियाँ, पात्रता और आवेदन प्रक्रिया एक ही स्थान पर मिल जाए।
+        Our team monitors official notifications from various Central and State Government
+        departments on a daily basis and presents them in simple, well-organized language on this
+        portal — so that important dates, eligibility criteria, and application procedures are
+        available to users in one place.
       </p>
 
-      <h2>हमारी प्रतिबद्धता</h2>
+      <h2>Our Commitment</h2>
       <ul>
-        <li>सटीकता: प्रत्येक जानकारी को प्रकाशन से पूर्व आधिकारिक स्रोत से क्रॉस-वेरीफाई किया जाता है।</li>
-        <li>पारदर्शिता: हम स्पष्ट रूप से बताते हैं कि हम कोई सरकारी संस्था नहीं हैं।</li>
-        <li>सुरक्षा: हम कभी भी संवेदनशील दस्तावेज़ नहीं माँगते।</li>
+        <li>Accuracy: Every piece of information is cross-verified with the official source before publication.</li>
+        <li>Transparency: We clearly state that we are not a government entity.</li>
+        <li>Safety: We never ask for sensitive documents.</li>
       </ul>
 
-      <p>Official Sarkari Patrika आपके करियर की यात्रा में एक विश्वसनीय साथी बनने का प्रयास करता है।</p>
+      <p>Official Sarkari Patrika strives to be a trusted companion in your career journey.</p>
     </div>
   )
 }
