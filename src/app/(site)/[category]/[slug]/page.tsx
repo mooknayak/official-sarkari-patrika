@@ -24,11 +24,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const post = await client.fetch(SINGLE_POST_QUERY, { slug: params.slug })
   if (!post) return {}
 
+  // Canonical हमेशा पोस्ट की असली/स्थायी category से बनता है - भले ही यूज़र इसे
+  // किसी status-based बॉक्स (जैसे /result) से खोलकर आया हो। इससे एक ही कंटेंट के
+  // लिए एक ही canonical URL रहता है, duplicate-content की समस्या नहीं होती।
+  const realCategorySlug = post.category?.slug || params.category
+
   return {
     title: post.seo?.metaTitle || `${post.title} - Apply Online, Dates, Eligibility`,
     description: post.seo?.metaDescription,
     alternates: {
-      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${params.category}/${params.slug}`,
+      canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}/${params.slug}`,
     },
     robots: post.seo?.noIndex
       ? { index: false, follow: false }
@@ -46,12 +51,14 @@ export default async function JobPostPage({ params }: Props) {
   const post = await client.fetch(SINGLE_POST_QUERY, { slug: params.slug })
   if (!post) return notFound()
 
+  const realCategorySlug = post.category?.slug || params.category
+
   const related = await client.fetch(RELATED_POSTS_QUERY, {
-    categorySlug: params.category,
+    categorySlug: realCategorySlug,
     currentSlug: params.slug,
   })
 
-  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${params.category}/${params.slug}`
+  const pageUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}/${params.slug}`
 
   return (
     <article>
