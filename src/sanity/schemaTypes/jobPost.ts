@@ -28,7 +28,7 @@ export const jobPost = defineType({
       group: 'general',
       options: { source: 'title', maxLength: 100 },
       validation: (Rule) => Rule.required(),
-      description: 'एक बार सेट होने के बाद इसे कभी न बदलें — यही Dynamic Update का आधार है।',
+      description: 'एक बार सेट होने के बाद इसे कभी न बदलें - यही Dynamic Update का आधार है।',
     }),
 
     defineField({
@@ -36,7 +36,7 @@ export const jobPost = defineType({
       title: '🔗 Source / Official Notification Link',
       type: 'url',
       group: 'general',
-      description: 'पोस्ट लिखते समय रेफरेंस के लिए ऑफिशियल नोटिफिकेशन का लिंक यहाँ पेस्ट करें — यह सिर्फ आपकी (Editor की) मदद के लिए है, पब्लिक साइट पर नहीं दिखता। Important Links सेक्शन में डालकर ही यह यूज़र को दिखेगा।',
+      description: 'पोस्ट लिखते समय रेफरेंस के लिए ऑफिशियल नोटिफिकेशन का लिंक यहाँ पेस्ट करें - यह सिर्फ आपकी (Editor की) मदद के लिए है, पब्लिक साइट पर नहीं दिखता। Important Links सेक्शन में डालकर ही यह यूज़र को दिखेगा।',
     }),
 
     defineField({
@@ -230,7 +230,7 @@ export const jobPost = defineType({
       title: 'Last Updated At',
       type: 'datetime',
       group: 'general',
-      description: 'हर बार status बदलने पर इसे मैन्युअली अपडेट करें — Schema.org dateModified के लिए ज़रूरी',
+      description: 'हर बार status बदलने पर इसे मैन्युअली अपडेट करें - Schema.org dateModified के लिए ज़रूरी',
     }),
   ],
 
