@@ -9,9 +9,11 @@ const config: Config = {
     extend: {
       colors: {
         brand: {
-          green: '#16803C',
-          saffron: '#F97316',
-          navy: '#0F172A',
+          blue: '#0B3D91',
+          blueDark: '#082B66',
+          blueLight: '#EAF1FB',
+          pink: '#FBE1ED',
+          pinkAccent: '#D6336C',
         },
       },
     },
