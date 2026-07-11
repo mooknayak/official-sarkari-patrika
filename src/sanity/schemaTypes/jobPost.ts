@@ -32,6 +32,14 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'sourceUrl',
+      title: '🔗 Source / Official Notification Link',
+      type: 'url',
+      group: 'general',
+      description: 'पोस्ट लिखते समय रेफरेंस के लिए ऑफिशियल नोटिफिकेशन का लिंक यहाँ पेस्ट करें — यह सिर्फ आपकी (Editor की) मदद के लिए है, पब्लिक साइट पर नहीं दिखता। Important Links सेक्शन में डालकर ही यह यूज़र को दिखेगा।',
+    }),
+
+    defineField({
       name: 'organization',
       title: 'Organization',
       type: 'reference',
@@ -64,6 +72,15 @@ export const jobPost = defineType({
       },
       initialValue: 'job',
       validation: (Rule) => Rule.required(),
+    }),
+
+    defineField({
+      name: 'isNew',
+      title: '✨ Mark as NEW (चमकता हुआ टैग)',
+      type: 'boolean',
+      group: 'status',
+      initialValue: false,
+      description: 'इसे ON करने पर पोस्ट पर लाल रंग का चमकता हुआ "NEW" टैग दिखेगा। कुछ दिनों बाद वापस OFF कर दें।',
     }),
 
     defineField({
