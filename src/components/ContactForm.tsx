@@ -48,7 +48,7 @@ export default function ContactForm() {
       </div>
       <button
         type="submit"
-        className="bg-brand-navy text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-brand-saffron transition w-fit"
+        className="bg-brand-blue text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-brand-pinkAccent transition w-fit"
       >
         भेजें
       </button>
