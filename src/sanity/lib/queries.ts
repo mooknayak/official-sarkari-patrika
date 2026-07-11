@@ -6,6 +6,7 @@ export const HOMEPAGE_LATEST_QUERY = groq`
   title,
   "slug": slug.current,
   status,
+  isNew,
   "category": category->slug.current,
   "categoryTitle": category->title,
   "organization": organization->name,
@@ -22,6 +23,26 @@ export const CATEGORY_LISTING_QUERY = groq`
   title,
   "slug": slug.current,
   status,
+  isNew,
+  "category": category->slug.current,
+  "organization": organization->name,
+  updatedAt,
+  importantDates
+}
+`
+
+// ---- Status के आधार पर Listing — यही Dynamic Box Architecture का मुख्य हिस्सा है ----
+// एक पोस्ट सिर्फ अपने CURRENT status के हिसाब से बॉक्स/लिस्टिंग में दिखती है,
+// चाहे उसकी मूल (permanent) category/URL कुछ भी हो।
+export const STATUS_LISTING_QUERY = groq`
+*[_type == "jobPost" && status in $statusList && !(seo.noIndex == true)]
+| order(updatedAt desc) [$start...$end] {
+  _id,
+  title,
+  "slug": slug.current,
+  status,
+  isNew,
+  "category": category->slug.current,
   "organization": organization->name,
   updatedAt,
   importantDates
