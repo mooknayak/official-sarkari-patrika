@@ -2,45 +2,52 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
-  description: 'Official Sarkari Patrika की नियम एवं शर्तें',
+  description: 'Terms & Conditions of Official Sarkari Patrika',
 }
 
 export default function TermsPage() {
   return (
     <div className="prose max-w-none">
-      <h1>नियम एवं शर्तें (Terms & Conditions)</h1>
-      <p>Official Sarkari Patrika (officialsarkaripatrika.com) का उपयोग करके, आप निम्नलिखित शर्तों से सहमत होते हैं:</p>
-
-      <h2>1. वेबसाइट का उद्देश्य</h2>
+      <h1>Terms & Conditions</h1>
       <p>
-        यह वेबसाइट केवल सरकारी नौकरियों, प्रवेश पत्र और परिणामों से संबंधित सामान्य जानकारी प्रदान
-        करने के उद्देश्य से बनाई गई है। यह किसी भी सरकारी विभाग की आधिकारिक वेबसाइट नहीं है।
+        By accessing and using Official Sarkari Patrika (officialsarkaripatrika.com), you agree to
+        be bound by the following terms and conditions:
       </p>
 
-      <h2>2. जानकारी की सटीकता</h2>
+      <h2>1. Purpose of the Website</h2>
       <p>
-        हम जानकारी को यथासंभव सटीक और अद्यतन रखने का प्रयास करते हैं, परंतु किसी भी त्रुटि, चूक या
-        विलंब के लिए हम उत्तरदायी नहीं होंगे। उपयोगकर्ताओं को सलाह दी जाती है कि आवेदन करने या किसी
-        निर्णय पर पहुँचने से पहले संबंधित विभाग की आधिकारिक वेबसाइट पर जानकारी अवश्य सत्यापित करें।
+        This website is created solely to provide general information related to government job
+        notifications, admit cards, and results. It is not the official website of any government
+        department.
       </p>
 
-      <h2>3. बौद्धिक संपदा</h2>
+      <h2>2. Accuracy of Information</h2>
       <p>
-        इस वेबसाइट पर मौजूद मूल कंटेंट, लोगो और डिज़ाइन Official Sarkari Patrika की संपत्ति हैं। बिना
-        अनुमति के पुनरुत्पादन निषिद्ध है।
+        We strive to keep all information as accurate and up to date as possible; however, we are
+        not liable for any errors, omissions, or delays. Users are advised to verify information
+        on the concerned department&apos;s official website before applying or making any
+        decisions.
       </p>
 
-      <h2>4. उपयोगकर्ता का आचरण</h2>
-      <p>उपयोगकर्ता वेबसाइट का उपयोग केवल कानूनी उद्देश्यों के लिए करने हेतु सहमत होते हैं।</p>
-
-      <h2>5. दायित्व की सीमा</h2>
+      <h2>3. Intellectual Property</h2>
       <p>
-        किसी भी प्रत्यक्ष या अप्रत्यक्ष हानि के लिए, जो इस वेबसाइट पर दी गई जानकारी के उपयोग से उत्पन्न
-        हो, Official Sarkari Patrika उत्तरदायी नहीं होगा।
+        All original content, logos, and designs on this website are the property of Official
+        Sarkari Patrika. Reproduction without permission is strictly prohibited.
       </p>
 
-      <h2>6. शर्तों में बदलाव</h2>
-      <p>हम बिना किसी पूर्व सूचना के इन शर्तों में बदलाव करने का अधिकार सुरक्षित रखते हैं।</p>
+      <h2>4. User Conduct</h2>
+      <p>Users agree to use this website only for lawful purposes.</p>
+
+      <h2>5. Limitation of Liability</h2>
+      <p>
+        Official Sarkari Patrika shall not be held liable for any direct or indirect loss arising
+        from the use of information provided on this website.
+      </p>
+
+      <h2>6. Changes to Terms</h2>
+      <p>We reserve the right to modify these terms at any time without prior notice.</p>
+
+      <p className="text-sm text-slate-500">Last updated: [Insert Date]</p>
     </div>
   )
 }
