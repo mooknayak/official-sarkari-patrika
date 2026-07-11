@@ -1,6 +1,6 @@
 import { client } from '@/sanity/lib/client'
-import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY } from '@/sanity/lib/queries'
-import JobCard from '@/components/JobCard'
+import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY } from '@/sanity/lib/queries'
+import ExpandableGrid from '@/components/ExpandableGrid'
 import CategoryBox from '@/components/CategoryBox'
 
 export const revalidate = 3600
@@ -13,21 +13,24 @@ type Post = {
   category: string
   organization?: string
   updatedAt?: string
+  isNew?: boolean
 }
 
 const BOXES = [
-  { title: '🟢 Latest Jobs', slug: 'jobs' },
-  { title: '🟡 Admit Card', slug: 'admit-card' },
-  { title: '🔴 Result', slug: 'result' },
-  { title: '🔵 Answer Key', slug: 'answer-key' },
-  { title: '📘 Syllabus', slug: 'syllabus' },
-  { title: '🎓 Admission', slug: 'admission' },
+  { title: '🟢 Latest Jobs', slug: 'jobs', type: 'status' as const, value: ['job'] },
+  { title: '🟡 Admit Card', slug: 'admit-card', type: 'status' as const, value: ['admit_card'] },
+  { title: '🔴 Result', slug: 'result', type: 'status' as const, value: ['result', 'final_selection'] },
+  { title: '🔵 Answer Key', slug: 'answer-key', type: 'status' as const, value: ['answer_key'] },
+  { title: '📘 Syllabus', slug: 'syllabus', type: 'category' as const, value: ['syllabus'] },
+  { title: '🎓 Admission', slug: 'admission', type: 'category' as const, value: ['admission'] },
 ]
 
 async function getBoxData() {
   const results = await Promise.all(
     BOXES.map((box) =>
-      client.fetch(CATEGORY_LISTING_QUERY, { categorySlug: box.slug, start: 0, end: 5 })
+      box.type === 'status'
+        ? client.fetch(STATUS_LISTING_QUERY, { statusList: box.value, start: 0, end: 15 })
+        : client.fetch(CATEGORY_LISTING_QUERY, { categorySlug: box.value[0], start: 0, end: 15 })
     )
   )
   return BOXES.map((box, idx) => ({ ...box, items: results[idx] || [] }))
@@ -51,19 +54,24 @@ export default async function HomePage() {
         </p>
       </div>
 
-      {/* 6-Box Category Grid — Sarkari Result मॉडल */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+      {/* 6-Box Category Grid — मोबाइल पर 2 कॉलम, डेस्कटॉप पर 3 कॉलम, सभी बॉक्स बराबर ऊँचाई के */}
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-10 items-stretch">
         {boxes.map((box) => (
           <CategoryBox
             key={box.slug}
             title={box.title}
             categorySlug={box.slug}
-            items={box.items.map((i: any) => ({ title: i.title, slug: i.slug, category: box.slug }))}
+            items={box.items.map((i: any) => ({
+              title: i.title,
+              slug: i.slug,
+              category: i.category || box.value[0],
+              isNew: i.isNew,
+            }))}
           />
         ))}
       </div>
 
-      {/* नवीनतम अपडेट */}
+      {/* नवीनतम अपडेट — Load More / Show Less के साथ */}
       <h2 className="text-lg font-bold text-brand-blueDark mb-4 border-l-4 border-brand-pinkAccent pl-3">
         नवीनतम अपडेट
       </h2>
@@ -71,19 +79,7 @@ export default async function HomePage() {
       {posts.length === 0 ? (
         <p className="text-slate-500">फिलहाल कोई पोस्ट उपलब्ध नहीं है। कृपया Sanity Studio से पोस्ट जोड़ें।</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {posts.map((post) => (
-            <JobCard
-              key={post._id}
-              title={post.title}
-              slug={post.slug}
-              category={post.category}
-              status={post.status}
-              organization={post.organization}
-              updatedAt={post.updatedAt}
-            />
-          ))}
-        </div>
+        <ExpandableGrid posts={posts} initialCount={9} step={9} />
       )}
     </div>
   )
