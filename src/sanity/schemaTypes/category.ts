@@ -26,7 +26,7 @@ export const category = defineType({
       name: 'description',
       title: 'Short Description',
       type: 'text',
-      description: 'Category listing पेज के लिए intro paragraph — SEO के लिए उपयोगी',
+      description: 'Category listing पेज के लिए intro paragraph - SEO के लिए उपयोगी',
     }),
     defineField({
       name: 'order',
