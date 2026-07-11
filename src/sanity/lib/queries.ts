@@ -31,7 +31,7 @@ export const CATEGORY_LISTING_QUERY = groq`
 }
 `
 
-// ---- Status के आधार पर Listing — यही Dynamic Box Architecture का मुख्य हिस्सा है ----
+// ---- Status के आधार पर Listing - यही Dynamic Box Architecture का मुख्य हिस्सा है ----
 // एक पोस्ट सिर्फ अपने CURRENT status के हिसाब से बॉक्स/लिस्टिंग में दिखती है,
 // चाहे उसकी मूल (permanent) category/URL कुछ भी हो।
 export const STATUS_LISTING_QUERY = groq`
