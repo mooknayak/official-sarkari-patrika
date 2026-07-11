@@ -14,7 +14,7 @@ export default function JobCard({ title, slug, category, status, organization, u
   return (
     <Link
       href={`/${category}/${slug}`}
-      className="block border border-slate-200 rounded-lg p-4 hover:shadow-md hover:border-brand-saffron transition bg-white"
+      className="block border border-blue-100 rounded-lg p-4 hover:shadow-md hover:border-brand-blue transition bg-white"
     >
       <div className="flex items-center justify-between gap-2 mb-2">
         <StatusBadge status={status} />
@@ -24,7 +24,7 @@ export default function JobCard({ title, slug, category, status, organization, u
           </span>
         )}
       </div>
-      <h3 className="font-semibold text-slate-800 leading-snug">{title}</h3>
+      <h3 className="font-semibold text-brand-blueDark leading-snug">{title}</h3>
       {organization && <p className="text-sm text-slate-500 mt-1">{organization}</p>}
     </Link>
   )
