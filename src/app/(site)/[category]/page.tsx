@@ -30,7 +30,7 @@ export default async function CategoryPage({ params }: Props) {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold text-brand-navy mb-2">{info?.title || params.category}</h1>
+      <h1 className="text-2xl font-bold text-brand-blueDark mb-2">{info?.title || params.category}</h1>
       {info?.description && <p className="text-slate-600 mb-6">{info.description}</p>}
 
       {posts.length === 0 ? (
