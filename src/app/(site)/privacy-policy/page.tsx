@@ -2,52 +2,66 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'Official Sarkari Patrika की गोपनीयता नीति',
+  description: 'Privacy Policy of Official Sarkari Patrika',
 }
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="prose max-w-none">
-      <h1>गोपनीयता नीति (Privacy Policy)</h1>
+      <h1>Privacy Policy</h1>
       <p>
-        Official Sarkari Patrika (officialsarkaripatrika.com) पर आने के लिए धन्यवाद। आपकी गोपनीयता
-        हमारे लिए सर्वोपरि है। यह नीति बताती है कि हम किस प्रकार की जानकारी एकत्र करते हैं और उसका
-        उपयोग कैसे करते हैं।
+        Thank you for visiting Official Sarkari Patrika (officialsarkaripatrika.com). Your privacy
+        is important to us. This Privacy Policy explains what information we collect and how we
+        use it.
       </p>
 
-      <h2>1. हम कौन-सी जानकारी एकत्र करते हैं</h2>
+      <h2>1. Information We Collect</h2>
       <ul>
         <li>
-          हम उपयोगकर्ताओं से Aadhaar नंबर, बैंक विवरण, पासवर्ड या किसी भी प्रकार का संवेदनशील
-          व्यक्तिगत/सरकारी दस्तावेज़ नहीं माँगते और न ही संग्रहीत करते हैं।
+          We do not request or store sensitive personal or government documents such as Aadhaar
+          numbers, bank details, or passwords from our users.
         </li>
-        <li>Contact Us फॉर्म भरने पर केवल आपका नाम, ईमेल और संदेश हमें प्राप्त होता है।</li>
         <li>
-          सामान्य Analytics (जैसे Google Analytics) के माध्यम से गैर-व्यक्तिगत डेटा (ब्राउज़र प्रकार,
-          पृष्ठ दृश्य, समयावधि) स्वतः एकत्र हो सकता है।
+          When you fill out the Contact Us form, we only receive your name, email address, and
+          message.
+        </li>
+        <li>
+          Standard analytics tools (such as Google Analytics) may automatically collect
+          non-personal data, including browser type, page views, and session duration.
         </li>
       </ul>
 
-      <h2>2. Cookies का उपयोग</h2>
+      <h2>2. Use of Cookies</h2>
       <p>
-        हमारी वेबसाइट Google AdSense और Google Analytics जैसी थर्ड-पार्टी सेवाओं का उपयोग करती है, जो
-        विज्ञापन प्रदर्शन और वेबसाइट सुधार हेतु Cookies का उपयोग करती हैं।
+        Our website uses third-party services such as Google AdSense and Google Analytics, which
+        use cookies to serve advertisements and improve website performance.
       </p>
 
-      <h2>3. थर्ड-पार्टी लिंक</h2>
+      <h2>3. Third-Party Links</h2>
       <p>
-        हमारी वेबसाइट पर सरकारी विभागों/संगठनों की आधिकारिक वेबसाइटों के लिंक दिए जाते हैं। इन बाहरी
-        वेबसाइटों की गोपनीयता नीतियों के लिए हम उत्तरदायी नहीं हैं।
+        Our website contains links to official websites of government departments and
+        organizations. We are not responsible for the privacy practices of these external sites.
       </p>
 
-      <h2>4. डेटा सुरक्षा</h2>
-      <p>हम उचित तकनीकी उपायों के माध्यम से एकत्र किए गए सीमित डेटा की सुरक्षा सुनिश्चित करने का प्रयास करते हैं।</p>
+      <h2>4. Data Security</h2>
+      <p>
+        We take reasonable technical measures to protect the limited data we collect from
+        unauthorized access.
+      </p>
 
-      <h2>5. नीति में परिवर्तन</h2>
-      <p>इस गोपनीयता नीति को समय-समय पर अपडेट किया जा सकता है। किसी भी बदलाव की जानकारी इसी पेज पर प्रकाशित की जाएगी।</p>
+      <h2>5. Changes to This Policy</h2>
+      <p>
+        This Privacy Policy may be updated from time to time. Any changes will be published on
+        this page.
+      </p>
 
-      <h2>6. संपर्क करें</h2>
-      <p>इस नीति से संबंधित किसी भी प्रश्न के लिए कृपया हमारी Contact Us पेज के माध्यम से संपर्क करें।</p>
+      <h2>6. Contact Us</h2>
+      <p>
+        If you have any questions regarding this policy, please reach out to us via our Contact
+        Us page.
+      </p>
+
+      <p className="text-sm text-slate-500">Last updated: [Insert Date]</p>
     </div>
   )
 }
