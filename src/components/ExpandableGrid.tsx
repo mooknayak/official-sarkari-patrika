@@ -27,8 +27,8 @@ export default function ExpandableGrid({ posts, initialCount = 9, step = 9 }: Ex
   const canCollapse = visibleCount > initialCount
 
   return (
-    <div>
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
+    <div className="flex flex-col">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 order-1">
         {visible.map((post) => (
           <JobCard
             key={post._id}
@@ -44,7 +44,7 @@ export default function ExpandableGrid({ posts, initialCount = 9, step = 9 }: Ex
       </div>
 
       {(hasMore || canCollapse) && (
-        <div className="flex justify-center gap-3 mt-6">
+        <div className="flex justify-center gap-3 mt-6 order-2">
           {hasMore && (
             <button
               onClick={() => setVisibleCount((v) => v + step)}
