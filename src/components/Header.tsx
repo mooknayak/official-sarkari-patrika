@@ -6,18 +6,20 @@ const NAV_ITEMS = [
   { title: 'Admit Card', href: '/admit-card' },
   { title: 'Result', href: '/result' },
   { title: 'Answer Key', href: '/answer-key' },
+  { title: 'Syllabus', href: '/syllabus' },
+  { title: 'Admission', href: '/admission' },
 ]
 
 export default function Header() {
   return (
-    <header className="bg-brand-navy text-white sticky top-0 z-50 shadow-md">
+    <header className="bg-brand-blueDark text-white sticky top-0 z-50 shadow-md">
       <div className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         <Link href="/" className="text-xl font-bold">
-          Official <span className="text-brand-saffron">Sarkari</span> Patrika
+          Official <span className="text-brand-pinkAccent">Sarkari</span> Patrika
         </Link>
         <nav className="hidden md:flex gap-6 text-sm font-medium">
           {NAV_ITEMS.map((item) => (
-            <Link key={item.href} href={item.href} className="hover:text-brand-saffron transition">
+            <Link key={item.href} href={item.href} className="hover:text-brand-pinkAccent transition">
               {item.title}
             </Link>
           ))}
@@ -26,7 +28,7 @@ export default function Header() {
       {/* Mobile nav */}
       <nav className="md:hidden flex overflow-x-auto gap-4 px-4 pb-3 text-sm">
         {NAV_ITEMS.map((item) => (
-          <Link key={item.href} href={item.href} className="whitespace-nowrap hover:text-brand-saffron">
+          <Link key={item.href} href={item.href} className="whitespace-nowrap hover:text-brand-pinkAccent">
             {item.title}
           </Link>
         ))}
