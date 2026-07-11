@@ -15,7 +15,7 @@ export default function ContactUsPage() {
         to us through the following channel:
       </p>
       <p>
-        <strong>Email:</strong> contact@officialsarkaripatrika.com
+        <strong>Email:</strong> officialsarkaripatrika@gmail.com
       </p>
 
       <ContactForm />
