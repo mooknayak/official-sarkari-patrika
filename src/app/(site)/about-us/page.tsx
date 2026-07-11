@@ -33,6 +33,14 @@ export default function AboutUsPage() {
         <li>Safety: We never ask for sensitive documents.</li>
       </ul>
 
+      <h2>Meet the Founder</h2>
+      <p>
+        Official Sarkari Patrika is founded and maintained by <strong>Diwakar Kumar</strong>, who
+        has been working in the computer software field since 2006, with dedicated professional
+        experience in HTML and web development since 2010. This platform reflects his continued
+        commitment to building simple, accessible, and reliable digital resources for the public.
+      </p>
+
       <p>Official Sarkari Patrika strives to be a trusted companion in your career journey.</p>
     </div>
   )
