@@ -2,58 +2,61 @@ import type { Metadata } from 'next'
 
 export const metadata: Metadata = {
   title: 'Disclaimer',
-  description: 'Official Sarkari Patrika का अस्वीकरण और डेटा सुरक्षा प्रतिबद्धता',
+  description: 'Disclaimer and Data Privacy Commitment of Official Sarkari Patrika',
 }
 
 export default function DisclaimerPage() {
   return (
     <div className="prose max-w-none">
-      <h1>अस्वीकरण (Disclaimer)</h1>
+      <h1>Disclaimer</h1>
       <p>
-        Official Sarkari Patrika (officialsarkaripatrika.com) एक स्वतंत्र, निजी सूचना पोर्टल है। हम
-        किसी भी केंद्र सरकार, राज्य सरकार, मंत्रालय, विभाग, बोर्ड या आयोग (जैसे UPSC, SSC, Railway,
-        Banking आदि) से संबद्ध, अनुमोदित या उनके आधिकारिक प्रतिनिधि नहीं हैं।
+        Official Sarkari Patrika (officialsarkaripatrika.com) is an independent, privately-owned
+        information portal. We are not affiliated with, endorsed by, or an official representative
+        of any Central Government, State Government, ministry, department, board, or commission
+        (such as UPSC, SSC, Railways, Banking sector, etc.).
       </p>
 
-      <h2>1. सूचना का स्रोत</h2>
+      <h2>1. Source of Information</h2>
       <p>
-        इस वेबसाइट पर प्रकाशित सभी जानकारी (नौकरी अधिसूचना, प्रवेश पत्र, परिणाम आदि) संबंधित विभागों
-        की आधिकारिक वेबसाइटों और प्रेस विज्ञप्तियों से एकत्र कर, सरल भाषा में प्रस्तुत की जाती है।
+        All information published on this website (job notifications, admit cards, results, etc.)
+        is collected from the official websites and press releases of the concerned departments
+        and presented here in simplified language.
       </p>
 
-      <h2>2. आधिकारिक सत्यापन अनिवार्य</h2>
+      <h2>2. Official Verification Required</h2>
       <p>
-        किसी भी पद हेतु आवेदन करने, परीक्षा में शामिल होने या कोई भी महत्वपूर्ण निर्णय लेने से पूर्व,
-        उपयोगकर्ताओं को संबंधित विभाग की आधिकारिक वेबसाइट पर जाकर जानकारी की पुष्टि करना अनिवार्य है।
-        किसी भी विसंगति की स्थिति में आधिकारिक अधिसूचना ही मान्य होगी।
+        Before applying for any post, appearing for an examination, or making any important
+        decision, users are required to verify the information on the official website of the
+        concerned department. In case of any discrepancy, the official notification shall prevail.
       </p>
 
-      <h2>3. डेटा सुरक्षा प्रतिबद्धता (Data Privacy Commitment)</h2>
+      <h2>3. Data Privacy Commitment</h2>
       <ul>
         <li>
-          हम कभी भी उपयोगकर्ताओं से Aadhaar कार्ड, बैंक खाता विवरण, OTP, पासवर्ड या कोई भी संवेदनशील
-          दस्तावेज़ नहीं माँगते।
+          We never ask users for Aadhaar cards, bank account details, OTPs, passwords, or any
+          sensitive documents.
         </li>
         <li>
-          हमारी वेबसाइट पर आवेदन करने की कोई सुविधा नहीं है — आवेदन केवल संबंधित विभाग की आधिकारिक
-          वेबसाइट के माध्यम से करें।
+          There is no application facility on our website — applications must be submitted only
+          through the official website of the concerned department.
         </li>
-        <li>यह पोर्टल पूर्णतः निःशुल्क है और किसी भी प्रकार के दस्तावेज़ अपलोड की आवश्यकता नहीं है।</li>
+        <li>This portal is completely free, and no document upload is ever required.</li>
       </ul>
 
-      <h2>4. त्रुटि की संभावना</h2>
+      <h2>4. Possibility of Errors</h2>
       <p>
-        मानवीय त्रुटि की संभावना को देखते हुए, हम किसी भी टाइपिंग त्रुटि, तिथि में परिवर्तन या तकनीकी
-        भूल के लिए उत्तरदायी नहीं हैं।
+        Given the possibility of human error, we are not responsible for any typographical errors,
+        date changes, or technical mistakes.
       </p>
 
-      <h2>5. बाहरी लिंक</h2>
+      <h2>5. External Links</h2>
       <p>
-        वेबसाइट पर दिए गए सभी &quot;Apply Online&quot;, &quot;Download Admit Card&quot; जैसे लिंक सीधे
-        संबंधित विभाग की आधिकारिक वेबसाइट की ओर निर्देशित करते हैं।
+        All links on this website labeled &quot;Apply Online,&quot; &quot;Download Admit
+        Card,&quot; and similar, redirect directly to the official website of the concerned
+        department.
       </p>
 
-      <p>किसी भी शंका की स्थिति में कृपया हमसे Contact Us पेज के माध्यम से संपर्क करें।</p>
+      <p>For any queries, please contact us via our Contact Us page.</p>
     </div>
   )
 }
