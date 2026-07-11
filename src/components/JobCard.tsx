@@ -11,21 +11,16 @@ type JobCardProps = {
   isNew?: boolean
 }
 
-export default function JobCard({ title, slug, category, status, organization, updatedAt, isNew }: JobCardProps) {
+// नोट: NEW टैग जानबूझकर सिर्फ CategoryBox (6-बॉक्स ग्रिड) में दिखाया जाता है,
+// यहाँ "नवीनतम अपडेट" वाली मुख्य लिस्टिंग में जानबूझकर नहीं दिखाया गया।
+export default function JobCard({ title, slug, category, status, organization, updatedAt }: JobCardProps) {
   return (
     <Link
       href={`/${category}/${slug}`}
       className="block border border-blue-100 rounded-lg p-4 hover:shadow-md hover:border-brand-blue transition bg-white h-full"
     >
       <div className="flex items-center justify-between gap-2 mb-2">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <StatusBadge status={status} />
-          {isNew && (
-            <span className="bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded animate-pulse">
-              NEW
-            </span>
-          )}
-        </div>
+        <StatusBadge status={status} />
         {updatedAt && (
           <span className="text-xs text-slate-400 whitespace-nowrap">
             {new Date(updatedAt).toLocaleDateString('hi-IN')}
