@@ -21,8 +21,8 @@ const BOXES = [
   { title: '🟡 Admit Card', slug: 'admit-card', type: 'status' as const, value: ['admit_card'] },
   { title: '🔴 Result', slug: 'result', type: 'status' as const, value: ['result', 'final_selection'] },
   { title: '🔵 Answer Key', slug: 'answer-key', type: 'status' as const, value: ['answer_key'] },
-  { title: '📘 Syllabus', slug: 'syllabus', type: 'category' as const, value: ['syllabus'] },
-  { title: '🎓 Admission', slug: 'admission', type: 'category' as const, value: ['admission'] },
+  { title: '📄 Documents', slug: 'documents', type: 'category' as const, value: ['documents'] },
+  { title: '🏛️ सरकारी योजनाएं', slug: 'sarkari-yojana', type: 'category' as const, value: ['sarkari-yojana'] },
 ]
 
 async function getBoxData() {
