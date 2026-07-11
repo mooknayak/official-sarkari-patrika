@@ -6,8 +6,8 @@ const NAV_ITEMS = [
   { title: 'Admit Card', href: '/admit-card' },
   { title: 'Result', href: '/result' },
   { title: 'Answer Key', href: '/answer-key' },
-  { title: 'Syllabus', href: '/syllabus' },
-  { title: 'Admission', href: '/admission' },
+  { title: 'Documents', href: '/documents' },
+  { title: 'सरकारी योजनाएं', href: '/sarkari-yojana' },
 ]
 
 export default function Header() {
