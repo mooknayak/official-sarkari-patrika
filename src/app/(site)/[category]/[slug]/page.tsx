@@ -68,7 +68,7 @@ export default async function JobPostPage({ params }: Props) {
       <div className="mb-3">
         <StatusBadge status={post.status} />
       </div>
-      <h1 className="text-2xl font-bold text-brand-navy mb-2">{post.title}</h1>
+      <h1 className="text-2xl font-bold text-brand-blueDark mb-2">{post.title}</h1>
       {post.organization?.name && (
         <p className="text-slate-500 mb-4">{post.organization.name}</p>
       )}
@@ -76,7 +76,7 @@ export default async function JobPostPage({ params }: Props) {
       {/* Status के हिसाब से conditional सेक्शन */}
       {post.status === 'job' && post.vacancyDetails && post.vacancyDetails.length > 0 && (
         <section className="my-6 border border-slate-200 rounded-lg overflow-hidden">
-          <h2 className="bg-brand-navy text-white px-4 py-2 font-semibold">पद विवरण (Vacancy Details)</h2>
+          <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">पद विवरण (Vacancy Details)</h2>
           <table className="w-full text-sm">
             <thead>
               <tr className="bg-slate-50 text-left">
@@ -100,14 +100,14 @@ export default async function JobPostPage({ params }: Props) {
 
       {post.status === 'admit_card' && post.admitCardInfo && (
         <section className="my-6 border border-slate-200 rounded-lg p-4 bg-yellow-50">
-          <h2 className="font-semibold text-brand-navy mb-2">प्रवेश पत्र जानकारी</h2>
+          <h2 className="font-semibold text-brand-blueDark mb-2">प्रवेश पत्र जानकारी</h2>
           <p className="text-slate-700 whitespace-pre-line">{post.admitCardInfo}</p>
         </section>
       )}
 
       {(post.status === 'result' || post.status === 'final_selection') && post.resultInfo && (
         <section className="my-6 border border-slate-200 rounded-lg p-4 bg-red-50">
-          <h2 className="font-semibold text-brand-navy mb-2">परिणाम जानकारी</h2>
+          <h2 className="font-semibold text-brand-blueDark mb-2">परिणाम जानकारी</h2>
           <p className="text-slate-700 whitespace-pre-line">{post.resultInfo}</p>
         </section>
       )}
@@ -124,7 +124,7 @@ export default async function JobPostPage({ params }: Props) {
 
       {related && related.length > 0 && (
         <section className="mt-10">
-          <h2 className="text-lg font-bold text-brand-navy mb-4">संबंधित पोस्ट</h2>
+          <h2 className="text-lg font-bold text-brand-blueDark mb-4">संबंधित पोस्ट</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
             {related.map((r: any) => (
               <JobCard
