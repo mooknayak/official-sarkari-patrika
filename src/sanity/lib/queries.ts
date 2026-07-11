@@ -90,7 +90,7 @@ export const SINGLE_POST_QUERY = groq`
 `
 
 export const ALL_SLUGS_QUERY = groq`
-*[_type == "jobPost"] {
+*[_type == "jobPost" && defined(category->slug.current) && defined(slug.current)] {
   "slug": slug.current,
   "category": category->slug.current
 }
