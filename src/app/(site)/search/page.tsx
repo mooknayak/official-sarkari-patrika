@@ -22,7 +22,7 @@ export default async function SearchPage({ searchParams }: Props) {
   return (
     <div>
       <h1 className="text-xl font-bold text-brand-blueDark mb-4">
-        खोज परिणाम {query && <span className="text-slate-500 font-normal">— &quot;{query}&quot;</span>}
+        खोज परिणाम {query && <span className="text-slate-500 font-normal"> - &quot;{query}&quot;</span>}
       </h1>
 
       {!query && (
