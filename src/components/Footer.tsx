@@ -13,7 +13,7 @@ export default function Footer() {
     <footer className="bg-brand-blueDark text-blue-100 mt-12">
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="bg-brand-pink border border-brand-pinkAccent rounded-lg p-3 text-center text-sm text-brand-blueDark font-medium mb-6">
-          🔒 हम कभी भी Aadhaar, बैंक विवरण या OTP नहीं माँगते — 100% Free & No Document Upload Required
+          🔒 हम कभी भी Aadhaar, बैंक विवरण या OTP नहीं माँगते - 100% Free & No Document Upload Required
         </div>
 
         <nav className="flex flex-wrap justify-center gap-4 text-sm mb-4">
