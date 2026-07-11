@@ -37,7 +37,7 @@ export default function DisclaimerPage() {
           sensitive documents.
         </li>
         <li>
-          There is no application facility on our website — applications must be submitted only
+          There is no application facility on our website - applications must be submitted only
           through the official website of the concerned department.
         </li>
         <li>This portal is completely free, and no document upload is ever required.</li>
