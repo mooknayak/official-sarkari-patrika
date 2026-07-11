@@ -13,7 +13,7 @@ const NAV_ITEMS = [
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 shadow-md">
-      {/* बड़ा Hero बैंड — नाम व डोमेन */}
+      {/* बड़ा Hero बैंड - नाम व डोमेन */}
       <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white text-center py-6 px-4">
         <Link href="/">
           <h1 className="text-2xl md:text-4xl font-extrabold tracking-wide">
@@ -25,7 +25,7 @@ export default function Header() {
         </p>
       </div>
 
-      {/* Menu Bar — Nav एक तरफ, Search दूसरी तरफ */}
+      {/* Menu Bar - Nav एक तरफ, Search दूसरी तरफ */}
       <div className="bg-brand-blueDark border-t border-white/10">
         <div className="max-w-5xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
           <nav className="flex items-center gap-4 overflow-x-auto text-sm font-medium text-white whitespace-nowrap">
