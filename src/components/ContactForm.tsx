@@ -10,14 +10,14 @@ export default function ContactForm() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     const subject = encodeURIComponent(`Contact Form - ${name}`)
-    const body = encodeURIComponent(`नाम: ${name}\nईमेल: ${email}\n\nसंदेश:\n${message}`)
+    const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`)
     window.location.href = `mailto:contact@officialsarkaripatrika.com?subject=${subject}&body=${body}`
   }
 
   return (
     <form onSubmit={handleSubmit} className="not-prose flex flex-col gap-4 max-w-md mt-6">
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">नाम</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
         <input
           type="text"
           required
@@ -27,7 +27,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">ईमेल</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Email</label>
         <input
           type="email"
           required
@@ -37,7 +37,7 @@ export default function ContactForm() {
         />
       </div>
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">संदेश</label>
+        <label className="block text-sm font-medium text-slate-700 mb-1">Message</label>
         <textarea
           required
           rows={4}
@@ -50,7 +50,7 @@ export default function ContactForm() {
         type="submit"
         className="bg-brand-blue text-white rounded-md px-4 py-2 text-sm font-semibold hover:bg-brand-pinkAccent transition w-fit"
       >
-        भेजें
+        Send Message
       </button>
     </form>
   )
