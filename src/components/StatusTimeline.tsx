@@ -11,7 +11,7 @@ export default function StatusTimeline({ timeline }: { timeline?: TimelineEntry[
 
   return (
     <section className="my-6 border border-slate-200 rounded-lg overflow-hidden">
-      <h2 className="bg-brand-navy text-white px-4 py-2 font-semibold">
+      <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">
         अपडेट हिस्ट्री (Status Timeline)
       </h2>
       <ul className="divide-y divide-slate-100">
