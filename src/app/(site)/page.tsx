@@ -46,7 +46,7 @@ export default async function HomePage() {
     <div>
       <div className="bg-brand-blueLight border border-blue-100 rounded-lg p-4 mb-6">
         <h1 className="text-xl font-bold text-brand-blueDark mb-1">
-          Official Sarkari Patrika — नवीनतम सरकारी नौकरी, प्रवेश पत्र व परिणाम
+          Official Sarkari Patrika - नवीनतम सरकारी नौकरी, प्रवेश पत्र व परिणाम
         </h1>
         <p className="text-slate-600 text-sm">
           यहाँ आपको सभी सरकारी विभागों की ताज़ा भर्ती अधिसूचनाएँ, प्रवेश पत्र और परिणाम की सटीक और
@@ -54,7 +54,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      {/* 6-Box Category Grid — मोबाइल पर 2 कॉलम, डेस्कटॉप पर 3 कॉलम, सभी बॉक्स बराबर ऊँचाई के */}
+      {/* 6-Box Category Grid - मोबाइल पर 2 कॉलम, डेस्कटॉप पर 3 कॉलम, सभी बॉक्स बराबर ऊँचाई के */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-10 items-stretch">
         {boxes.map((box) => (
           <CategoryBox
@@ -71,7 +71,7 @@ export default async function HomePage() {
         ))}
       </div>
 
-      {/* नवीनतम अपडेट — Load More / Show Less के साथ */}
+      {/* नवीनतम अपडेट - Load More / Show Less के साथ */}
       <h2 className="text-lg font-bold text-brand-blueDark mb-4 border-l-4 border-brand-pinkAccent pl-3">
         नवीनतम अपडेट
       </h2>
