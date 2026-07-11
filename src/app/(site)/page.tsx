@@ -1,6 +1,6 @@
 import { client } from '@/sanity/lib/client'
 import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY } from '@/sanity/lib/queries'
-import ExpandableGrid from '@/components/ExpandableGrid'
+import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
 
 export const revalidate = 3600
@@ -71,7 +71,7 @@ export default async function HomePage() {
         ))}
       </div>
 
-      {/* नवीनतम अपडेट - Load More / Show Less के साथ */}
+      {/* नवीनतम अपडेट - सिर्फ सबसे लेटेस्ट 1 पोस्ट */}
       <h2 className="text-lg font-bold text-brand-blueDark mb-4 border-l-4 border-brand-pinkAccent pl-3">
         नवीनतम अपडेट
       </h2>
@@ -79,7 +79,17 @@ export default async function HomePage() {
       {posts.length === 0 ? (
         <p className="text-slate-500">फिलहाल कोई पोस्ट उपलब्ध नहीं है। कृपया Sanity Studio से पोस्ट जोड़ें।</p>
       ) : (
-        <ExpandableGrid posts={posts} initialCount={9} step={9} />
+        <div className="max-w-sm">
+          <JobCard
+            title={posts[0].title}
+            slug={posts[0].slug}
+            category={posts[0].category}
+            status={posts[0].status}
+            organization={posts[0].organization}
+            updatedAt={posts[0].updatedAt}
+            isNew={posts[0].isNew}
+          />
+        </div>
       )}
     </div>
   )
