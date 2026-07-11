@@ -42,7 +42,7 @@ export const organization = defineType({
       name: 'about',
       title: 'About Organization',
       type: 'text',
-      description: 'संगठन के बारे में 2-3 पंक्तियाँ — SEO के लिए उपयोगी unique content',
+      description: 'संगठन के बारे में 2-3 पंक्तियाँ - SEO के लिए उपयोगी unique content',
     }),
   ],
   preview: {
