@@ -59,7 +59,7 @@ export default function CategoryBox({ title, categorySlug, items }: CategoryBoxP
       {hasMore && (
         <button
           onClick={() => setExpanded(!expanded)}
-          className="w-full text-center text-xs font-semibold text-brand-blue hover:bg-brand-blueLight py-2.5 border-t border-blue-50 transition"
+          className="w-full text-center text-xs font-semibold text-brand-blue hover:bg-brand-blueLight py-2.5 border-t border-blue-50 transition mt-auto order-last"
         >
           {expanded ? '▲ Show Less' : `▼ Load More (${items.length - INITIAL_COUNT} more)`}
         </button>
