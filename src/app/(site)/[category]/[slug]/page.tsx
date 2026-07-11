@@ -17,7 +17,12 @@ type Props = {
 
 export async function generateStaticParams() {
   const posts = await client.fetch(ALL_SLUGS_QUERY)
-  return posts.map((post: any) => ({ category: post.category, slug: post.slug }))
+  // Safety filter: अगर किसी पोस्ट की category या slug खाली/undefined है,
+  // तो उसे static pages की लिस्ट से बाहर रखें ताकि वो अकेली पोस्ट पूरी
+  // वेबसाइट का बिल्ड न तोड़े। ऐसी पोस्ट सिर्फ तब दिखेगी जब उसमें category सेट होगी।
+  return posts
+    .filter((post: any) => post.category && post.slug)
+    .map((post: any) => ({ category: post.category, slug: post.slug }))
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
