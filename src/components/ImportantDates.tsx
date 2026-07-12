@@ -16,6 +16,9 @@ const LABELS: Record<string, string> = {
   resultDate: 'परिणाम तिथि',
 }
 
+// यह तारीखें urgent/deadline टाइप की हैं - इन्हें हल्के लाल रंग में हाइलाइट करते हैं
+const URGENT_KEYS = ['applicationEnd']
+
 export default function ImportantDates({ dates }: ImportantDatesProps) {
   if (!dates) return null
   const entries = Object.entries(dates).filter(([, value]) => value)
@@ -26,14 +29,23 @@ export default function ImportantDates({ dates }: ImportantDatesProps) {
       <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">महत्वपूर्ण तिथियाँ</h2>
       <table className="w-full text-sm">
         <tbody>
-          {entries.map(([key, value]) => (
-            <tr key={key} className="border-t border-slate-100">
-              <td className="px-4 py-2 text-slate-600">{LABELS[key] || key}</td>
-              <td className="px-4 py-2 font-medium text-slate-800">
-                {new Date(value as string).toLocaleDateString('hi-IN')}
-              </td>
-            </tr>
-          ))}
+          {entries.map(([key, value]) => {
+            const isUrgent = URGENT_KEYS.includes(key)
+            return (
+              <tr
+                key={key}
+                className={`border-t border-slate-100 ${isUrgent ? 'bg-red-50' : ''}`}
+              >
+                <td className={`px-4 py-2.5 ${isUrgent ? 'text-red-700 font-semibold' : 'text-slate-600'}`}>
+                  {isUrgent && <span className="mr-1.5">⏰</span>}
+                  {LABELS[key] || key}
+                </td>
+                <td className={`px-4 py-2.5 font-medium ${isUrgent ? 'text-red-700 font-bold' : 'text-slate-800'}`}>
+                  {new Date(value as string).toLocaleDateString('hi-IN')}
+                </td>
+              </tr>
+            )
+          })}
         </tbody>
       </table>
     </section>
