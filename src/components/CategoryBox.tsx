@@ -39,7 +39,7 @@ export default function CategoryBox({ title, categorySlug, items }: CategoryBoxP
         </div>
       </div>
 
-      <ul className="divide-y divide-blue-50 flex-1">
+      <ul className="divide-y divide-blue-200 flex-1">
         {items.length === 0 && (
           <li className="px-4 py-10 text-sm text-slate-400 text-center">Updates coming soon</li>
         )}
@@ -47,14 +47,16 @@ export default function CategoryBox({ title, categorySlug, items }: CategoryBoxP
           <li key={item.slug}>
             <Link
               href={`/${item.category || categorySlug}/${item.slug}`}
-              className="flex items-start gap-2 px-4 py-3 text-sm text-slate-700 hover:bg-brand-pink/40 hover:text-brand-blueDark transition leading-snug"
+              className="flex items-start gap-2 px-4 py-3 text-sm leading-snug hover:bg-brand-pink/40 transition"
             >
               {item.isNew && (
                 <span className="mt-0.5 flex-shrink-0 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded animate-pulse">
                   NEW
                 </span>
               )}
-              <span>{item.title}</span>
+              <span className="text-brand-blue underline underline-offset-2 hover:text-brand-pinkAccent">
+                {item.title}
+              </span>
             </Link>
           </li>
         ))}
