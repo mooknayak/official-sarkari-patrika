@@ -223,6 +223,30 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'customBlockSimple',
+      title: '➕ कस्टम सेक्शन (सादा)',
+      type: 'object',
+      group: 'details',
+      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे सादा टेक्स्ट लिखें (कोई formatting नहीं)',
+      fields: [
+        { name: 'heading', type: 'string', title: 'Section का Title' },
+        { name: 'content', type: 'text', title: 'Content (सादा टेक्स्ट)', rows: 5 },
+      ],
+    }),
+
+    defineField({
+      name: 'customBlockRich',
+      title: '➕ कस्टम सेक्शन (Layout वाला)',
+      type: 'object',
+      group: 'details',
+      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे Heading/Bold/List जैसी Formatting इस्तेमाल कर सकते हैं',
+      fields: [
+        { name: 'heading', type: 'string', title: 'Section का Title' },
+        { name: 'content', type: 'array', of: [{ type: 'block' }], title: 'Content (Rich Text)' },
+      ],
+    }),
+
+    defineField({
       name: 'seo',
       title: 'SEO Settings',
       type: 'object',
