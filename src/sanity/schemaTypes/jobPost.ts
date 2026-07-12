@@ -137,6 +137,23 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'categoryWiseVacancy',
+      title: 'Category-wise Vacancy (आरक्षण अनुसार)',
+      type: 'object',
+      group: 'details',
+      description: 'मार्कशीट जैसी टेबल के लिए - UR/EWS/OBC/SC/ST के हिसाब से पदों की संख्या',
+      fields: [
+        { name: 'ur', type: 'number', title: 'UR (General)' },
+        { name: 'ews', type: 'number', title: 'EWS' },
+        { name: 'obc', type: 'number', title: 'OBC / BC' },
+        { name: 'sc', type: 'number', title: 'SC' },
+        { name: 'st', type: 'number', title: 'ST' },
+        { name: 'total', type: 'number', title: 'Total' },
+      ],
+      hidden: ({ document }) => document?.status === 'result',
+    }),
+
+    defineField({
       name: 'applicationFee',
       title: 'Application Fee',
       type: 'object',
