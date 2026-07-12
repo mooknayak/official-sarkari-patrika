@@ -18,6 +18,8 @@
     "@sanity/icons": "^3.3.1",
     "@sanity/image-url": "^1.1.0",
     "@sanity/assist": "^3.0.3",
+    "@portabletext/react": "^3.1.0",
+    "google-auth-library": "^9.14.1",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {
