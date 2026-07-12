@@ -69,6 +69,7 @@ export const SINGLE_POST_QUERY = groq`
   },
   importantDates,
   vacancyDetails,
+  categoryWiseVacancy,
   applicationFee,
   admitCardInfo,
   resultInfo,
