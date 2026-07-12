@@ -75,6 +75,8 @@ export const SINGLE_POST_QUERY = groq`
   resultInfo,
   importantLinks,
   description,
+  customBlockSimple,
+  customBlockRich,
   seo,
   publishedAt,
   updatedAt,
