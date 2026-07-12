@@ -16,7 +16,6 @@ const LABELS: Record<string, string> = {
   resultDate: 'परिणाम तिथि',
 }
 
-// यह तारीखें urgent/deadline टाइप की हैं - इन्हें हल्के लाल रंग में हाइलाइट करते हैं
 const URGENT_KEYS = ['applicationEnd']
 
 export default function ImportantDates({ dates }: ImportantDatesProps) {
@@ -25,22 +24,29 @@ export default function ImportantDates({ dates }: ImportantDatesProps) {
   if (entries.length === 0) return null
 
   return (
-    <section className="my-6 border border-slate-200 rounded-lg overflow-hidden">
-      <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">महत्वपूर्ण तिथियाँ</h2>
-      <table className="w-full text-sm">
+    <div className="border border-blue-200 rounded-md overflow-hidden">
+      <h3 className="bg-brand-blue text-white text-center font-bold py-2 text-sm">
+        Important Dates
+      </h3>
+      <table className="w-full text-sm border-collapse">
         <tbody>
           {entries.map(([key, value]) => {
             const isUrgent = URGENT_KEYS.includes(key)
             return (
-              <tr
-                key={key}
-                className={`border-t border-slate-100 ${isUrgent ? 'bg-red-50' : ''}`}
-              >
-                <td className={`px-4 py-2.5 ${isUrgent ? 'text-red-700 font-semibold' : 'text-slate-600'}`}>
-                  {isUrgent && <span className="mr-1.5">⏰</span>}
+              <tr key={key} className={isUrgent ? 'bg-red-50' : ''}>
+                <td
+                  className={`border border-blue-200 px-3 py-2 w-1/2 ${
+                    isUrgent ? 'text-red-700 font-semibold' : 'text-slate-600'
+                  }`}
+                >
+                  {isUrgent && <span className="mr-1">⏰</span>}
                   {LABELS[key] || key}
                 </td>
-                <td className={`px-4 py-2.5 font-medium ${isUrgent ? 'text-red-700 font-bold' : 'text-slate-800'}`}>
+                <td
+                  className={`border border-blue-200 px-3 py-2 font-semibold ${
+                    isUrgent ? 'text-red-700 font-bold' : 'text-slate-800'
+                  }`}
+                >
                   {new Date(value as string).toLocaleDateString('hi-IN')}
                 </td>
               </tr>
@@ -48,6 +54,6 @@ export default function ImportantDates({ dates }: ImportantDatesProps) {
           })}
         </tbody>
       </table>
-    </section>
+    </div>
   )
 }
