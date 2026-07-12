@@ -2,6 +2,7 @@ import { client } from '@/sanity/lib/client'
 import { SINGLE_POST_QUERY, ALL_SLUGS_QUERY, RELATED_POSTS_QUERY } from '@/sanity/lib/queries'
 import StatusBadge from '@/components/StatusBadge'
 import PostInfoBlock from '@/components/PostInfoBlock'
+import PostDescription from '@/components/PostDescription'
 import ImportantDates from '@/components/ImportantDates'
 import ApplicationFeeTable from '@/components/ApplicationFeeTable'
 import CategoryWiseVacancy from '@/components/CategoryWiseVacancy'
@@ -75,6 +76,9 @@ export default async function JobPostPage({ params }: Props) {
         applicationEnd={post.importantDates?.applicationEnd}
         organization={post.organization}
         url={pageUrl}
+        importantDates={post.importantDates}
+        applicationFee={post.applicationFee}
+        totalVacancies={post.categoryWiseVacancy?.total}
       />
 
       <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5 flex-wrap">
@@ -154,11 +158,7 @@ export default async function JobPostPage({ params }: Props) {
       <ImportantLinks links={post.importantLinks} />
       <StatusTimeline timeline={post.statusTimeline} />
 
-      {post.description && (
-        <section className="prose max-w-none my-6">
-          {/* अगर आप Portable Text रेंडर करना चाहें तो यहाँ @portabletext/react इस्तेमाल करें */}
-        </section>
-      )}
+      <PostDescription value={post.description} />
 
       {related && related.length > 0 && (
         <section className="mt-10">
