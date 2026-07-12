@@ -6,6 +6,7 @@ import ImportantLinks from '@/components/ImportantLinks'
 import StatusTimeline from '@/components/StatusTimeline'
 import SchemaMarkup from '@/components/SchemaMarkup'
 import JobCard from '@/components/JobCard'
+import Link from 'next/link'
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 
@@ -77,8 +78,23 @@ export default async function JobPostPage({ params }: Props) {
         url={pageUrl}
       />
 
-      <div className="mb-3">
+      <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5 flex-wrap">
+        <Link href="/" className="hover:text-brand-blue">होम</Link>
+        <span>/</span>
+        <Link href={`/${realCategorySlug}`} className="hover:text-brand-blue capitalize">
+          {realCategorySlug.replace(/-/g, ' ')}
+        </Link>
+        <span>/</span>
+        <span className="text-slate-400 truncate max-w-[200px]">{post.title}</span>
+      </nav>
+
+      <div className="mb-3 flex items-center gap-2 flex-wrap">
         <StatusBadge status={post.status} />
+        {post.updatedAt && (
+          <span className="text-xs text-slate-400">
+            Last Updated: {new Date(post.updatedAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+          </span>
+        )}
       </div>
       <h1 className="text-2xl font-bold text-brand-blueDark mb-2">{post.title}</h1>
       {post.organization?.name && (
