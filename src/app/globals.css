@@ -10,11 +10,10 @@ body {
   @apply bg-slate-50 text-slate-900;
 }
 
-/* हल्का, सुकून देने वाला नीला link - सभी बॉक्स की लिस्ट में इस्तेमाल होता है */
+/* साफ़, crisp प्रोफेशनल नीला link - कोई blur/shadow नहीं */
 .link-glow {
   color: #2563eb;
-  text-shadow: 0 0 3px rgba(37, 99, 235, 0.18);
-  transition: color 0.2s ease;
+  transition: color 0.15s ease;
 }
 .link-glow:hover {
   color: #1d4ed8;
