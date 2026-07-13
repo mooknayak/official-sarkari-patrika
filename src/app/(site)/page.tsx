@@ -22,7 +22,7 @@ const BOXES = [
   { title: '🔴 Result', slug: 'result', type: 'status' as const, value: ['result', 'final_selection'] },
   { title: '🔵 Answer Key', slug: 'answer-key', type: 'status' as const, value: ['answer_key'] },
   { title: '📄 Documents', slug: 'documents', type: 'category' as const, value: ['documents'] },
-  { title: '🏛️ सरकारी योजनाएं', slug: 'sarkari-yojana', type: 'category' as const, value: ['sarkari-yojana'] },
+  { title: '📌 Important', slug: 'sarkari-yojana', type: 'category' as const, value: ['sarkari-yojana'] },
 ]
 
 async function getBoxData() {
