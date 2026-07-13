@@ -119,6 +119,96 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'importantLinks',
+      title: 'Important Links',
+      type: 'array',
+      group: 'details',
+      description: '📌 Full Description के नीचे यह लिंक वेबसाइट पर एक साफ़-सुथरे बॉक्स में दिखेंगे - Documents/योजना के लिए Official Website, PDF, Apply Link यहीं जोड़ें।',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            { name: 'label', type: 'string', title: 'Link Label' },
+            { name: 'url', type: 'url', title: 'URL' },
+            {
+              name: 'linkType',
+              type: 'string',
+              options: {
+                list: [
+                  'Apply Online',
+                  'Download Admit Card',
+                  'Check Result',
+                  'Official Notification',
+                  'Official Website',
+                ],
+              },
+            },
+          ],
+        }),
+      ],
+    }),
+
+    defineField({
+      name: 'description',
+      title: 'Full Description',
+      type: 'array',
+      group: 'details',
+      description: '📌 Documents/सरकारी योजनाएं पोस्ट के लिए मुख्य जगह यही है - यहाँ bullet points, headings और Highlight (🖍️) इस्तेमाल करके पूरी जानकारी लिखें। Job Post के लिए यह अतिरिक्त जानकारी के तौर पर इस्तेमाल करें।',
+      of: [
+        {
+          type: 'block',
+          marks: {
+            decorators: [
+              { title: 'Bold', value: 'strong' },
+              { title: 'Italic', value: 'em' },
+              { title: 'Highlight', value: 'highlight', icon: () => '🖍️' },
+            ],
+          },
+        },
+      ],
+    }),
+
+    defineField({
+      name: 'customBlockSimple',
+      title: '➕ कस्टम सेक्शन (सादा)',
+      type: 'object',
+      group: 'details',
+      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे सादा टेक्स्ट लिखें (कोई formatting नहीं)',
+      fields: [
+        { name: 'heading', type: 'string', title: 'Section का Title' },
+        { name: 'content', type: 'text', title: 'Content (सादा टेक्स्ट)', rows: 5 },
+      ],
+    }),
+
+    defineField({
+      name: 'customBlockRich',
+      title: '➕ कस्टम सेक्शन (Layout वाला)',
+      type: 'object',
+      group: 'details',
+      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे Heading/Bold/List जैसी Formatting इस्तेमाल कर सकते हैं',
+      fields: [
+        { name: 'heading', type: 'string', title: 'Section का Title' },
+        {
+          name: 'content',
+          type: 'array',
+          title: 'Content (Rich Text)',
+          of: [
+            {
+              type: 'block',
+              marks: {
+                decorators: [
+                  { title: 'Bold', value: 'strong' },
+                  { title: 'Italic', value: 'em' },
+                  { title: 'Highlight', value: 'highlight', icon: () => '🖍️' },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+    }),
+
+    defineField({
       name: 'vacancyDetails',
       title: 'Vacancy Details',
       type: 'array',
@@ -134,6 +224,7 @@ export const jobPost = defineType({
         }),
       ],
       hidden: ({ document }) => document?.status === 'result',
+      description: '⚠️ सिर्फ Job Post के लिए। Documents/सरकारी योजनाएं पोस्ट में इसे खाली छोड़ दें।',
     }),
 
     defineField({
@@ -183,67 +274,6 @@ export const jobPost = defineType({
       hidden: ({ document }) =>
         document?.status !== 'result' && document?.status !== 'final_selection',
       description: 'कट-ऑफ, अगला चरण आदि। कभी भी उम्मीदवारों का व्यक्तिगत डेटा न डालें।',
-    }),
-
-    defineField({
-      name: 'importantLinks',
-      title: 'Important Links',
-      type: 'array',
-      group: 'details',
-      of: [
-        defineArrayMember({
-          type: 'object',
-          fields: [
-            { name: 'label', type: 'string', title: 'Link Label' },
-            { name: 'url', type: 'url', title: 'URL' },
-            {
-              name: 'linkType',
-              type: 'string',
-              options: {
-                list: [
-                  'Apply Online',
-                  'Download Admit Card',
-                  'Check Result',
-                  'Official Notification',
-                  'Official Website',
-                ],
-              },
-            },
-          ],
-        }),
-      ],
-    }),
-
-    defineField({
-      name: 'description',
-      title: 'Full Description',
-      type: 'array',
-      group: 'details',
-      of: [{ type: 'block' }],
-    }),
-
-    defineField({
-      name: 'customBlockSimple',
-      title: '➕ कस्टम सेक्शन (सादा)',
-      type: 'object',
-      group: 'details',
-      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे सादा टेक्स्ट लिखें (कोई formatting नहीं)',
-      fields: [
-        { name: 'heading', type: 'string', title: 'Section का Title' },
-        { name: 'content', type: 'text', title: 'Content (सादा टेक्स्ट)', rows: 5 },
-      ],
-    }),
-
-    defineField({
-      name: 'customBlockRich',
-      title: '➕ कस्टम सेक्शन (Layout वाला)',
-      type: 'object',
-      group: 'details',
-      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे Heading/Bold/List जैसी Formatting इस्तेमाल कर सकते हैं',
-      fields: [
-        { name: 'heading', type: 'string', title: 'Section का Title' },
-        { name: 'content', type: 'array', of: [{ type: 'block' }], title: 'Content (Rich Text)' },
-      ],
     }),
 
     defineField({
