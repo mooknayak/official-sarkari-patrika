@@ -169,42 +169,74 @@ export const jobPost = defineType({
     }),
 
     defineField({
-      name: 'customBlockSimple',
-      title: '➕ कस्टम सेक्शन (सादा)',
-      type: 'object',
+      name: 'customSectionsBeforeLinks',
+      title: '➕ कस्टम सेक्शन (Important Links से ऊपर)',
+      type: 'array',
       group: 'details',
-      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे सादा टेक्स्ट लिखें (कोई formatting नहीं)',
-      fields: [
-        { name: 'heading', type: 'string', title: 'Section का Title' },
-        { name: 'content', type: 'text', title: 'Content (सादा टेक्स्ट)', rows: 5 },
+      description: '📌 जितने चाहें उतने Title+Description वाले बॉक्स जोड़ें ("+ Add item" दबाकर) - यह सब Important Links से ऊपर दिखेंगे। हर बॉक्स में Bold/Bullet/Highlight जैसी formatting इस्तेमाल कर सकते हैं।',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            { name: 'heading', type: 'string', title: 'Section का Title' },
+            {
+              name: 'content',
+              type: 'array',
+              title: 'Content (Bullet/Bold/Highlight सब चलेगा)',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    decorators: [
+                      { title: 'Bold', value: 'strong' },
+                      { title: 'Italic', value: 'em' },
+                      { title: 'Highlight', value: 'highlight', icon: () => '🖍️' },
+                    ],
+                  },
+                },
+              ],
+            },
+          ],
+          preview: {
+            select: { title: 'heading' },
+          },
+        }),
       ],
     }),
 
     defineField({
-      name: 'customBlockRich',
-      title: '➕ कस्टम सेक्शन (Layout वाला)',
-      type: 'object',
+      name: 'customSectionsAfterLinks',
+      title: '➕ कस्टम सेक्शन (Important Links से नीचे)',
+      type: 'array',
       group: 'details',
-      description: 'अपनी मर्ज़ी से कोई भी नया सेक्शन जोड़ें - Title खुद रखें, नीचे Heading/Bold/List जैसी Formatting इस्तेमाल कर सकते हैं',
-      fields: [
-        { name: 'heading', type: 'string', title: 'Section का Title' },
-        {
-          name: 'content',
-          type: 'array',
-          title: 'Content (Rich Text)',
-          of: [
+      description: '📌 जितने चाहें उतने Title+Description वाले बॉक्स जोड़ें ("+ Add item" दबाकर) - यह सब Important Links के नीचे, Full Description के पहले दिखेंगे।',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            { name: 'heading', type: 'string', title: 'Section का Title' },
             {
-              type: 'block',
-              marks: {
-                decorators: [
-                  { title: 'Bold', value: 'strong' },
-                  { title: 'Italic', value: 'em' },
-                  { title: 'Highlight', value: 'highlight', icon: () => '🖍️' },
-                ],
-              },
+              name: 'content',
+              type: 'array',
+              title: 'Content (Bullet/Bold/Highlight सब चलेगा)',
+              of: [
+                {
+                  type: 'block',
+                  marks: {
+                    decorators: [
+                      { title: 'Bold', value: 'strong' },
+                      { title: 'Italic', value: 'em' },
+                      { title: 'Highlight', value: 'highlight', icon: () => '🖍️' },
+                    ],
+                  },
+                },
+              ],
             },
           ],
-        },
+          preview: {
+            select: { title: 'heading' },
+          },
+        }),
       ],
     }),
 
