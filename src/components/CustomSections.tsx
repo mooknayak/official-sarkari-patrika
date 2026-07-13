@@ -28,35 +28,41 @@ const richComponents: PortableTextComponents = {
         {children}
       </a>
     ),
+    highlight: ({ children }) => (
+      <mark className="bg-yellow-200 text-brand-blueDark px-1 rounded font-medium">
+        {children}
+      </mark>
+    ),
   },
 }
 
-type CustomBlockSimpleProps = {
-  data?: { heading?: string; content?: string }
+type CustomSection = {
+  heading?: string
+  content?: any[]
 }
 
-type CustomBlockRichProps = {
-  data?: { heading?: string; content?: any[] }
+type CustomSectionsListProps = {
+  sections?: CustomSection[]
 }
 
-export function CustomBlockSimple({ data }: CustomBlockSimpleProps) {
-  if (!data?.heading || !data?.content) return null
+// यह component जितने भी Title+Description बॉक्स Studio में जोड़े गए हों,
+// सबको अलग-अलग बॉक्स के रूप में क्रम से दिखाता है (Multiple Boxes Support)
+export default function CustomSectionsList({ sections }: CustomSectionsListProps) {
+  if (!sections || sections.length === 0) return null
+
+  const validSections = sections.filter((s) => s.heading && s.content && s.content.length > 0)
+  if (validSections.length === 0) return null
+
   return (
-    <section className="my-6 border border-blue-200 rounded-lg overflow-hidden">
-      <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">{data.heading}</h2>
-      <p className="p-4 text-slate-700 whitespace-pre-line leading-relaxed">{data.content}</p>
-    </section>
-  )
-}
-
-export function CustomBlockRich({ data }: CustomBlockRichProps) {
-  if (!data?.heading || !data?.content || data.content.length === 0) return null
-  return (
-    <section className="my-6 border border-blue-200 rounded-lg overflow-hidden">
-      <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">{data.heading}</h2>
-      <div className="p-4">
-        <PortableText value={data.content} components={richComponents} />
-      </div>
-    </section>
+    <>
+      {validSections.map((section, idx) => (
+        <section key={idx} className="my-6 border border-blue-200 rounded-lg overflow-hidden">
+          <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold">{section.heading}</h2>
+          <div className="p-4">
+            <PortableText value={section.content!} components={richComponents} />
+          </div>
+        </section>
+      ))}
+    </>
   )
 }
