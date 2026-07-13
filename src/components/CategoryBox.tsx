@@ -54,7 +54,7 @@ export default function CategoryBox({ title, categorySlug, items }: CategoryBoxP
                   NEW
                 </span>
               )}
-              <span className="text-brand-blue underline underline-offset-2 hover:text-brand-pinkAccent">
+              <span className="link-glow underline underline-offset-2 hover:text-brand-pinkAccent">
                 {item.title}
               </span>
             </Link>
