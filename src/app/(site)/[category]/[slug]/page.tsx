@@ -3,7 +3,7 @@ import { SINGLE_POST_QUERY, ALL_SLUGS_QUERY, RELATED_POSTS_QUERY } from '@/sanit
 import StatusBadge from '@/components/StatusBadge'
 import PostInfoBlock from '@/components/PostInfoBlock'
 import PostDescription from '@/components/PostDescription'
-import { CustomBlockSimple, CustomBlockRich } from '@/components/CustomSections'
+import CustomSectionsList from '@/components/CustomSections'
 import ImportantDates from '@/components/ImportantDates'
 import ApplicationFeeTable from '@/components/ApplicationFeeTable'
 import CategoryWiseVacancy from '@/components/CategoryWiseVacancy'
@@ -156,13 +156,14 @@ export default async function JobPostPage({ params }: Props) {
         </section>
       )}
 
+      <CustomSectionsList sections={post.customSectionsBeforeLinks} />
+
       <ImportantLinks links={post.importantLinks} />
       <StatusTimeline timeline={post.statusTimeline} />
 
-      <PostDescription value={post.description} />
+      <CustomSectionsList sections={post.customSectionsAfterLinks} />
 
-      <CustomBlockSimple data={post.customBlockSimple} />
-      <CustomBlockRich data={post.customBlockRich} />
+      <PostDescription value={post.description} />
 
       {related && related.length > 0 && (
         <section className="mt-10">
