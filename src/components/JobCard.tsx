@@ -32,7 +32,7 @@ export default function JobCard({ title, slug, category, status, organization, u
           </span>
         )}
       </div>
-      <h3 className="font-semibold text-brand-blue underline underline-offset-2 leading-snug hover:text-brand-pinkAccent">
+      <h3 className="link-glow font-semibold underline underline-offset-2 leading-snug hover:text-brand-pinkAccent">
         {title}
       </h3>
       {organization && <p className="text-sm text-slate-500 mt-1">{organization}</p>}
