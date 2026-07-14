@@ -1,6 +1,7 @@
 import { revalidatePath } from 'next/cache'
 import { parseBody } from 'next-sanity/webhook'
 import { NextRequest, NextResponse } from 'next/server'
+import { requestGoogleIndexing } from '@/lib/googleIndexing'
 
 type WebhookPayload = {
   slug?: string
@@ -25,7 +26,16 @@ export async function POST(req: NextRequest) {
     revalidatePath(`/${body.category}`)
     revalidatePath('/')
 
-    return NextResponse.json({ revalidated: true, now: Date.now() })
+    // Google को तुरंत बताना कि यह पेज नया/अपडेट हुआ है
+    // (सिर्फ तभी काम करेगा जब Indexing API सेटअप हो, वरना चुपचाप स्किप हो जाता है)
+    const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${body.category}/${body.slug}`
+    const indexingResult = await requestGoogleIndexing(postUrl)
+
+    return NextResponse.json({
+      revalidated: true,
+      now: Date.now(),
+      googleIndexing: indexingResult,
+    })
   } catch (err) {
     return NextResponse.json({ message: (err as Error).message }, { status: 500 })
   }
