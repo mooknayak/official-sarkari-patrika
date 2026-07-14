@@ -2,6 +2,7 @@ import { client } from '@/sanity/lib/client'
 import { SINGLE_POST_QUERY, ALL_SLUGS_QUERY, RELATED_POSTS_QUERY } from '@/sanity/lib/queries'
 import StatusBadge from '@/components/StatusBadge'
 import PostInfoBlock from '@/components/PostInfoBlock'
+import ShareButtons from '@/components/ShareButtons'
 import PostDescription from '@/components/PostDescription'
 import CustomSectionsList from '@/components/CustomSections'
 import ImportantDates from '@/components/ImportantDates'
@@ -96,6 +97,8 @@ export default async function JobPostPage({ params }: Props) {
         <StatusBadge status={post.status} />
       </div>
       <h1 className="text-2xl font-bold text-brand-blueDark mb-4">{post.title}</h1>
+
+      <ShareButtons title={post.title} url={pageUrl} />
 
       {/* Post Info Block - मार्कशीट स्टाइल */}
       <PostInfoBlock
