@@ -22,6 +22,19 @@ type Props = {
   params: { category: string; slug: string }
 }
 
+// Full Description (Portable Text/rich blocks) से सादा टेक्स्ट निकालता है -
+// ताकि Google के JobPosting Schema की अनिवार्य "description" फील्ड में
+// असली, सही जानकारी जा सके, सिर्फ generic fallback टेक्स्ट न जाए।
+function extractPlainText(blocks?: any[], maxLength = 300): string {
+  if (!blocks || blocks.length === 0) return ''
+  const text = blocks
+    .filter((block) => block._type === 'block' && block.children)
+    .map((block) => block.children.map((child: any) => child.text).join(''))
+    .join(' ')
+    .trim()
+  return text.length > maxLength ? text.slice(0, maxLength) + '...' : text
+}
+
 export async function generateStaticParams() {
   const posts = await client.fetch(ALL_SLUGS_QUERY)
   return posts
@@ -68,6 +81,14 @@ export default async function JobPostPage({ params }: Props) {
   const hasFeeInfo = post.applicationFee?.general || post.applicationFee?.scst || post.applicationFee?.paymentMode
   const hasDatesInfo = post.importantDates && Object.values(post.importantDates).some((v) => v)
 
+  // Priority: SEO meta description > Full Description से निकाला टेक्स्ट > Result/Admit Card जानकारी
+  const bestDescription =
+    post.seo?.metaDescription ||
+    extractPlainText(post.description) ||
+    post.resultInfo ||
+    post.admitCardInfo ||
+    ''
+
   return (
     <article>
       <SchemaMarkup
@@ -81,6 +102,7 @@ export default async function JobPostPage({ params }: Props) {
         importantDates={post.importantDates}
         applicationFee={post.applicationFee}
         totalVacancies={post.categoryWiseVacancy?.total}
+        description={bestDescription}
       />
 
       <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5 flex-wrap">
