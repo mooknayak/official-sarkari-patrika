@@ -28,6 +28,7 @@ type SchemaProps = {
   importantDates?: ImportantDatesType
   applicationFee?: ApplicationFeeType
   totalVacancies?: number
+  description?: string
 }
 
 function formatDate(dateStr?: string) {
@@ -93,13 +94,25 @@ export default function SchemaMarkup({
   importantDates,
   applicationFee,
   totalVacancies,
+  description,
 }: SchemaProps) {
+  // Google को हर JobPosting में "description" अनिवार्य चाहिए - खाली होने पर
+  // Rich Result "invalid" मान लिया जाता है। इसलिए हमेशा एक भरोसेमंद
+  // fallback टेक्स्ट तैयार रखते हैं, चाहे Editor ने कुछ अलग से न लिखा हो।
+  const jobDescription =
+    description && description.trim().length > 0
+      ? description
+      : `${title} - ${organization?.name || 'संबंधित सरकारी विभाग'} द्वारा जारी अधिसूचना। ${
+          totalVacancies ? `कुल ${totalVacancies} पदों पर भर्ती। ` : ''
+        }पूरी जानकारी, पात्रता, महत्वपूर्ण तिथियों और आवेदन प्रक्रिया के लिए Official Sarkari Patrika पर यह पोस्ट देखें।`
+
   const mainSchema =
     status === 'job'
       ? {
           '@context': 'https://schema.org',
           '@type': 'JobPosting',
           title,
+          description: jobDescription,
           datePosted: publishedAt,
           validThrough: applicationEnd,
           employmentType: 'FULL_TIME',
@@ -117,6 +130,7 @@ export default function SchemaMarkup({
           '@context': 'https://schema.org',
           '@type': 'Article',
           headline: title,
+          description: jobDescription,
           datePublished: publishedAt,
           dateModified: updatedAt,
           mainEntityOfPage: url,
