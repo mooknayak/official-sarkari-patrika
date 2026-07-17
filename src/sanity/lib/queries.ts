@@ -126,3 +126,34 @@ export const SEARCH_QUERY = groq`
   "category": category->slug.current
 }
 `
+
+// ---- Organization-wise पेज के लिए ----
+export const ORGANIZATION_INFO_QUERY = groq`
+*[_type == "organization" && slug.current == $orgSlug][0] {
+  name,
+  about,
+  website,
+  "logoUrl": logo.asset->url
+}
+`
+
+export const ORGANIZATION_POSTS_QUERY = groq`
+*[_type == "jobPost" && organization->slug.current == $orgSlug && !(seo.noIndex == true)]
+| order(_updatedAt desc) [0...100] {
+  _id,
+  title,
+  "slug": slug.current,
+  status,
+  isNew,
+  "category": category->slug.current,
+  updatedAt
+}
+`
+
+export const ALL_ORGANIZATIONS_QUERY = groq`
+*[_type == "organization"] | order(name asc) {
+  name,
+  "slug": slug.current,
+  "postCount": count(*[_type == "jobPost" && references(^._id)])
+}
+`
