@@ -26,9 +26,26 @@ export const jobPost = defineType({
       title: 'URL Slug',
       type: 'slug',
       group: 'general',
-      options: { source: 'title', maxLength: 100 },
+      options: {
+        source: 'title',
+        maxLength: 100,
+        isUnique: async (slugValue, context) => {
+          const { document, getClient } = context
+          const client = getClient({ apiVersion: '2024-01-01' })
+          const id = document?._id.replace(/^drafts\./, '') || ''
+          const params = {
+            draft: `drafts.${id}`,
+            published: id,
+            slug: slugValue,
+          }
+          const query = `!defined(*[!(_id in [$draft, $published]) && slug.current == $slug][0]._id)`
+          const result = await client.fetch(query, params)
+          return result
+        },
+      },
       validation: (Rule) => Rule.required(),
-      description: 'एक बार सेट होने के बाद इसे कभी न बदलें - यही Dynamic Update का आधार है।',
+      description:
+        'एक बार सेट होने के बाद इसे कभी न बदलें - यही Dynamic Update का आधार है। अगर यह किसी दूसरी पोस्ट में पहले से इस्तेमाल हो चुका है, तो Studio अपने-आप Error दिखाकर रोक देगा।',
     }),
 
     defineField({
