@@ -3,7 +3,9 @@ import { HOMEPAGE_LATEST_QUERY } from '@/sanity/lib/queries'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://officialsarkaripatrika.com'
 
-function escapeXml(str: string) {
+// null/undefined आने पर भी कभी न टूटे - हमेशा एक सुरक्षित खाली स्ट्रिंग रिटर्न करे
+function escapeXml(value: unknown) {
+  const str = value == null ? '' : String(value)
   return str
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
@@ -15,7 +17,11 @@ function escapeXml(str: string) {
 export async function GET() {
   const posts: any[] = await client.fetch(HOMEPAGE_LATEST_QUERY)
 
-  const items = posts
+  // सिर्फ वही पोस्ट लें जिनमें title, slug और category तीनों मौजूद हों -
+  // कोई भी अधूरी/खाली-category वाली पोस्ट यहीं छूट जाएगी, बिल्ड कभी नहीं टूटेगा
+  const validPosts = posts.filter((post) => post?.title && post?.slug && post?.category)
+
+  const items = validPosts
     .map((post) => {
       const url = `${SITE_URL}/${post.category}/${post.slug}`
       const pubDate = post.updatedAt ? new Date(post.updatedAt).toUTCString() : new Date().toUTCString()
