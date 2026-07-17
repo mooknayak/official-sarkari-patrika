@@ -103,6 +103,14 @@ export default async function JobPostPage({ params }: Props) {
         applicationFee={post.applicationFee}
         totalVacancies={post.categoryWiseVacancy?.total}
         description={bestDescription}
+        breadcrumb={[
+          { name: 'होम', url: process.env.NEXT_PUBLIC_SITE_URL || '' },
+          {
+            name: realCategorySlug.replace(/-/g, ' '),
+            url: `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}`,
+          },
+          { name: post.title, url: pageUrl },
+        ]}
       />
 
       <nav className="text-xs text-slate-500 mb-4 flex items-center gap-1.5 flex-wrap">
