@@ -29,6 +29,7 @@ type SchemaProps = {
   applicationFee?: ApplicationFeeType
   totalVacancies?: number
   description?: string
+  breadcrumb?: { name: string; url: string }[]
 }
 
 function formatDate(dateStr?: string) {
@@ -95,6 +96,7 @@ export default function SchemaMarkup({
   applicationFee,
   totalVacancies,
   description,
+  breadcrumb,
 }: SchemaProps) {
   // Google को हर JobPosting में "description" अनिवार्य चाहिए - खाली होने पर
   // Rich Result "invalid" मान लिया जाता है। इसलिए हमेशा एक भरोसेमंद
@@ -158,6 +160,20 @@ export default function SchemaMarkup({
         }
       : null
 
+  const breadcrumbSchema =
+    breadcrumb && breadcrumb.length > 0
+      ? {
+          '@context': 'https://schema.org',
+          '@type': 'BreadcrumbList',
+          itemListElement: breadcrumb.map((item, idx) => ({
+            '@type': 'ListItem',
+            position: idx + 1,
+            name: item.name,
+            item: item.url,
+          })),
+        }
+      : null
+
   return (
     <>
       <script
@@ -168,6 +184,12 @@ export default function SchemaMarkup({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
+      {breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
     </>
