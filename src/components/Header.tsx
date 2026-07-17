@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { title: 'Answer Key', href: '/answer-key' },
   { title: 'Documents', href: '/documents' },
   { title: 'Important', href: '/sarkari-yojana' },
+  { title: 'Organizations', href: '/organizations' },
 ]
 
 export default function Header() {
