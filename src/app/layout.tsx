@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
+import GoogleAnalytics from '@/components/GoogleAnalytics'
 import './globals.css'
 
 const ADSENSE_CLIENT_ID = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
@@ -12,6 +13,11 @@ export const metadata: Metadata = {
   },
   description:
     'नवीनतम सरकारी नौकरी अधिसूचना, प्रवेश पत्र और परिणाम की सटीक व समय पर जानकारी।',
+  alternates: {
+    types: {
+      'application/rss+xml': [{ url: '/rss.xml', title: 'Official Sarkari Patrika RSS Feed' }],
+    },
+  },
   // AdSense साइट-वेरिफिकेशन के लिए (जब आप Client ID डालेंगे तभी यह टैग दिखेगा)
   ...(ADSENSE_CLIENT_ID && {
     other: { 'google-adsense-account': ADSENSE_CLIENT_ID },
@@ -26,6 +32,7 @@ export default function RootLayout({
   return (
     <html lang="hi">
       <body>
+        <GoogleAnalytics />
         {children}
 
         {/* AdSense Script - सिर्फ तभी लोड होगी जब NEXT_PUBLIC_ADSENSE_CLIENT_ID env variable सेट हो */}
