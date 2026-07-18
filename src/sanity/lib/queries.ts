@@ -157,3 +157,14 @@ export const ALL_ORGANIZATIONS_QUERY = groq`
   "postCount": count(*[_type == "jobPost" && references(^._id)])
 }
 `
+
+// ---- होमपेज के 6 रंगीन Trending बॉक्स के लिए ----
+export const TRENDING_POSTS_QUERY = groq`
+*[_type == "jobPost" && isTrending == true && !(seo.noIndex == true)]
+| order(_updatedAt desc) [0...6] {
+  title,
+  "slug": slug.current,
+  "category": category->slug.current,
+  status
+}
+`
