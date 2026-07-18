@@ -17,7 +17,8 @@ function urlBase64ToUint8Array(base64String: string) {
 
 export default function PushNotificationPrompt() {
   const [visible, setVisible] = useState(false)
-  const [status, setStatus] = useState<'idle' | 'loading' | 'done'>('idle')
+  const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle')
+  const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
     if (!VAPID_PUBLIC_KEY) return
@@ -49,16 +50,24 @@ export default function PushNotificationPrompt() {
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
       })
 
-      await fetch('/api/push-subscribe', {
+      const res = await fetch('/api/push-subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(subscription),
       })
 
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}))
+        setErrorMsg(data.message || `Server Error (${res.status})`)
+        setStatus('error')
+        return
+      }
+
       setStatus('done')
       setTimeout(() => setVisible(false), 1800)
     } catch (err) {
-      setVisible(false)
+      setErrorMsg((err as Error).message || 'कुछ गड़बड़ हो गई')
+      setStatus('error')
     }
   }
 
@@ -75,6 +84,17 @@ export default function PushNotificationPrompt() {
         <p className="text-sm text-green-700 font-semibold text-center py-2">
           ✅ Notification चालू हो गई! अब नई पोस्ट की जानकारी आपको तुरंत मिलेगी।
         </p>
+      ) : status === 'error' ? (
+        <div className="text-center py-2">
+          <p className="text-sm text-red-700 font-semibold">⚠️ Subscribe नहीं हो पाया</p>
+          <p className="text-xs text-red-500 mt-1 break-words">{errorMsg}</p>
+          <button
+            onClick={handleDismiss}
+            className="mt-3 text-xs border border-slate-300 text-slate-600 px-4 py-1.5 rounded-md hover:bg-slate-50 transition"
+          >
+            बंद करें
+          </button>
+        </div>
       ) : (
         <>
           <div className="flex items-start gap-3">
