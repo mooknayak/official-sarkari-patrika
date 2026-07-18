@@ -49,4 +49,11 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('🏛️ Organizations')
         .child(S.documentTypeList('organization').title('Organizations')),
+      S.divider(),
+      S.listItem()
+        .title('📧 Job Alert Subscribers (Email)')
+        .child(S.documentTypeList('subscriber').title('Email Subscribers')),
+      S.listItem()
+        .title('🔔 Push Notification Subscribers')
+        .child(S.documentTypeList('pushSubscriber').title('Push Subscribers')),
     ])
