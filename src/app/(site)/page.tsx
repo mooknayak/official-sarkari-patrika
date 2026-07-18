@@ -1,7 +1,8 @@
 import { client } from '@/sanity/lib/client'
-import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY } from '@/sanity/lib/queries'
+import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TRENDING_POSTS_QUERY } from '@/sanity/lib/queries'
 import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
+import TrendingBoxes from '@/components/TrendingBoxes'
 
 export const revalidate = 3600
 
@@ -37,9 +38,10 @@ async function getBoxData() {
 }
 
 export default async function HomePage() {
-  const [posts, boxes]: [Post[], any[]] = await Promise.all([
+  const [posts, boxes, trendingPosts]: [Post[], any[], any[]] = await Promise.all([
     client.fetch(HOMEPAGE_LATEST_QUERY),
     getBoxData(),
+    client.fetch(TRENDING_POSTS_QUERY),
   ])
 
   return (
@@ -53,6 +55,8 @@ export default async function HomePage() {
           समय पर जानकारी मिलेगी।
         </p>
       </div>
+
+      <TrendingBoxes posts={trendingPosts} />
 
       {/* 6-Box Category Grid - मोबाइल पर 2 कॉलम, डेस्कटॉप पर 3 कॉलम, सभी बॉक्स बराबर ऊँचाई के */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 md:gap-4 mb-10 items-stretch">
