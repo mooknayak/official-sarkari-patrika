@@ -2,7 +2,6 @@ import { client } from '@/sanity/lib/client'
 import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY } from '@/sanity/lib/queries'
 import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
-import JobAlertForm from '@/components/JobAlertForm'
 
 export const revalidate = 3600
 
@@ -53,10 +52,6 @@ export default async function HomePage() {
           यहाँ आपको सभी सरकारी विभागों की ताज़ा भर्ती अधिसूचनाएँ, प्रवेश पत्र और परिणाम की सटीक और
           समय पर जानकारी मिलेगी।
         </p>
-      </div>
-
-      <div className="mb-8">
-        <JobAlertForm />
       </div>
 
       {/* 6-Box Category Grid - मोबाइल पर 2 कॉलम, डेस्कटॉप पर 3 कॉलम, सभी बॉक्स बराबर ऊँचाई के */}
