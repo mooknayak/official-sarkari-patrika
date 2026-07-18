@@ -101,6 +101,16 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'isTrending',
+      title: '🔥 Trending Box में दिखाएँ (होमपेज के रंगीन बॉक्स)',
+      type: 'boolean',
+      group: 'status',
+      initialValue: false,
+      description:
+        'इसे ON करने पर यह पोस्ट होमपेज के ऊपर 6 रंगीन Trending बॉक्स में से एक में दिखेगी - ज़्यादा-से-ज़्यादा 6 पोस्ट एक साथ ON रखें, बाकी अपने-आप नहीं दिखेंगी।',
+    }),
+
+    defineField({
       name: 'statusTimeline',
       title: 'Status Update Timeline',
       type: 'array',
