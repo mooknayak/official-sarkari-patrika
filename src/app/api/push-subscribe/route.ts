@@ -29,6 +29,10 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ message: 'Subscribe हो गया', success: true })
   } catch (err) {
-    return NextResponse.json({ message: 'कुछ गड़बड़ हो गई' }, { status: 500 })
+    const message = (err as Error).message || 'कुछ गड़बड़ हो गई'
+    return NextResponse.json(
+      { message: `Sanity Write Error: ${message}` },
+      { status: 500 }
+    )
   }
 }
