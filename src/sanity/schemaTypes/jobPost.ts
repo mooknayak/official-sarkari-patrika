@@ -111,6 +111,26 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'helpfulCount',
+      title: '👍 Helpful Votes',
+      type: 'number',
+      group: 'status',
+      initialValue: 0,
+      readOnly: true,
+      description: 'यह अपने-आप वेबसाइट पर यूज़र के फीडबैक से भरता है, इसे मैनुअली न बदलें।',
+    }),
+
+    defineField({
+      name: 'notHelpfulCount',
+      title: '👎 Not Helpful Votes',
+      type: 'number',
+      group: 'status',
+      initialValue: 0,
+      readOnly: true,
+      description: 'यह अपने-आप वेबसाइट पर यूज़र के फीडबैक से भरता है, इसे मैनुअली न बदलें।',
+    }),
+
+    defineField({
       name: 'statusTimeline',
       title: 'Status Update Timeline',
       type: 'array',
