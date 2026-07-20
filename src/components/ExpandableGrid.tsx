@@ -20,15 +20,44 @@ type ExpandableGridProps = {
   step?: number
 }
 
-export default function ExpandableGrid({ posts, initialCount = 9, step = 9 }: ExpandableGridProps) {
-  const [visibleCount, setVisibleCount] = useState(initialCount)
-  const visible = posts.slice(0, visibleCount)
-  const hasMore = visibleCount < posts.length
-  const canCollapse = visibleCount > initialCount
+const PER_PAGE = 12
+
+export default function ExpandableGrid({ posts, initialCount = PER_PAGE }: ExpandableGridProps) {
+  const [currentPage, setCurrentPage] = useState(1)
+  const perPage = initialCount || PER_PAGE
+  const totalPages = Math.ceil(posts.length / perPage)
+
+  const start = (currentPage - 1) * perPage
+  const visible = posts.slice(start, start + perPage)
+
+  const goToPage = (page: number) => {
+    setCurrentPage(page)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  // सिर्फ 2 पेज तक होने पर सामान्य rendering, ज़्यादा होने पर छोटे नंबर दिखाना
+  // जैसे: 1 2 3 ... 8 9 10 (शुरुआत, आस-पास, आखिर)
+  const getPageNumbers = () => {
+    const pages: (number | 'dots')[] = []
+    for (let i = 1; i <= totalPages; i++) {
+      if (
+        i === 1 ||
+        i === totalPages ||
+        (i >= currentPage - 1 && i <= currentPage + 1)
+      ) {
+        pages.push(i)
+      } else if (pages[pages.length - 1] !== 'dots') {
+        pages.push('dots')
+      }
+    }
+    return pages
+  }
 
   return (
     <div className="flex flex-col">
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 order-1">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {visible.map((post) => (
           <JobCard
             key={post._id}
@@ -43,24 +72,43 @@ export default function ExpandableGrid({ posts, initialCount = 9, step = 9 }: Ex
         ))}
       </div>
 
-      {(hasMore || canCollapse) && (
-        <div className="flex justify-center gap-3 mt-6 order-2">
-          {hasMore && (
-            <button
-              onClick={() => setVisibleCount((v) => v + step)}
-              className="bg-brand-blue text-white text-sm font-semibold px-5 py-2 rounded-md hover:bg-brand-blueDark transition"
-            >
-              Load More ▼
-            </button>
+      {totalPages > 1 && (
+        <div className="flex justify-center items-center gap-1.5 mt-6 flex-wrap">
+          <button
+            onClick={() => goToPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1.5 text-sm rounded-md border border-slate-300 text-slate-600 disabled:opacity-40 hover:bg-brand-blueLight transition"
+          >
+            ← पिछला
+          </button>
+
+          {getPageNumbers().map((page, idx) =>
+            page === 'dots' ? (
+              <span key={`dots-${idx}`} className="px-1 text-slate-400 text-sm">
+                ...
+              </span>
+            ) : (
+              <button
+                key={page}
+                onClick={() => goToPage(page)}
+                className={`w-9 h-9 text-sm rounded-md transition ${
+                  page === currentPage
+                    ? 'bg-brand-blue text-white font-bold'
+                    : 'border border-slate-300 text-slate-600 hover:bg-brand-blueLight'
+                }`}
+              >
+                {page}
+              </button>
+            )
           )}
-          {canCollapse && (
-            <button
-              onClick={() => setVisibleCount(initialCount)}
-              className="border border-brand-blue text-brand-blue text-sm font-semibold px-5 py-2 rounded-md hover:bg-brand-blueLight transition"
-            >
-              Show Less ▲
-            </button>
-          )}
+
+          <button
+            onClick={() => goToPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1.5 text-sm rounded-md border border-slate-300 text-slate-600 disabled:opacity-40 hover:bg-brand-blueLight transition"
+          >
+            अगला →
+          </button>
         </div>
       )}
     </div>
