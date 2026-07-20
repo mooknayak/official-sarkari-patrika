@@ -4,6 +4,8 @@ import StatusBadge from '@/components/StatusBadge'
 import PostInfoBlock from '@/components/PostInfoBlock'
 import ShareButtons from '@/components/ShareButtons'
 import PostDescription from '@/components/PostDescription'
+import AIFaqAssistant from '@/components/AIFaqAssistant'
+import PostFeedback from '@/components/PostFeedback'
 import CustomSectionsList from '@/components/CustomSections'
 import ImportantDates from '@/components/ImportantDates'
 import ApplicationFeeTable from '@/components/ApplicationFeeTable'
@@ -197,6 +199,10 @@ export default async function JobPostPage({ params }: Props) {
       <CustomSectionsList sections={post.customSectionsAfterLinks} />
 
       <PostDescription value={post.description} />
+
+      <AIFaqAssistant postTitle={post.title} postContext={bestDescription} />
+
+      <PostFeedback slug={post.slug} />
 
       {related && related.length > 0 && (
         <section className="mt-10">
