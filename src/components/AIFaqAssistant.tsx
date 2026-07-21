@@ -3,21 +3,26 @@
 import { useState } from 'react'
 
 type AIFaqAssistantProps = {
-  postTitle: string
-  postContext: string
+  postTitle?: string
+  postContext?: string
+  heading?: string
+  placeholder?: string
+  suggestions?: string[]
 }
 
-export default function AIFaqAssistant({ postTitle, postContext }: AIFaqAssistantProps) {
+export default function AIFaqAssistant({
+  postTitle,
+  postContext,
+  heading = '🤖 AI से इस पोस्ट के बारे में पूछें',
+  placeholder = 'अपना सवाल यहाँ लिखें...',
+  suggestions = ['आवेदन कैसे करें?', 'योग्यता क्या है?', 'अंतिम तिथि क्या है?'],
+}: AIFaqAssistantProps) {
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'error'>('idle')
   const [errorMsg, setErrorMsg] = useState('')
 
-  const suggestedQuestions = [
-    'आवेदन कैसे करें?',
-    'योग्यता क्या है?',
-    'अंतिम तिथि क्या है?',
-  ]
+  const suggestedQuestions = suggestions
 
   const askQuestion = async (q: string) => {
     if (!q.trim()) return
@@ -52,7 +57,7 @@ export default function AIFaqAssistant({ postTitle, postContext }: AIFaqAssistan
   return (
     <section className="my-6 border border-blue-200 rounded-lg overflow-hidden">
       <h2 className="bg-brand-blue text-white px-4 py-2 font-semibold flex items-center gap-1.5">
-        🤖 AI से इस पोस्ट के बारे में पूछें
+        {heading}
       </h2>
       <div className="p-4">
         <div className="flex flex-wrap gap-2 mb-3">
@@ -75,7 +80,7 @@ export default function AIFaqAssistant({ postTitle, postContext }: AIFaqAssistan
             type="text"
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
-            placeholder="अपना सवाल यहाँ लिखें..."
+            placeholder={placeholder}
             className="flex-1 border border-slate-300 rounded-md px-3 py-2 text-sm outline-none"
           />
           <button
