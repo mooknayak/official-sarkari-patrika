@@ -3,6 +3,7 @@ import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TR
 import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
 import TrendingBoxes from '@/components/TrendingBoxes'
+import AIFaqAssistant from '@/components/AIFaqAssistant'
 
 export const revalidate = 3600
 
@@ -55,6 +56,12 @@ export default async function HomePage() {
           समय पर जानकारी मिलेगी।
         </p>
       </div>
+
+      <AIFaqAssistant
+        heading="🤖 सरकारी नौकरी से जुड़ा कोई भी सवाल AI से पूछें"
+        placeholder="जैसे: SSC की भर्ती कब आएगी?"
+        suggestions={['नई भर्ती कैसे खोजें?', 'रिज़ल्ट कैसे चेक करें?', 'आवेदन शुल्क कैसे भरें?']}
+      />
 
       <TrendingBoxes posts={trendingPosts} />
 
