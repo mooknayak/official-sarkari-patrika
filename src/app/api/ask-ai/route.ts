@@ -2,41 +2,8 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY
 
-// Dynamic Model Auto-Selector (gemini-3.6-flash & Active Flash Models)
-let cachedModel: string | null = null
-let cachedAt = 0
-const CACHE_DURATION_MS = 6 * 60 * 60 * 1000 // 6 घंटे कैश
-
-async function getBestAvailableModel(): Promise<string> {
-  const now = Date.now()
-  if (cachedModel && now - cachedAt < CACHE_DURATION_MS) {
-    return cachedModel
-  }
-
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}`
-    )
-    if (res.ok) {
-      const data = await res.json()
-      const models: any[] = data?.models || []
-      const usable = models.filter((m) =>
-        (m.supportedGenerationMethods || []).includes('generateContent')
-      )
-      if (usable.length > 0) {
-        const flashModel = usable.find((m) => m.name?.toLowerCase().includes('flash'))
-        const chosen = (flashModel || usable[0]).name.replace('models/', '')
-        cachedModel = chosen
-        cachedAt = now
-        return chosen
-      }
-    }
-  } catch (e) {
-    // त्रुटि पर डिफ़ॉल्ट मॉडल
-  }
-
-  return 'gemini-3.6-flash'
-}
+// Active candidate models (gemini-3.6-flash, gemini-flash-latest)
+const CANDIDATE_MODELS = ['gemini-3.6-flash', 'gemini-flash-latest']
 
 export async function POST(req: NextRequest) {
   try {
@@ -54,7 +21,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: 'कृपया कोई खोज शब्द या सवाल दर्ज करें।' }, { status: 400 })
     }
 
-    // सिस्टम प्रॉम्ट जो वेबसाइट के सभी अनुभागों के अनुसार उत्तर देता है
+    // सिस्टम प्रॉम्ट जो वेबसाइट के सभी अनुभागों (Jobs, Result, Admit Card, Answer Key, Documents, Important, Organizations) के अनुसार उत्तर देता है
     const systemPrompt = `तुम "Official Sarkari Patrika" (officialsarkaripatrika.com) वेबसाइट के आधिकारिक AI सर्च और सहायक हो।
 
 [हमारी वेबसाइट की जानकारी व परिचय (Website Information)]:
@@ -103,27 +70,36 @@ export async function POST(req: NextRequest) {
 [यूज़र का प्रश्न / कीवर्ड]: ${query}`
       : `[यूज़र का प्रश्न / कीवर्ड]: ${query}`
 
-    let modelName = await getBestAvailableModel()
+    let response: Response | null = null
+    let lastErrorMsg = ''
+    let lastStatus = 500
 
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ parts: [{ text: userPrompt }] }],
-          systemInstruction: { parts: [{ text: systemPrompt }] },
-          generationConfig: { maxOutputTokens: 400, temperature: 0.2 },
-        }),
+    // Try active models (gemini-3.6-flash, gemini-flash-latest) in order
+    for (const modelName of CANDIDATE_MODELS) {
+      const apiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/${modelName}:generateContent?key=${GEMINI_API_KEY}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [{ parts: [{ text: userPrompt }] }],
+            systemInstruction: { parts: [{ text: systemPrompt }] },
+            generationConfig: { maxOutputTokens: 400, temperature: 0.2 },
+          }),
+        }
+      )
+
+      if (apiRes.ok) {
+        response = apiRes
+        break
       }
-    )
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      const status = response.status
-      const errorMsg = errorData?.error?.message || ''
+      const errorData = await apiRes.json().catch(() => ({}))
+      lastStatus = apiRes.status
+      lastErrorMsg = errorData?.error?.message || ''
 
-      if (status === 429 || errorMsg.includes('Quota exceeded') || errorMsg.includes('rate limit')) {
+      // Quota Exceeded (429) & Rate Limit error handling
+      if (lastStatus === 429 || lastErrorMsg.includes('Quota exceeded') || lastErrorMsg.includes('rate limit')) {
         return NextResponse.json(
           {
             message:
@@ -132,10 +108,11 @@ export async function POST(req: NextRequest) {
           { status: 429 }
         )
       }
+    }
 
-      cachedModel = null
+    if (!response) {
       return NextResponse.json(
-        { message: `AI प्रतिक्रिया नहीं मिल सकी: ${errorMsg || 'HTTP Status ' + status}` },
+        { message: `AI प्रतिक्रिया नहीं मिल सकी: ${lastErrorMsg || 'HTTP Status ' + lastStatus}` },
         { status: 502 }
       )
     }
