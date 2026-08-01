@@ -1,9 +1,10 @@
+}
 import { client } from '@/sanity/lib/client'
 import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TRENDING_POSTS_QUERY } from '@/sanity/lib/queries'
 import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
 import TrendingBoxes from '@/components/TrendingBoxes'
-import AIFaqAssistant from '@/components/AIFaqAssistant'
+import DiscoverMore from '@/components/DiscoverMore'
 
 export const revalidate = 3600
 
@@ -57,11 +58,7 @@ export default async function HomePage() {
         </p>
       </div>
 
-      <AIFaqAssistant
-        heading="🤖 सरकारी नौकरी से जुड़ा कोई भी सवाल AI से पूछें"
-        placeholder="जैसे: SSC की भर्ती कब आएगी?"
-        suggestions={['नई भर्ती कैसे खोजें?', 'रिज़ल्ट कैसे चेक करें?', 'आवेदन शुल्क कैसे भरें?']}
-      />
+      <DiscoverMore />
 
       <TrendingBoxes posts={trendingPosts} />
 
