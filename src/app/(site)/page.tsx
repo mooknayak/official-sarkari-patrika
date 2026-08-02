@@ -1,4 +1,3 @@
-}
 import { client } from '@/sanity/lib/client'
 import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TRENDING_POSTS_QUERY } from '@/sanity/lib/queries'
 import JobCard from '@/components/JobCard'
