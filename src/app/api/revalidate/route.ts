@@ -30,20 +30,28 @@ export async function POST(req: NextRequest) {
 
     const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${body.category}/${body.slug}`
 
-    // Google को तुरंत बताना कि यह पेज नया/अपडेट हुआ है
-    const indexingResult = await requestGoogleIndexing(postUrl)
-
-    // सभी Push Notification Subscribers को तुरंत सूचना भेजना
-    const postTitle = await client.fetch(`*[slug.current == $slug][0].title`, { slug: body.slug })
-    const pushResult = await sendPushToAllSubscribers(postTitle || 'नई अपडेट उपलब्ध है', postUrl)
+    // Google Indexing और Push Notification एक साथ (parallel) - तेज़ रिस्पॉन्स
+    const [indexingResult, pushResult] = await Promise.allSettled([
+      requestGoogleIndexing(postUrl),
+      client
+        .fetch(`*[slug.current == $slug][0].title`, { slug: body.slug })
+        .then((title: string) => sendPushToAllSubscribers(title || 'नई अपडेट उपलब्ध है', postUrl)),
+    ])
 
     return NextResponse.json({
       revalidated: true,
       now: Date.now(),
-      googleIndexing: indexingResult,
-      pushNotification: pushResult,
+      googleIndexing:
+        indexingResult.status === 'fulfilled'
+          ? indexingResult.value
+          : { success: false, message: (indexingResult.reason as Error)?.message },
+      pushNotification:
+        pushResult.status === 'fulfilled'
+          ? pushResult.value
+          : { success: false, message: (pushResult.reason as Error)?.message },
     })
   } catch (err) {
+    console.error('[Revalidate] विफल:', (err as Error).message)
     return NextResponse.json({ message: (err as Error).message }, { status: 500 })
   }
 }
