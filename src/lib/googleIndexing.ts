@@ -1,9 +1,11 @@
-import { JWT } from 'google-auth-library'
+import { SignJWT, importPKCS8 } from 'jose'
 
 type IndexingResult = { success: boolean; message: string }
 
+const TOKEN_URL = 'https://oauth2.googleapis.com/token'
+const INDEXING_URL = 'https://indexing.googleapis.com/v3/urlNotifications:publish'
+
 function loadCredentials(): { clientEmail?: string; privateKey?: string; source: string } {
-  // प्राथमिकता: base64 वाला पूरा JSON (सबसे भरोसेमंद, corrupt नहीं होता)
   const base64Creds = process.env.GOOGLE_SERVICE_ACCOUNT_BASE64
   if (base64Creds) {
     try {
@@ -16,26 +18,55 @@ function loadCredentials(): { clientEmail?: string; privateKey?: string; source:
       console.error('[GoogleIndexing] base64 decode विफल:', (e as Error).message)
     }
   }
-
-  // Fallback: पुराने अलग-अलग env vars
   const clientEmail = process.env.GOOGLE_INDEXING_CLIENT_EMAIL
   const privateKey = process.env.GOOGLE_INDEXING_PRIVATE_KEY?.replace(/\\n/g, '\n')
   return { clientEmail, privateKey, source: 'separate-vars' }
 }
 
-async function callGoogleIndexingApi(jwtClient: JWT, url: string) {
-  return jwtClient.request({
-    url: 'https://indexing.googleapis.com/v3/urlNotifications:publish',
+async function getAccessToken(clientEmail: string, privateKeyPem: string): Promise<string> {
+  // jose WebCrypto से key पढ़ता है - Vercel के serverless environment में
+  // google-auth-library वाली "DECODER routines::unsupported" समस्या नहीं आती
+  const key = await importPKCS8(privateKeyPem, 'RS256')
+
+  const now = Math.floor(Date.now() / 1000)
+  const jwt = await new SignJWT({ scope: 'https://www.googleapis.com/auth/indexing' })
+    .setProtectedHeader({ alg: 'RS256', typ: 'JWT' })
+    .setIssuer(clientEmail)
+    .setAudience(TOKEN_URL)
+    .setIssuedAt(now)
+    .setExpirationTime(now + 3600)
+    .sign(key)
+
+  const res = await fetch(TOKEN_URL, {
     method: 'POST',
-    data: { url, type: 'URL_UPDATED' },
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body: new URLSearchParams({
+      grant_type: 'urn:ietf:params:oauth:grant-type:jwt-bearer',
+      assertion: jwt,
+    }),
+  })
+
+  if (!res.ok) {
+    const errText = await res.text()
+    throw new Error(`Token exchange विफल (${res.status}): ${errText.slice(0, 300)}`)
+  }
+
+  const data = await res.json()
+  if (!data.access_token) throw new Error('access_token नहीं मिला')
+  return data.access_token
+}
+
+async function callIndexingApi(accessToken: string, url: string) {
+  return fetch(INDEXING_URL, {
+    method: 'POST',
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ url, type: 'URL_UPDATED' }),
   })
 }
 
-/**
- * Google को तुरंत बताता है कि कोई पेज नया/अपडेट हुआ है।
- * अस्थायी गलतियों (network/500) पर अपने-आप दोबारा कोशिश करता है।
- * Quota या permission जैसी स्थायी गलतियों पर तुरंत साफ़ जवाब देता है।
- */
 export async function requestGoogleIndexing(url: string): Promise<IndexingResult> {
   const { clientEmail, privateKey, source } = loadCredentials()
 
@@ -47,39 +78,36 @@ export async function requestGoogleIndexing(url: string): Promise<IndexingResult
 
   console.log(`[GoogleIndexing] शुरू (source: ${source}) - URL: ${url}`)
 
-  const jwtClient = new JWT({
-    email: clientEmail,
-    key: privateKey,
-    scopes: ['https://www.googleapis.com/auth/indexing'],
-  })
-
   const maxAttempts = 3
   let lastError: any = null
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
-      const res = await callGoogleIndexingApi(jwtClient, url)
-      console.log(`[GoogleIndexing] SUCCESS (attempt ${attempt}) - status: ${res.status}`)
-      return { success: true, message: `Google को सूचित कर दिया गया (status: ${res.status})` }
-    } catch (err: any) {
-      lastError = err
-      const status = err?.response?.status
-      const code = err?.code
+      const accessToken = await getAccessToken(clientEmail, privateKey)
+      const res = await callIndexingApi(accessToken, url)
 
-      if (status === 401 || status === 403 || code === 'ERR_OSSL_UNSUPPORTED') {
-        console.error(`[GoogleIndexing] स्थायी त्रुटि (attempt ${attempt}), रुक रहे हैं:`, err.message)
-        break
-      }
-
-      if (status === 429) {
+      if (res.status === 429) {
         console.error('[GoogleIndexing] दैनिक Quota समाप्त हो गई है')
         return { success: false, message: 'Google Indexing की दैनिक सीमा (quota) पूरी हो चुकी है' }
       }
 
-      console.warn(`[GoogleIndexing] अस्थायी त्रुटि (attempt ${attempt}/${maxAttempts}):`, err.message)
-      if (attempt < maxAttempts) {
-        await new Promise((r) => setTimeout(r, attempt * 500))
+      if (res.status === 401 || res.status === 403) {
+        const errText = await res.text()
+        console.error(`[GoogleIndexing] स्थायी त्रुटि (${res.status}):`, errText.slice(0, 300))
+        return { success: false, message: `Permission त्रुटि (${res.status}) - Search Console में service account का access जाँचें` }
       }
+
+      if (!res.ok) {
+        const errText = await res.text()
+        throw new Error(`HTTP ${res.status}: ${errText.slice(0, 300)}`)
+      }
+
+      console.log(`[GoogleIndexing] SUCCESS (attempt ${attempt}) - status: ${res.status}`)
+      return { success: true, message: `Google को सूचित कर दिया गया (status: ${res.status})` }
+    } catch (err: any) {
+      lastError = err
+      console.warn(`[GoogleIndexing] अस्थायी त्रुटि (attempt ${attempt}/${maxAttempts}):`, err.message)
+      if (attempt < maxAttempts) await new Promise((r) => setTimeout(r, attempt * 500))
     }
   }
 
