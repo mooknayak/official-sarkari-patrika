@@ -1,51 +1,43 @@
-import webpush from 'web-push'
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/lib/pushNotification.ts
+// (पहले web-push library इस्तेमाल होती थी, अब Firebase Cloud Messaging - ज़्यादा भरोसेमंद)
+
+import { getFirebaseMessaging } from '@/lib/firebaseAdmin'
 import { writeClient } from '@/sanity/lib/writeClient'
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-const VAPID_PRIVATE_KEY = process.env.VAPID_PRIVATE_KEY
-
 export async function sendPushToAllSubscribers(title: string, url: string) {
-  if (!VAPID_PUBLIC_KEY || !VAPID_PRIVATE_KEY) {
-    return { success: false, message: 'Push Notification अभी सेट नहीं है (VAPID keys खाली हैं)' }
+  const messaging = getFirebaseMessaging()
+  if (!messaging) {
+    return { success: false, message: 'Push Notification अभी सेट नहीं है (Firebase env variables खाली हैं)' }
   }
 
-  webpush.setVapidDetails(
-    'mailto:officialsarkaripatrika@gmail.com',
-    VAPID_PUBLIC_KEY,
-    VAPID_PRIVATE_KEY
+  const subscribers: { _id: string; fcmToken: string }[] = await writeClient.fetch(
+    `*[_type == "pushSubscriber"]{ _id, fcmToken }`
   )
-
-  const subscribers: { _id: string; endpoint: string; p256dh: string; auth: string }[] =
-    await writeClient.fetch(`*[_type == "pushSubscriber"]{ _id, endpoint, p256dh, auth }`)
 
   if (subscribers.length === 0) {
     return { success: true, message: 'कोई subscriber नहीं है अभी' }
   }
 
-  const payload = JSON.stringify({
-    title,
-    body: 'नई जानकारी के लिए टैप करें',
-    url,
+  const tokens = subscribers.map((s) => s.fcmToken).filter(Boolean)
+
+  const response = await messaging.sendEachForMulticast({
+    tokens,
+    notification: {
+      title,
+      body: 'नई जानकारी के लिए टैप करें',
+    },
+    webpush: {
+      fcmOptions: { link: url },
+      notification: { icon: '/icon.svg' },
+    },
   })
 
-  const results = await Promise.allSettled(
-    subscribers.map((sub) =>
-      webpush.sendNotification(
-        {
-          endpoint: sub.endpoint,
-          keys: { p256dh: sub.p256dh, auth: sub.auth },
-        },
-        payload
-      )
-    )
-  )
-
-  // जो subscription अब काम नहीं कर रही (expired/uninstalled), उन्हें Sanity से हटाना
+  // जो Token अब मान्य नहीं है (App Uninstall / Browser Data Clear), उसे Sanity से हटा देना
   const toDelete: string[] = []
-  results.forEach((result, idx) => {
-    if (result.status === 'rejected') {
-      const statusCode = (result.reason as any)?.statusCode
-      if (statusCode === 404 || statusCode === 410) {
+  response.responses.forEach((res, idx) => {
+    if (!res.success) {
+      const code = res.error?.code || ''
+      if (code.includes('registration-token-not-registered') || code.includes('invalid-argument')) {
         toDelete.push(subscribers[idx]._id)
       }
     }
@@ -55,9 +47,8 @@ export async function sendPushToAllSubscribers(title: string, url: string) {
     await Promise.allSettled(toDelete.map((id) => writeClient.delete(id)))
   }
 
-  const successCount = results.filter((r) => r.status === 'fulfilled').length
   return {
     success: true,
-    message: `${successCount}/${subscribers.length} को notification भेजी गई`,
+    message: `${response.successCount}/${tokens.length} को notification भेजी गई`,
   }
 }
