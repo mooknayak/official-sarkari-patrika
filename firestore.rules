@@ -1,0 +1,28 @@
+// 🆕 नई फ़ाइल — यह कोड आपके प्रोजेक्ट में नहीं जाएगी, बल्कि Firebase Console में
+// Firestore Database → Rules टैब में जाकर PURA पुराना content हटा कर यही Paste
+// करके "Publish" करना है। यह Security के लिए ज़रूरी है - इसके बिना कोई भी
+// Comments को Edit/Delete कर सकता है या Retry Queue पढ़ सकता है।
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // 💬 Comments - सब कोई पढ़ सकता है और नया Comment बना सकता है,
+    // लेकिन सिर्फ़ Logged-in Admin ही Reply जोड़/बदल सकता है
+    match /comments/{commentId} {
+      allow read: if true;
+      allow create: if request.resource.data.message is string
+                    && request.resource.data.message.size() > 0
+                    && request.resource.data.message.size() < 1000
+                    && request.resource.data.postSlug is string;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null;
+    }
+
+    // 🔁 Indexing Retry Queue - सिर्फ़ Server (Admin SDK) यहाँ लिख/पढ़ सकता है,
+    // Browser से कोई भी इसे कभी access नहीं कर सकता
+    match /indexingRetryQueue/{docId} {
+      allow read, write: if false;
+    }
+  }
+}
