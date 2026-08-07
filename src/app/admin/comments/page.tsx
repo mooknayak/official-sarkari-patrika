@@ -131,6 +131,7 @@ function LoginForm() {
 function CommentsDashboard() {
   const [comments, setComments] = useState<CommentDoc[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [replyDrafts, setReplyDrafts] = useState<Record<string, string>>({})
   const [sendingId, setSendingId] = useState<string | null>(null)
 
@@ -141,10 +142,19 @@ function CommentsDashboard() {
       return
     }
     const q = query(collection(db, 'comments'), orderBy('createdAt', 'desc'))
-    const unsub = onSnapshot(q, (snapshot) => {
-      setComments(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommentDoc, 'id'>) })))
-      setLoading(false)
-    })
+    const unsub = onSnapshot(
+      q,
+      (snapshot) => {
+        setComments(snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommentDoc, 'id'>) })))
+        setLoading(false)
+        setLoadError('')
+      },
+      (err) => {
+        console.error('[Admin Comments] Firestore Error:', err.message)
+        setLoadError(err.message || 'Comments लोड नहीं हो पाए')
+        setLoading(false)
+      }
+    )
     return () => unsub()
   }, [])
 
@@ -180,6 +190,11 @@ function CommentsDashboard() {
 
       {loading ? (
         <p className="text-sm text-slate-400">लोड हो रहा है...</p>
+      ) : loadError ? (
+        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3">
+          <p className="font-semibold">⚠️ Comments लोड नहीं हो पाए</p>
+          <p className="text-xs mt-1 break-words">{loadError}</p>
+        </div>
       ) : comments.length === 0 ? (
         <p className="text-sm text-slate-400">अभी तक कोई Comment नहीं आया।</p>
       ) : (
