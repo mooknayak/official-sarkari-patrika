@@ -1,3 +1,4 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/sanity/schemaTypes/jobPost.ts
 import { defineField, defineType, defineArrayMember } from 'sanity'
 import { DocumentIcon } from '@sanity/icons'
 
@@ -10,6 +11,7 @@ export const jobPost = defineType({
     { name: 'general', title: 'General Info' },
     { name: 'status', title: 'Status & Dates', default: true },
     { name: 'details', title: 'Post Details' },
+    { name: 'media', title: '🖼️ Post Photo (Google News)' },
     { name: 'seo', title: 'SEO' },
   ],
   fields: [
@@ -356,6 +358,24 @@ export const jobPost = defineType({
     }),
 
     defineField({
+      name: 'featuredImage',
+      title: '🖼️ इस Post की मुख्य फ़ोटो',
+      type: 'image',
+      group: 'media',
+      options: { hotspot: true },
+      fields: [
+        {
+          name: 'alt',
+          type: 'string',
+          title: 'Alt Text (फ़ोटो में क्या है, संक्षेप में लिखें)',
+          validation: (Rule) => Rule.max(125),
+        },
+      ],
+      description:
+        '⚠️ यह वेबसाइट के Logo से बिल्कुल अलग है (Logo सिर्फ Website Settings में एक बार डलता है) — यहाँ इसी पोस्ट से जुड़ी असली फ़ोटो/बैनर अपलोड करें। Google News, Google Discover, WhatsApp/Facebook Share Preview और Rich Result — इन सबमें यही फ़ोटो दिखेगी। कम-से-कम 1200×675px (16:9), साफ़ और बिना ज़्यादा टेक्स्ट वाली फ़ोटो सबसे अच्छा रिज़ल्ट देती है।',
+    }),
+
+    defineField({
       name: 'seo',
       title: 'SEO Settings',
       type: 'object',
@@ -385,8 +405,8 @@ export const jobPost = defineType({
   ],
 
   preview: {
-    select: { title: 'title', status: 'status', media: 'organization.logo' },
-    prepare({ title, status }) {
+    select: { title: 'title', status: 'status', media: 'featuredImage', orgLogo: 'organization.logo' },
+    prepare({ title, status, media, orgLogo }) {
       const statusLabels: Record<string, string> = {
         job: '🟢 Job',
         admit_card: '🟡 Admit Card',
@@ -394,7 +414,7 @@ export const jobPost = defineType({
         result: '🔴 Result',
         final_selection: '⚫ Final Selection',
       }
-      return { title, subtitle: statusLabels[status] || status }
+      return { title, subtitle: statusLabels[status] || status, media: media || orgLogo }
     },
   },
 })
