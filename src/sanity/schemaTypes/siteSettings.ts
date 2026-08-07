@@ -1,0 +1,137 @@
+// 🆕 नई फ़ाइल — इसे इसी पाथ पर बनाएं: src/sanity/schemaTypes/siteSettings.ts
+// (यह फ़ाइल पहले गलती से डिलीट हो गई थी, अब वापस बनाई गई है)
+
+import { defineField, defineType } from 'sanity'
+import { CogIcon } from '@sanity/icons'
+
+// ⚙️ यह एक "Singleton" है — पूरी साइट में इसका सिर्फ 1 ही Document रहेगा।
+// यहीं से Logo, Favicon, Organization की फ़ोटो, AdSense/Google News/Search Console
+// से जुड़ी सारी सेटिंग्स कण्ट्रोल होंगी — Studio Structure (structure.ts) में
+// इसे अलग "⚙️ Website Settings" ग्रुप के तौर पर पिन किया गया है।
+export const siteSettings = defineType({
+  name: 'siteSettings',
+  title: '⚙️ Website Settings',
+  type: 'document',
+  icon: CogIcon,
+  groups: [
+    { name: 'branding', title: '🖼️ Logo / Favicon / Photos', default: true },
+    { name: 'seo', title: '🔍 SEO / Search Console' },
+    { name: 'ads', title: '💰 AdSense' },
+    { name: 'news', title: '📰 Google News / Discover' },
+    { name: 'social', title: '🔗 Social Links' },
+  ],
+  fields: [
+    // ---------- Branding / Photos ----------
+    defineField({
+      name: 'siteLogo',
+      title: 'Site Logo (Header, Favicon और Publisher Schema के लिए)',
+      type: 'image',
+      group: 'branding',
+      options: { hotspot: true },
+      description:
+        'चौड़ा (rectangular) logo अपलोड करें — जैसे 600×140px। यह Header में, Google Search के Publisher Logo में और (अगर अलग Favicon न डालें तो) Favicon के तौर पर भी इस्तेमाल होगा। ⚠️ यह पोस्ट की फ़ोटो से बिल्कुल अलग चीज़ है — हर पोस्ट की अपनी फ़ोटो अलग जगह (उसी पोस्ट के अंदर "🖼️ Post की मुख्य फ़ोटो" सेक्शन में) अपलोड होती है।',
+    }),
+    defineField({
+      name: 'favicon',
+      title: 'Favicon (Browser Tab व Google Search Result Icon)',
+      type: 'image',
+      group: 'branding',
+      description:
+        'Square इमेज (कम-से-कम 512×512px, बैकग्राउंड साफ़/ठोस रंग का) — Search Result में साइट के नाम के बगल में और Browser के Tab में यही दिखता है। अगर यहाँ कुछ अपलोड नहीं करेंगे, तो ऊपर वाला Site Logo अपने-आप Favicon के तौर पर भी इस्तेमाल हो जाएगा।',
+    }),
+    defineField({
+      name: 'siteGalleryImages',
+      title: '📸 Organization / Site Photos',
+      type: 'array',
+      group: 'branding',
+      description:
+        'साइट से जुड़े संगठन, ऑफिस या प्रतिनिधि फ़ोटो यहाँ अपलोड करें (जितने चाहें उतने) — Google को साइट की प्रामाणिकता (E-E-A-T) दिखाने में मदद करता है, AdSense व Google News Approval दोनों के लिए उपयोगी।',
+      of: [defineArrayMemberImage()],
+    }),
+    defineField({
+      name: 'publisherName',
+      title: 'Publisher / Organization Name',
+      type: 'string',
+      group: 'branding',
+      initialValue: 'Official Sarkari Patrika',
+      description: 'Schema.org Organization व NewsArticle publisher में यही नाम भेजा जाएगा।',
+    }),
+
+    // ---------- SEO / Search Console ----------
+    defineField({
+      name: 'googleSiteVerification',
+      title: 'Google Search Console Verification Code',
+      type: 'string',
+      group: 'seo',
+      description:
+        'search.google.com/search-console → Settings → Ownership Verification → HTML Tag से सिर्फ content="..." वाला कोड यहाँ पेस्ट करें (सिर्फ कोड, पूरा HTML टैग नहीं)। Sitelinks Search Box व Search Console की सारी सुविधाएँ इसी से Verify होंगी — यह सीधे वेबसाइट के <head> में अपने-आप जुड़ जाएगा, कोई अलग file अपलोड करने की ज़रूरत नहीं।',
+    }),
+    defineField({
+      name: 'bingSiteVerification',
+      title: 'Bing Webmaster Verification Code',
+      type: 'string',
+      group: 'seo',
+      description: 'bing.com/webmasters से content="..." वाला कोड (सिर्फ कोड) यहाँ पेस्ट करें।',
+    }),
+
+    // ---------- AdSense ----------
+    defineField({
+      name: 'adsensePublisherId',
+      title: 'AdSense Publisher ID (ca-pub-xxxxxxxxxxxxxxxx)',
+      type: 'string',
+      group: 'ads',
+      description:
+        'AdSense अप्रूवल के बाद यहाँ डालें (Vercel के Environment Variable NEXT_PUBLIC_ADSENSE_CLIENT_ID से भी सेट हो सकता है — दोनों जगह डालने की ज़रूरत नहीं, कोई एक काफ़ी है; यहाँ डाला हुआ हमेशा प्राथमिकता में रहेगा)।',
+    }),
+
+    // ---------- News / Discover ----------
+    defineField({
+      name: 'googleNewsPublicationName',
+      title: 'Google News Publication Name',
+      type: 'string',
+      group: 'news',
+      description:
+        'Google News Publisher Center में जो नाम रजिस्टर करें, वही यहाँ भी डालें — दोनों जगह एक जैसा नाम होना अनिवार्य है।',
+      initialValue: 'Official Sarkari Patrika',
+    }),
+    defineField({
+      name: 'enableNewsSitemap',
+      title: 'News Sitemap Enable करें',
+      type: 'boolean',
+      group: 'news',
+      initialValue: true,
+      description:
+        '/news-sitemap.xml पर पिछले 48 घंटों की पोस्ट (उनकी फ़ोटो सहित) अपने-आप शामिल होंगी — Google News व Discover के लिए ज़रूरी। हर पोस्ट में फ़ोटो डालना न भूलें, तभी Google News में फ़ोटो के साथ पोस्ट दिखेगी।',
+    }),
+
+    // ---------- Social ----------
+    defineField({
+      name: 'socialLinks',
+      title: 'Social Media Links',
+      type: 'object',
+      group: 'social',
+      fields: [
+        { name: 'facebook', type: 'url', title: 'Facebook Page URL' },
+        { name: 'twitter', type: 'url', title: 'Twitter / X URL' },
+        { name: 'youtube', type: 'url', title: 'YouTube Channel URL' },
+        { name: 'telegram', type: 'url', title: 'Telegram Channel URL' },
+        { name: 'instagram', type: 'url', title: 'Instagram URL' },
+      ],
+      description:
+        'यह सब Organization Schema के "sameAs" में जाएँगे — Google को साइट की पहचान (Knowledge Panel) बनाने में मदद करता है।',
+    }),
+  ],
+  preview: {
+    prepare() {
+      return { title: 'Website Settings (Logo, Favicon, SEO, AdSense, News)' }
+    },
+  },
+})
+
+function defineArrayMemberImage() {
+  return {
+    type: 'image' as const,
+    options: { hotspot: true },
+    fields: [{ name: 'caption', type: 'string' as const, title: 'Caption (वैकल्पिक)' }],
+  }
+}
