@@ -1,7 +1,9 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/api/revalidate/route.ts
 import { revalidatePath } from 'next/cache'
 import { parseBody } from 'next-sanity/webhook'
 import { NextRequest, NextResponse } from 'next/server'
 import { requestGoogleIndexing } from '@/lib/googleIndexing'
+import { pingIndexNow } from '@/lib/indexNow'
 import { sendPushToAllSubscribers } from '@/lib/pushNotification'
 import { client } from '@/sanity/lib/client'
 
@@ -30,9 +32,10 @@ export async function POST(req: NextRequest) {
 
     const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${body.category}/${body.slug}`
 
-    // Google Indexing और Push Notification एक साथ (parallel) - तेज़ रिस्पॉन्स
-    const [indexingResult, pushResult] = await Promise.allSettled([
+    // Google Indexing, IndexNow (Bing/Yandex) और Push Notification एक साथ (parallel) - तेज़ रिस्पॉन्स
+    const [indexingResult, indexNowResult, pushResult] = await Promise.allSettled([
       requestGoogleIndexing(postUrl),
+      pingIndexNow(postUrl),
       client
         .fetch(`*[slug.current == $slug][0].title`, { slug: body.slug })
         .then((title: string) => sendPushToAllSubscribers(title || 'नई अपडेट उपलब्ध है', postUrl)),
@@ -45,6 +48,10 @@ export async function POST(req: NextRequest) {
         indexingResult.status === 'fulfilled'
           ? indexingResult.value
           : { success: false, message: (indexingResult.reason as Error)?.message },
+      indexNow:
+        indexNowResult.status === 'fulfilled'
+          ? indexNowResult.value
+          : { success: false, message: (indexNowResult.reason as Error)?.message },
       pushNotification:
         pushResult.status === 'fulfilled'
           ? pushResult.value
