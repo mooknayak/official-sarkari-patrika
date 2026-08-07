@@ -45,6 +45,7 @@ export default function CommentsSection({
   const [message, setMessage] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const [loadError, setLoadError] = useState('')
   const [dbReady, setDbReady] = useState(false)
 
   useEffect(() => {
@@ -70,8 +71,15 @@ export default function CommentsSection({
           snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommentDoc, 'id'>) }))
         )
         setLoading(false)
+        setLoadError('')
       },
-      () => setLoading(false)
+      (err) => {
+        // ⚠️ यहीं वह असली वजह दिखती है (जैसे "Missing or insufficient permissions" -
+        // मतलब Firestore Rules Publish नहीं हुई हैं)
+        console.error('[Comments] Firestore Error:', err.message)
+        setLoadError(err.message || 'Comments लोड नहीं हो पाए')
+        setLoading(false)
+      }
     )
 
     return () => unsubscribe()
@@ -143,6 +151,16 @@ export default function CommentsSection({
 
       {loading ? (
         <p className="text-sm text-slate-400">Comments लोड हो रहे हैं...</p>
+      ) : loadError ? (
+        <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3">
+          <p className="font-semibold">⚠️ Comments लोड नहीं हो पाए</p>
+          <p className="text-xs mt-1 break-words">{loadError}</p>
+          <p className="text-xs mt-2 text-red-500">
+            आमतौर पर यह तब होता है जब Firebase Console → Firestore Database → Rules में
+            "firestore.rules" वाला Content Publish न किया गया हो, या Firestore Database
+            बनाई ही न गई हो।
+          </p>
+        </div>
       ) : comments.length === 0 ? (
         <p className="text-sm text-slate-400">अभी तक कोई Comment नहीं है - सबसे पहले आप करें!</p>
       ) : (
