@@ -1,4 +1,8 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/Header.tsx
 import Link from 'next/link'
+import Image from 'next/image'
+import { client } from '@/sanity/lib/client'
+import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
 const NAV_ITEMS = [
   { title: 'होम', href: '/' },
@@ -11,15 +15,29 @@ const NAV_ITEMS = [
   { title: 'Organizations', href: '/organizations' },
 ]
 
-export default function Header() {
+export default async function Header() {
+  const settings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
+  const logoUrl = settings?.siteLogoUrl
+
   return (
     <header className="sticky top-0 z-50 shadow-md">
       {/* बड़ा Hero बैंड - नाम व डोमेन */}
       <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white text-center py-6 px-4">
-        <Link href="/">
-          <h1 className="text-2xl md:text-4xl font-extrabold tracking-wide">
-            Official <span className="text-brand-pink">Sarkari</span> Patrika
-          </h1>
+        <Link href="/" className="inline-flex flex-col items-center">
+          {logoUrl ? (
+            <Image
+              src={`${logoUrl}?w=600&h=140&fit=max&auto=format`}
+              alt={settings?.publisherName || 'Official Sarkari Patrika'}
+              width={220}
+              height={52}
+              priority
+              className="h-12 md:h-14 w-auto object-contain mb-1"
+            />
+          ) : (
+            <h1 className="text-2xl md:text-4xl font-extrabold tracking-wide">
+              Official <span className="text-brand-pink">Sarkari</span> Patrika
+            </h1>
+          )}
         </Link>
         <p className="text-xs md:text-sm text-blue-100 mt-1 tracking-widest uppercase">
           officialsarkaripatrika.com
