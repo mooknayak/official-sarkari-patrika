@@ -15,7 +15,10 @@ import StatusTimeline from '@/components/StatusTimeline'
 import SchemaMarkup from '@/components/SchemaMarkup'
 import JobCard from '@/components/JobCard'
 import Link from 'next/link'
+import Image from 'next/image'
+import CommentsSection from '@/components/CommentsSection'
 import type { Metadata } from 'next'
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/(site)/[category]/[slug]/page.tsx
 import { notFound } from 'next/navigation'
 
 export const revalidate = 3600
@@ -64,6 +67,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
+      // पोस्ट में अपलोड की गई असली फ़ोटो हो तो वही दिखेगी, वरना पहले जैसा auto-generated बैनर
+      ...(post.featuredImageUrl && {
+        images: [{ url: post.featuredImageUrl, width: 1200, height: 675, alt: post.featuredImageAlt || post.title }],
+      }),
     },
   }
 }
@@ -105,6 +112,7 @@ export default async function JobPostPage({ params }: Props) {
         applicationFee={post.applicationFee}
         totalVacancies={post.categoryWiseVacancy?.total}
         description={bestDescription}
+        imageUrl={post.featuredImageUrl}
         breadcrumb={[
           { name: 'होम', url: process.env.NEXT_PUBLIC_SITE_URL || '' },
           {
@@ -129,6 +137,17 @@ export default async function JobPostPage({ params }: Props) {
         <StatusBadge status={post.status} />
       </div>
       <h1 className="text-2xl font-bold text-brand-blueDark mb-4">{post.title}</h1>
+
+      {post.featuredImageUrl && (
+        <Image
+          src={`${post.featuredImageUrl}?w=1200&h=675&fit=max&auto=format`}
+          alt={post.featuredImageAlt || post.title}
+          width={1200}
+          height={675}
+          className="w-full h-auto rounded-lg border border-blue-100 mb-4"
+          priority
+        />
+      )}
 
       <ShareButtons title={post.title} url={pageUrl} />
 
@@ -220,6 +239,8 @@ export default async function JobPostPage({ params }: Props) {
           </div>
         </section>
       )}
+
+      <CommentsSection postSlug={post.slug} postTitle={post.title} />
     </article>
   )
 }
