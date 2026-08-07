@@ -1,3 +1,4 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/sanity/schemaTypes/pushSubscriber.ts
 import { defineField, defineType } from 'sanity'
 import { BellIcon } from '@sanity/icons'
 
@@ -8,22 +9,11 @@ export const pushSubscriber = defineType({
   icon: BellIcon,
   fields: [
     defineField({
-      name: 'endpoint',
-      title: 'Endpoint (Device Identifier)',
+      name: 'fcmToken',
+      title: 'Firebase (FCM) Token',
       type: 'text',
       validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'p256dh',
-      title: 'p256dh Key',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'auth',
-      title: 'Auth Key',
-      type: 'string',
-      validation: (Rule) => Rule.required(),
+      description: 'Firebase Cloud Messaging का Device Token - इसी पर Notification भेजी जाती है।',
     }),
     defineField({
       name: 'subscribedAt',
@@ -33,7 +23,7 @@ export const pushSubscriber = defineType({
     }),
   ],
   preview: {
-    select: { title: 'subscribedAt', subtitle: 'endpoint' },
+    select: { title: 'subscribedAt', subtitle: 'fcmToken' },
     prepare({ title, subtitle }) {
       return { title: title ? `Subscribed: ${title}` : 'Push Subscriber', subtitle }
     },
