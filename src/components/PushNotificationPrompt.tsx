@@ -1,19 +1,10 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/PushNotificationPrompt.tsx
 'use client'
 
 import { useState, useEffect } from 'react'
+import { getFirebaseClientApp } from '@/lib/firebaseClient'
 
-const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY
-
-function urlBase64ToUint8Array(base64String: string) {
-  const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/')
-  const rawData = atob(base64)
-  const outputArray = new Uint8Array(rawData.length)
-  for (let i = 0; i < rawData.length; i++) {
-    outputArray[i] = rawData.charCodeAt(i)
-  }
-  return outputArray
-}
+const VAPID_KEY = process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY
 
 export default function PushNotificationPrompt() {
   const [visible, setVisible] = useState(false)
@@ -21,7 +12,7 @@ export default function PushNotificationPrompt() {
   const [errorMsg, setErrorMsg] = useState('')
 
   useEffect(() => {
-    if (!VAPID_PUBLIC_KEY) return
+    if (!VAPID_KEY) return
     if (typeof window === 'undefined') return
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return
 
@@ -33,7 +24,7 @@ export default function PushNotificationPrompt() {
   }, [])
 
   const handleAllow = async () => {
-    if (!VAPID_PUBLIC_KEY) return
+    if (!VAPID_KEY) return
     setStatus('loading')
     try {
       const permission = await Notification.requestPermission()
@@ -42,18 +33,35 @@ export default function PushNotificationPrompt() {
         return
       }
 
-      const registration = await navigator.serviceWorker.register('/sw.js')
+      const app = getFirebaseClientApp()
+      if (!app) {
+        setErrorMsg('Firebase Config सेट नहीं है')
+        setStatus('error')
+        return
+      }
+
+      // Firebase Messaging सिर्फ Browser में ही load होती है, इसलिए dynamic import
+      const { getMessaging, getToken } = await import('firebase/messaging')
+
+      const registration = await navigator.serviceWorker.register('/firebase-messaging-sw.js')
       await navigator.serviceWorker.ready
 
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+      const messaging = getMessaging(app)
+      const fcmToken = await getToken(messaging, {
+        vapidKey: VAPID_KEY,
+        serviceWorkerRegistration: registration,
       })
+
+      if (!fcmToken) {
+        setErrorMsg('Token नहीं मिला - फिर से कोशिश करें')
+        setStatus('error')
+        return
+      }
 
       const res = await fetch('/api/push-subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(subscription),
+        body: JSON.stringify({ fcmToken }),
       })
 
       if (!res.ok) {
