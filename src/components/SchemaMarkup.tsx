@@ -1,3 +1,4 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/SchemaMarkup.tsx
 type Organization = {
   name?: string
   website?: string
@@ -30,6 +31,7 @@ type SchemaProps = {
   totalVacancies?: number
   description?: string
   breadcrumb?: { name: string; url: string }[]
+  imageUrl?: string
 }
 
 function formatDate(dateStr?: string) {
@@ -97,6 +99,7 @@ export default function SchemaMarkup({
   totalVacancies,
   description,
   breadcrumb,
+  imageUrl,
 }: SchemaProps) {
   // Google को हर JobPosting में "description" अनिवार्य चाहिए - खाली होने पर
   // Rich Result "invalid" मान लिया जाता है। इसलिए हमेशा एक भरोसेमंद
@@ -118,6 +121,7 @@ export default function SchemaMarkup({
           datePosted: publishedAt,
           validThrough: applicationEnd,
           employmentType: 'FULL_TIME',
+          ...(imageUrl && { image: imageUrl }),
           hiringOrganization: {
             '@type': 'Organization',
             name: organization?.name || 'Government of India',
@@ -136,6 +140,7 @@ export default function SchemaMarkup({
           datePublished: publishedAt,
           dateModified: updatedAt,
           mainEntityOfPage: url,
+          ...(imageUrl && { image: [imageUrl] }),
           author: {
             '@type': 'Organization',
             name: 'Official Sarkari Patrika',
