@@ -1,4 +1,32 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/sanity/lib/queries.ts
 import { groq } from 'next-sanity'
+
+// ⚙️ Website Settings (Logo, Favicon, AdSense, Search Console, Google News, Social) - Singleton
+export const SITE_SETTINGS_QUERY = groq`
+*[_id == "siteSettings"][0] {
+  "siteLogoUrl": siteLogo.asset->url,
+  "faviconUrl": favicon.asset->url,
+  publisherName,
+  googleSiteVerification,
+  bingSiteVerification,
+  adsensePublisherId,
+  googleNewsPublicationName,
+  enableNewsSitemap,
+  socialLinks
+}
+`
+
+// 📰 Google News Sitemap के लिए - सिर्फ पिछले 48 घंटों की पोस्ट, फ़ोटो सहित
+export const NEWS_SITEMAP_QUERY = groq`
+*[_type == "jobPost" && publishedAt >= $since && !(seo.noIndex == true)] | order(publishedAt desc) {
+  title,
+  "slug": slug.current,
+  "category": category->slug.current,
+  publishedAt,
+  _createdAt,
+  "imageUrl": featuredImage.asset->url
+}
+`
 
 // नोट: ऑर्डरिंग के लिए हर जगह Sanity के अपने-आप अपडेट होने वाले "_updatedAt"
 // System फील्ड का इस्तेमाल किया गया है (मैनुअल "updatedAt" फील्ड की जगह) -
@@ -89,6 +117,8 @@ export const SINGLE_POST_QUERY = groq`
   seo,
   publishedAt,
   updatedAt,
+  "featuredImageUrl": featuredImage.asset->url,
+  "featuredImageAlt": featuredImage.alt,
   "organization": organization-> {
     name,
     website,
