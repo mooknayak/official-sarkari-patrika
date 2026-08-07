@@ -1,18 +1,18 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/api/push-subscribe/route.ts
 import { NextRequest, NextResponse } from 'next/server'
 import { writeClient } from '@/sanity/lib/writeClient'
 
 export async function POST(req: NextRequest) {
   try {
-    const subscription = await req.json()
-    const { endpoint, keys } = subscription
+    const { fcmToken } = await req.json()
 
-    if (!endpoint || !keys?.p256dh || !keys?.auth) {
-      return NextResponse.json({ message: 'Invalid subscription data' }, { status: 400 })
+    if (!fcmToken) {
+      return NextResponse.json({ message: 'Invalid token data' }, { status: 400 })
     }
 
     const existing = await writeClient.fetch(
-      `*[_type == "pushSubscriber" && endpoint == $endpoint][0]`,
-      { endpoint }
+      `*[_type == "pushSubscriber" && fcmToken == $fcmToken][0]`,
+      { fcmToken }
     )
 
     if (existing) {
@@ -21,9 +21,7 @@ export async function POST(req: NextRequest) {
 
     await writeClient.create({
       _type: 'pushSubscriber',
-      endpoint,
-      p256dh: keys.p256dh,
-      auth: keys.auth,
+      fcmToken,
       subscribedAt: new Date().toISOString(),
     })
 
