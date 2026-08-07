@@ -1,4 +1,5 @@
 import { SignJWT, importPKCS8 } from 'jose'
+import { getFirestoreAdmin } from '@/lib/firebaseAdmin'
 
 type IndexingResult = { success: boolean; message: string }
 
@@ -67,6 +68,25 @@ async function callIndexingApi(accessToken: string, url: string) {
   })
 }
 
+// 🔁 अगर 3 बार कोशिश करने के बाद भी Indexing API fail हो जाए, तो पोस्ट को यूँ ही मत छोड़ो -
+// Firebase Firestore की एक "Queue" में डाल दो, ताकि बाद में Cron Job (हर 30 मिनट में)
+// अपने-आप दोबारा कोशिश करता रहे। इससे कभी भी System "रुकता" नहीं, सिर्फ़ लाइन में लगता है।
+async function queueForRetry(url: string, reason: string) {
+  try {
+    const db = getFirestoreAdmin()
+    if (!db) return // Firebase सेट नहीं है तो चुपचाप स्किप - मुख्य flow नहीं टूटेगा
+    await db.collection('indexingRetryQueue').doc(Buffer.from(url).toString('base64url')).set({
+      url,
+      reason,
+      attempts: 0,
+      createdAt: new Date().toISOString(),
+      lastTriedAt: null,
+    })
+  } catch (e) {
+    console.error('[GoogleIndexing] Retry Queue में डालने में समस्या:', (e as Error).message)
+  }
+}
+
 export async function requestGoogleIndexing(url: string): Promise<IndexingResult> {
   const { clientEmail, privateKey, source } = loadCredentials()
 
@@ -88,13 +108,15 @@ export async function requestGoogleIndexing(url: string): Promise<IndexingResult
 
       if (res.status === 429) {
         console.error('[GoogleIndexing] दैनिक Quota समाप्त हो गई है')
-        return { success: false, message: 'Google Indexing की दैनिक सीमा (quota) पूरी हो चुकी है' }
+        await queueForRetry(url, 'quota-exceeded')
+        return { success: false, message: 'Google Indexing की दैनिक सीमा (quota) पूरी हो चुकी है - अपने-आप बाद में दोबारा कोशिश होगी' }
       }
 
       if (res.status === 401 || res.status === 403) {
         const errText = await res.text()
         console.error(`[GoogleIndexing] स्थायी त्रुटि (${res.status}):`, errText.slice(0, 300))
-        return { success: false, message: `Permission त्रुटि (${res.status}) - Search Console में service account का access जाँचें` }
+        await queueForRetry(url, `permission-error-${res.status}`)
+        return { success: false, message: `Permission त्रुटि (${res.status}) - Search Console में service account का access जाँचें (अपने-आप बाद में दोबारा कोशिश होगी)` }
       }
 
       if (!res.ok) {
@@ -113,5 +135,6 @@ export async function requestGoogleIndexing(url: string): Promise<IndexingResult
 
   const errorMessage = lastError?.message || 'अज्ञात त्रुटि'
   console.error('[GoogleIndexing] सभी कोशिशें विफल:', errorMessage)
-  return { success: false, message: `Google Indexing में समस्या: ${errorMessage}` }
+  await queueForRetry(url, `transient-error: ${errorMessage.slice(0, 200)}`)
+  return { success: false, message: `Google Indexing में समस्या: ${errorMessage} (अपने-आप बाद में दोबारा कोशिश होगी)` }
 }
