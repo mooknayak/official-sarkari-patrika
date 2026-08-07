@@ -1,9 +1,20 @@
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/sanity/structure.ts
 import type { StructureResolver } from 'sanity/structure'
 
 export const structure: StructureResolver = (S) =>
   S.list()
     .title('Official Sarkari Patrika')
     .items([
+      // ⚙️ Singleton — इसका सिर्फ 1 ही Document रहेगा (Logo/Favicon/AdSense/News सेटिंग्स)
+      S.listItem()
+        .title('⚙️ Website Settings')
+        .child(
+          S.document()
+            .schemaType('siteSettings')
+            .documentId('siteSettings')
+            .title('Website Settings')
+        ),
+      S.divider(),
       S.listItem()
         .title('🟢 Live Job Notifications')
         .child(
