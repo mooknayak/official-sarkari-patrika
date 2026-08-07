@@ -5,10 +5,10 @@ importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js
 importScripts('https://www.gstatic.com/firebasejs/10.13.0/firebase-messaging-compat.js')
 
 firebase.initializeApp({
-  apiKey: 'AIzaSyB1yGcD2RkCuMX-wxz07HScIUa7trTx_Gs',
+  apiKey: 'AIzaSyGjD2RKCuMX-wxr07HScIuW7crTx_Gs',
   authDomain: 'official-sarkari-patrika.firebaseapp.com',
   projectId: 'official-sarkari-patrika',
-  storageBucket: 'official-sarkari-patrika.firebasestorage.app',
+  storageBucket: 'official-sarkari-patrika.appspot.com',
   messagingSenderId: '661531699456',
   appId: '1:661531699456:web:48f3e89610b8f693a82be5',
 })
