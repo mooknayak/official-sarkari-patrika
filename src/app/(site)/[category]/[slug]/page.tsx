@@ -1,5 +1,5 @@
 import { client } from '@/sanity/lib/client'
-import { SINGLE_POST_QUERY, ALL_SLUGS_QUERY, RELATED_POSTS_QUERY } from '@/sanity/lib/queries'
+import { SINGLE_POST_QUERY, ALL_SLUGS_QUERY, RELATED_POSTS_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 import StatusBadge from '@/components/StatusBadge'
 import PostInfoBlock from '@/components/PostInfoBlock'
 import ShareButtons from '@/components/ShareButtons'
@@ -17,6 +17,8 @@ import JobCard from '@/components/JobCard'
 import Link from 'next/link'
 import Image from 'next/image'
 import CommentsSection from '@/components/CommentsSection'
+import PostBottomBanner from '@/components/PostBottomBanner'
+import DiscoverMore from '@/components/DiscoverMore'
 import type { Metadata } from 'next'
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/(site)/[category]/[slug]/page.tsx
 import { notFound } from 'next/navigation'
@@ -78,6 +80,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JobPostPage({ params }: Props) {
   const post = await client.fetch(SINGLE_POST_QUERY, { slug: params.slug })
   if (!post) return notFound()
+
+  // 🆕 Post के नीचे वाला Banner और Discover More (Website Settings से) - Sanity
+  // पहले से Cache करता है, इसलिए हर Post पर अलग से भारी fetch नहीं होता।
+  const siteSettings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
 
   const realCategorySlug = post.category?.slug || params.category
 
@@ -245,6 +251,16 @@ export default async function JobPostPage({ params }: Props) {
       )}
 
       <CommentsSection postSlug={post.slug} postTitle={post.title} />
+
+      {/* 🆕 Post के नीचे वैकल्पिक Banner - खाली होने पर कुछ नहीं दिखेगा */}
+      <PostBottomBanner
+        imageUrl={siteSettings?.postBottomBanner?.imageUrl}
+        link={siteSettings?.postBottomBanner?.link}
+        altText={siteSettings?.postBottomBanner?.altText}
+      />
+
+      {/* 🆕 Discover More - अब हर Post में, आपकी अपनी लिखी Guidelines के साथ */}
+      <DiscoverMore panels={siteSettings?.discoverMorePanels} />
     </article>
   )
 }
