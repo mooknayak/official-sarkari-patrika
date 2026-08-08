@@ -1,12 +1,13 @@
-// 🆕 नई फ़ाइल — इसे इसी पाथ पर बनाएं: src/app/api/cron/retry-indexing/route.ts
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/api/cron/retry-indexing/route.ts
 //
-// यह हर 30 मिनट में अपने-आप चलता है (vercel.json में Schedule सेट है) -
-// यह उन Post URLs को दोबारा Google को भेजने की कोशिश करता है जो पहले किसी वजह से
-// Fail हो गए थे। 3 दिन (या 10 कोशिशों) के बाद भी अगर Success न हो, तो उसे Queue से
-// हटा दिया जाता है (तब भी वह पोस्ट sitemap.xml के ज़रिए Google को मिल ही जाएगी)।
+// यह अपने-आप चलता है (vercel.json में Schedule सेट है) - यह उन Post URLs को
+// दोबारा Google को भेजने की कोशिश करता है जो पहले किसी वजह से Fail हो गए थे
+// (अब Queue Firebase नहीं, Sanity - "indexingQueueItem" में रहती है)। 10 कोशिशों
+// के बाद भी अगर Success न हो, तो उसे Queue से हटा दिया जाता है (तब भी वह पोस्ट
+// sitemap.xml के ज़रिए Google को मिल ही जाएगी)।
 
 import { NextRequest, NextResponse } from 'next/server'
-import { getFirestoreAdmin } from '@/lib/firebaseAdmin'
+import { writeClient } from '@/sanity/lib/writeClient'
 import { requestGoogleIndexing } from '@/lib/googleIndexing'
 
 const MAX_ATTEMPTS = 10
@@ -18,35 +19,36 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
   }
 
-  const db = getFirestoreAdmin()
-  if (!db) {
-    return NextResponse.json({ message: 'Firebase सेट नहीं है, कुछ करने को नहीं' })
-  }
+  const items: { _id: string; url: string; attempts: number }[] = await writeClient.fetch(
+    `*[_type == "indexingQueueItem"] | order(createdAt asc) [0...50]{ _id, url, attempts }`
+  )
 
-  const snapshot = await db.collection('indexingRetryQueue').limit(50).get()
-
-  if (snapshot.empty) {
+  if (items.length === 0) {
     return NextResponse.json({ message: 'Queue खाली है - सब पहले से index हो चुका है 🎉' })
   }
 
   const results: { url: string; outcome: string }[] = []
 
-  for (const doc of snapshot.docs) {
-    const data = doc.data()
-    const attempts = (data.attempts || 0) + 1
-
-    const result = await requestGoogleIndexing(data.url)
+  for (const item of items) {
+    const attempts = (item.attempts || 0) + 1
+    const result = await requestGoogleIndexing(item.url)
 
     if (result.success) {
-      await doc.ref.delete()
-      results.push({ url: data.url, outcome: 'success - Queue से हटाया गया' })
+      await writeClient.delete(item._id)
+      results.push({ url: item.url, outcome: 'success - Queue से हटाया गया' })
     } else if (attempts >= MAX_ATTEMPTS) {
       // बहुत बार कोशिश हो चुकी - अब sitemap.xml के भरोसे छोड़ते हैं (वह हमेशा काम करता है)
-      await doc.ref.delete()
-      results.push({ url: data.url, outcome: `${MAX_ATTEMPTS} कोशिशों के बाद भी असफल - sitemap के भरोसे छोड़ा` })
+      await writeClient.delete(item._id)
+      results.push({
+        url: item.url,
+        outcome: `${MAX_ATTEMPTS} कोशिशों के बाद भी असफल - sitemap के भरोसे छोड़ा`,
+      })
     } else {
-      await doc.ref.update({ attempts, lastTriedAt: new Date().toISOString() })
-      results.push({ url: data.url, outcome: `असफल (कोशिश ${attempts}/${MAX_ATTEMPTS}) - फिर कोशिश होगी` })
+      await writeClient
+        .patch(item._id)
+        .set({ attempts, lastTriedAt: new Date().toISOString() })
+        .commit()
+      results.push({ url: item.url, outcome: `असफल (कोशिश ${attempts}/${MAX_ATTEMPTS}) - फिर कोशिश होगी` })
     }
   }
 
