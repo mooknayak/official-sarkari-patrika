@@ -4,6 +4,17 @@ import { category } from './category'
 import { organization } from './organization'
 import { subscriber } from './subscriber'
 import { pushSubscriber } from './pushSubscriber'
+import { comment } from './comment'
+import { indexingQueueItem } from './indexingQueueItem'
 import { siteSettings } from './siteSettings'
 
-export const schemaTypes = [jobPost, category, organization, subscriber, pushSubscriber, siteSettings]
+export const schemaTypes = [
+  jobPost,
+  category,
+  organization,
+  subscriber,
+  pushSubscriber,
+  comment,
+  indexingQueueItem,
+  siteSettings,
+]
