@@ -158,12 +158,68 @@ export const jobPost = defineType({
       title: 'Important Dates',
       type: 'object',
       group: 'status',
+      description:
+        'हर तारीख के लिए या तो सही Date चुनें, या नीचे वाले "Note" वाले Text Field में कुछ लिख दें (जैसे "जल्द जारी होगी", "नियमानुसार", "संभावित तिथि जल्द बताई जाएगी") - Note भरा होगा तो वही Highlight होकर दिखेगा, Date की जगह।',
       fields: [
         { name: 'applicationStart', type: 'date', title: 'Application Start' },
+        {
+          name: 'applicationStartNote',
+          type: 'string',
+          title: '✏️ Application Start - Note (अगर Date पक्की नहीं है)',
+          description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+        },
         { name: 'applicationEnd', type: 'date', title: 'Application Last Date' },
+        {
+          name: 'applicationEndNote',
+          type: 'string',
+          title: '✏️ Application Last Date - Note (अगर Date पक्की नहीं है)',
+          description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+        },
         { name: 'admitCardDate', type: 'date', title: 'Admit Card Release Date' },
+        {
+          name: 'admitCardDateNote',
+          type: 'string',
+          title: '✏️ Admit Card Date - Note (अगर Date पक्की नहीं है)',
+          description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+        },
         { name: 'examDate', type: 'date', title: 'Exam Date' },
+        {
+          name: 'examDateNote',
+          type: 'string',
+          title: '✏️ Exam Date - Note (अगर Date पक्की नहीं है)',
+          description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+        },
         { name: 'resultDate', type: 'date', title: 'Result Date' },
+        {
+          name: 'resultDateNote',
+          type: 'string',
+          title: '✏️ Result Date - Note (अगर Date पक्की नहीं है)',
+          description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+        },
+        // 🆕 अगर ऊपर के 5 के अलावा भी कोई और तारीख बतानी हो (जैसे "Interview Date",
+        // "Document Verification"), तो यहाँ अपनी मर्ज़ी से 1-2 (या ज़्यादा) Custom
+        // Entry जोड़ सकते हैं - हर एक में भी Date या Note (टेक्स्ट), दोनों में से कोई एक चुन सकते हैं।
+        {
+          name: 'extraDates',
+          type: 'array',
+          title: '➕ कोई और Custom तारीख जोड़ें (वैकल्पिक)',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                { name: 'label', type: 'string', title: 'तारीख का नाम', description: 'उदाहरण: "Interview Date", "Document Verification"' },
+                { name: 'date', type: 'date', title: 'Date (अगर पक्की है)' },
+                {
+                  name: 'note',
+                  type: 'string',
+                  title: 'Note (अगर Date पक्की नहीं है)',
+                  description: 'उदाहरण: "जल्द जारी होगी" / "नियमानुसार" / "संभावित तिथि जल्द बताई जाएगी"',
+                },
+              ],
+              preview: { select: { title: 'label', subtitle: 'date' } },
+            },
+          ],
+        },
       ],
     }),
 
