@@ -67,4 +67,15 @@ export const structure: StructureResolver = (S) =>
       S.listItem()
         .title('🔔 Push Notification Subscribers')
         .child(S.documentTypeList('pushSubscriber').title('Push Subscribers')),
+      S.divider(),
+      S.listItem()
+        .title('💬 Comments (जवाब यहीं से दें)')
+        .child(
+          S.documentTypeList('comment')
+            .title('Comments')
+            .defaultOrdering([{ field: 'createdAt', direction: 'desc' }])
+        ),
+      S.listItem()
+        .title('🔁 Indexing Retry Queue')
+        .child(S.documentTypeList('indexingQueueItem').title('Indexing Retry Queue')),
     ])
