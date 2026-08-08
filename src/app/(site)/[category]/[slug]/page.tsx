@@ -113,6 +113,8 @@ export default async function JobPostPage({ params }: Props) {
         totalVacancies={post.categoryWiseVacancy?.total}
         description={bestDescription}
         imageUrl={post.featuredImageUrl}
+        jobLocation={post.jobLocation}
+        salary={post.salary}
         breadcrumb={[
           { name: 'होम', url: process.env.NEXT_PUBLIC_SITE_URL || '' },
           {
@@ -157,6 +159,8 @@ export default async function JobPostPage({ params }: Props) {
         publishedAt={post.publishedAt}
         updatedAt={post.updatedAt}
         organizationName={post.organization?.name}
+        jobLocation={post.jobLocation}
+        salaryText={post.salary?.payScaleText}
       />
 
       {/* Important Dates + Application Fee - साथ-साथ, बॉर्डर वाले */}
