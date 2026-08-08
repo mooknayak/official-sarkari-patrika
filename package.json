@@ -20,8 +20,7 @@
     "@sanity/assist": "^3.0.3",
     "@portabletext/react": "^3.1.0",
     "jose": "^5.9.6",
-    "firebase": "^10.13.0",
-    "firebase-admin": "^12.4.0",
+    "web-push": "^3.6.7",
     "styled-components": "^6.1.11"
   },
   "devDependencies": {
@@ -29,6 +28,7 @@
     "@types/node": "^20.14.11",
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
+    "@types/web-push": "^3.6.4",
     "tailwindcss": "^3.4.6",
     "postcss": "^8.4.39",
     "autoprefixer": "^10.4.19",
