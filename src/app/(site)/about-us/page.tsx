@@ -1,39 +1,100 @@
-// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/(site)/contact-us/page.tsx
-// 🆕 अब एक असली, नामित Contact Person (Diwakar Kumar) दिखता है - Google AdSense
-// Review Team किसी अनाम ईमेल की जगह एक असली इंसान का नाम देखकर ज़्यादा भरोसा
-// करती है। Response Time की जानकारी भी जोड़ी गई है।
+// ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/(site)/about-us/page.tsx
+// 🆕 अब यह पेज Sanity से Team Members (Founder, Editorial, Legal) खींचकर एक
+// "Our Team" सेक्शन भी दिखाता है - Sanity → Website Settings → "👥 हमारी टीम"
+// से पूरी तरह Control होता है। कोई Team Member न जोड़ें तो यह सेक्शन दिखेगा ही नहीं।
 import type { Metadata } from 'next'
-import ContactForm from '@/components/ContactForm'
+import Image from 'next/image'
+import { client } from '@/sanity/lib/client'
+import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
 export const metadata: Metadata = {
-  title: 'Contact Us',
-  description: 'Get in touch with Official Sarkari Patrika',
+  title: 'About Us',
+  description: 'About Official Sarkari Patrika — our mission and commitment',
 }
 
-export default function ContactUsPage() {
+type TeamMember = {
+  name: string
+  role: string
+  bio?: string
+  photoUrl?: string
+}
+
+export default async function AboutUsPage() {
+  const settings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
+  const team: TeamMember[] = settings?.teamMembers || []
+
   return (
     <div className="prose max-w-none">
-      <h1>Contact Us</h1>
+      <h1>About Us</h1>
+      <p>Welcome to {settings?.publisherName || 'Official Sarkari Patrika'}.</p>
+
+      <h2>Founder&apos;s Note</h2>
       <p>
-        Your feedback, complaints, or reports of any errors are important to us. Please reach out
-        to us through the following channel:
+        {settings?.publisherName || 'Official Sarkari Patrika'} was founded by{' '}
+        <strong>Diwakar Kumar</strong>, who has been working in the computer and technology field
+        since 2010, with hands-on experience in HTML and website development. Driven by a passion
+        for making government job information accessible and easy to understand for everyone, he
+        started this platform to help students and job seekers across India find accurate,
+        verified information in one place — without having to navigate through multiple complex
+        official websites.
       </p>
 
+      <h2>Our Mission</h2>
       <p>
-        <strong>Contact Person:</strong> Diwakar Kumar (Founder)
-        <br />
-        <strong>Email:</strong>{' '}
-        <a href="mailto:officialsarkaripatrika@gmail.com">officialsarkaripatrika@gmail.com</a>
-        <br />
-        <strong>Response Time:</strong> We usually respond within 24-48 hours on working days.
+        Our mission is to deliver accurate and timely information about government jobs, admit
+        cards, and results to the youth, students, and working population of India — especially
+        those who have limited time or resources to navigate complex government websites.
       </p>
 
-      <ContactForm />
-
-      <p className="text-sm text-slate-500 mt-6">
-        Please note: We do not exchange any personal information via phone calls or WhatsApp. All
-        communication should be conducted only through official email.
+      <h2>What We Do</h2>
+      <p>
+        Our team monitors official notifications from various Central and State Government
+        departments on a daily basis and presents them in simple, well-organized language on this
+        portal — so that important dates, eligibility criteria, and application procedures are
+        available to users in one place.
       </p>
+
+      <h2>Our Commitment</h2>
+      <ul>
+        <li>Accuracy: Every piece of information is cross-verified with the official source before publication.</li>
+        <li>Transparency: We clearly state that we are not a government entity.</li>
+        <li>Safety: We never ask for sensitive documents.</li>
+      </ul>
+
+      <p>{settings?.publisherName || 'Official Sarkari Patrika'} strives to be a trusted companion in your career journey.</p>
+
+      {team.length > 0 && (
+        <>
+          <h2>Our Team</h2>
+          <div className="not-prose grid grid-cols-1 sm:grid-cols-2 gap-4 mt-4">
+            {team.map((member, idx) => (
+              <div
+                key={idx}
+                className="flex gap-3 items-start border border-blue-100 rounded-lg p-4 bg-white"
+              >
+                {member.photoUrl ? (
+                  <Image
+                    src={member.photoUrl}
+                    alt={member.name}
+                    width={64}
+                    height={64}
+                    className="rounded-full object-cover w-16 h-16 flex-shrink-0"
+                  />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-brand-blueLight flex items-center justify-center text-brand-blueDark font-bold text-lg flex-shrink-0">
+                    {member.name?.charAt(0) || '?'}
+                  </div>
+                )}
+                <div>
+                  <p className="font-semibold text-brand-blueDark m-0">{member.name}</p>
+                  <p className="text-sm text-brand-pinkAccent font-medium m-0">{member.role}</p>
+                  {member.bio && <p className="text-sm text-slate-600 mt-1 mb-0">{member.bio}</p>}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
     </div>
   )
 }
