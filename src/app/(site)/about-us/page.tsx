@@ -28,6 +28,17 @@ export default async function AboutUsPage() {
       <h1>About Us</h1>
       <p>Welcome to {settings?.publisherName || 'Official Sarkari Patrika'}.</p>
 
+      <h2>Founder&apos;s Note</h2>
+      <p>
+        {settings?.publisherName || 'Official Sarkari Patrika'} was founded by{' '}
+        <strong>Diwakar Kumar</strong>, who has been working in the computer and technology field
+        since 2010, with hands-on experience in HTML and website development. Driven by a passion
+        for making government job information accessible and easy to understand for everyone, he
+        started this platform to help students and job seekers across India find accurate,
+        verified information in one place — without having to navigate through multiple complex
+        official websites.
+      </p>
+
       <h2>Our Mission</h2>
       <p>
         Our mission is to deliver accurate and timely information about government jobs, admit
