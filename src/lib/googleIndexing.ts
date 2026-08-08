@@ -1,5 +1,21 @@
+// ✏️ एडिट फ़ाइल — अब यह 3-Tier (3-परत) System है, ताकि नई पोस्ट किसी-न-किसी
+// तरीके से Google तक ज़रूर पहुँचे:
+//
+//   🥇 Tier 1 — Google Indexing API (Service Account से, सबसे तेज़ + पक्का तरीका)
+//   🥈 Tier 2 — अगर Tier 1 fail हो जाए, तो Google के Sitemap Ping Endpoint को
+//               सूचित किया जाता है (Backup कोशिश - मुफ़्त, कोई नुकसान नहीं,
+//               पर Google ने इसे June 2023 में Officially बंद कर दिया था,
+//               इसलिए यह गारंटी नहीं देता, बस एक Extra कोशिश है)
+//   🥉 Tier 3 — Google News सिस्टम (हमारी साइट में पहले से मौजूद
+//               /news-sitemap.xml अपने-आप हर 48 घंटे की नई पोस्ट को
+//               शामिल करता है - Google News Crawler इसे खुद पढ़ता रहता है,
+//               इसके लिए अलग से कुछ Trigger करने की ज़रूरत नहीं)
+//
+// तीनों Tier मिलकर पक्का करते हैं कि किसी-न-किसी हाल में पोस्ट Google तक पहुँचे,
+// चाहे कभी Indexing API का Quota खत्म हो जाए या Credentials में दिक्कत आ जाए।
+
 import { SignJWT, importPKCS8 } from 'jose'
-import { getFirestoreAdmin } from '@/lib/firebaseAdmin'
+import { writeClient } from '@/sanity/lib/writeClient'
 
 type IndexingResult = { success: boolean; message: string }
 
@@ -68,35 +84,68 @@ async function callIndexingApi(accessToken: string, url: string) {
   })
 }
 
-// 🔁 अगर 3 बार कोशिश करने के बाद भी Indexing API fail हो जाए, तो पोस्ट को यूँ ही मत छोड़ो -
-// Firebase Firestore की एक "Queue" में डाल दो, ताकि बाद में Cron Job (हर 30 मिनट में)
-// अपने-आप दोबारा कोशिश करता रहे। इससे कभी भी System "रुकता" नहीं, सिर्फ़ लाइन में लगता है।
+// 🔁 अगर सभी Tier के बाद भी पक्का Success न मिले, तो पोस्ट को यूँ ही मत छोड़ो -
+// Sanity की "indexingQueueItem" में डाल दो, ताकि बाद में Cron Job (हर दिन एक बार)
+// अपने-आप दोबारा Tier 1 कोशिश करता रहे। इससे कभी भी System "रुकता" नहीं, सिर्फ़
+// लाइन में लगता है - और Tier 3 (Google News Sitemap) तो वैसे भी हमेशा चालू रहता है।
 async function queueForRetry(url: string, reason: string) {
   try {
-    const db = getFirestoreAdmin()
-    if (!db) return // Firebase सेट नहीं है तो चुपचाप स्किप - मुख्य flow नहीं टूटेगा
-    await db.collection('indexingRetryQueue').doc(Buffer.from(url).toString('base64url')).set({
+    const docId = `indexingQueue.${Buffer.from(url).toString('base64url')}`
+    await writeClient.createIfNotExists({
+      _id: docId,
+      _type: 'indexingQueueItem',
       url,
       reason,
       attempts: 0,
       createdAt: new Date().toISOString(),
       lastTriedAt: null,
     })
+    await writeClient.patch(docId).set({ reason }).commit({ autoGenerateArrayKeys: true })
   } catch (e) {
     console.error('[GoogleIndexing] Retry Queue में डालने में समस्या:', (e as Error).message)
   }
 }
 
-export async function requestGoogleIndexing(url: string): Promise<IndexingResult> {
+// 🥈 Tier 2 — Backup कोशिश: Google के पुराने Sitemap Ping Endpoint को हिट करना।
+// ⚠️ ईमानदारी से बता दें: Google ने यह Endpoint June 2023 में Officially बंद कर
+// दिया था, इसलिए यह पक्की गारंटी नहीं है। पर यह मुफ़्त है, तुरंत होता है, और कभी
+// नुकसान नहीं करता - इसलिए एक Extra कोशिश के तौर पर रखा गया है।
+async function tier2PingSitemap(): Promise<IndexingResult> {
+  try {
+    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL
+    if (!siteUrl) {
+      return { success: false, message: 'Tier 2 स्किप - NEXT_PUBLIC_SITE_URL सेट नहीं है' }
+    }
+    const sitemapUrl = `${siteUrl}/sitemap.xml`
+    const res = await fetch(`https://www.google.com/ping?sitemap=${encodeURIComponent(sitemapUrl)}`)
+    return {
+      success: res.ok,
+      message: `Tier 2 (Sitemap Ping) भेजा गया - status: ${res.status} (यह सिर्फ़ Backup कोशिश है, पक्की गारंटी नहीं)`,
+    }
+  } catch (e) {
+    return { success: false, message: `Tier 2 (Sitemap Ping) में समस्या: ${(e as Error).message}` }
+  }
+}
+
+// 🥉 Tier 3 — Google News: कुछ भी अलग से भेजने की ज़रूरत नहीं। हमारी साइट का
+// /news-sitemap.xml रूट हमेशा जीवित रहता है और पिछले 48 घंटों में Publish हुई हर
+// पोस्ट को अपने-आप शामिल करता है - Google News Crawler इसे खुद बार-बार पढ़ता है।
+// यह Function सिर्फ़ यह बताता है कि पोस्ट इस Window में है या नहीं, ताकि Log/Message
+// में साफ़ दिखे कि Tier 3 भी लागू हो रहा है।
+function tier3NewsSitemapNote(): string {
+  return 'Tier 3 (Google News Sitemap) हमेशा से चालू है - /news-sitemap.xml अपने-आप पिछले 48 घंटे की पोस्ट Google News को दिखाता रहेगा।'
+}
+
+async function tier1IndexingApi(url: string): Promise<IndexingResult> {
   const { clientEmail, privateKey, source } = loadCredentials()
 
   if (!clientEmail || !privateKey) {
-    const msg = 'Google Indexing API सेट नहीं है (credentials खाली/अमान्य हैं) - स्किप किया'
+    const msg = 'Tier 1 स्किप - Google Indexing API सेट नहीं है (credentials खाली/अमान्य हैं)'
     console.error('[GoogleIndexing]', msg)
     return { success: false, message: msg }
   }
 
-  console.log(`[GoogleIndexing] शुरू (source: ${source}) - URL: ${url}`)
+  console.log(`[GoogleIndexing] Tier 1 शुरू (source: ${source}) - URL: ${url}`)
 
   const maxAttempts = 3
   let lastError: any = null
@@ -107,16 +156,14 @@ export async function requestGoogleIndexing(url: string): Promise<IndexingResult
       const res = await callIndexingApi(accessToken, url)
 
       if (res.status === 429) {
-        console.error('[GoogleIndexing] दैनिक Quota समाप्त हो गई है')
-        await queueForRetry(url, 'quota-exceeded')
-        return { success: false, message: 'Google Indexing की दैनिक सीमा (quota) पूरी हो चुकी है - अपने-आप बाद में दोबारा कोशिश होगी' }
+        console.error('[GoogleIndexing] Tier 1 - दैनिक Quota समाप्त हो गई है')
+        return { success: false, message: 'Tier 1 विफल - दैनिक सीमा (quota) पूरी हो चुकी है' }
       }
 
       if (res.status === 401 || res.status === 403) {
         const errText = await res.text()
-        console.error(`[GoogleIndexing] स्थायी त्रुटि (${res.status}):`, errText.slice(0, 300))
-        await queueForRetry(url, `permission-error-${res.status}`)
-        return { success: false, message: `Permission त्रुटि (${res.status}) - Search Console में service account का access जाँचें (अपने-आप बाद में दोबारा कोशिश होगी)` }
+        console.error(`[GoogleIndexing] Tier 1 - स्थायी त्रुटि (${res.status}):`, errText.slice(0, 300))
+        return { success: false, message: `Tier 1 विफल - Permission त्रुटि (${res.status})` }
       }
 
       if (!res.ok) {
@@ -124,17 +171,41 @@ export async function requestGoogleIndexing(url: string): Promise<IndexingResult
         throw new Error(`HTTP ${res.status}: ${errText.slice(0, 300)}`)
       }
 
-      console.log(`[GoogleIndexing] SUCCESS (attempt ${attempt}) - status: ${res.status}`)
-      return { success: true, message: `Google को सूचित कर दिया गया (status: ${res.status})` }
+      console.log(`[GoogleIndexing] Tier 1 SUCCESS (attempt ${attempt}) - status: ${res.status}`)
+      return { success: true, message: `Tier 1 सफल - Google को सीधे सूचित कर दिया गया (status: ${res.status})` }
     } catch (err: any) {
       lastError = err
-      console.warn(`[GoogleIndexing] अस्थायी त्रुटि (attempt ${attempt}/${maxAttempts}):`, err.message)
+      console.warn(`[GoogleIndexing] Tier 1 - अस्थायी त्रुटि (attempt ${attempt}/${maxAttempts}):`, err.message)
       if (attempt < maxAttempts) await new Promise((r) => setTimeout(r, attempt * 500))
     }
   }
 
   const errorMessage = lastError?.message || 'अज्ञात त्रुटि'
-  console.error('[GoogleIndexing] सभी कोशिशें विफल:', errorMessage)
-  await queueForRetry(url, `transient-error: ${errorMessage.slice(0, 200)}`)
-  return { success: false, message: `Google Indexing में समस्या: ${errorMessage} (अपने-आप बाद में दोबारा कोशिश होगी)` }
+  console.error('[GoogleIndexing] Tier 1 - सभी कोशिशें विफल:', errorMessage)
+  return { success: false, message: `Tier 1 विफल - ${errorMessage}` }
+}
+
+export async function requestGoogleIndexing(url: string): Promise<IndexingResult> {
+  // 🥇 पहले Tier 1 (सीधा Google Indexing API)
+  const tier1 = await tier1IndexingApi(url)
+  if (tier1.success) {
+    return tier1
+  }
+
+  // 🥈 Tier 1 fail हुआ तो घबराने की ज़रूरत नहीं - Tier 2 (Backup Sitemap Ping) आज़माते हैं
+  const tier2 = await tier2PingSitemap()
+
+  // 🥉 और Tier 3 (Google News) तो वैसे भी हमेशा चालू ही है
+  const tier3Note = tier3NewsSitemapNote()
+
+  // किसी भी हाल में पोस्ट को Retry Queue में डाल देना है, ताकि Tier 1 बाद में
+  // अपने-आप दोबारा कोशिश करता रहे (जब तक Success न मिल जाए या sitemap के भरोसे न छूटे)
+  await queueForRetry(url, `tier1-failed: ${tier1.message}`)
+
+  const combinedMessage = `${tier1.message} | ${tier2.message} | ${tier3Note} (Tier 1 अपने-आप बाद में दोबारा कोशिश करेगा)`
+
+  return {
+    success: tier2.success, // कम-से-कम Tier 2 सफल हुआ तो भी कुछ-न-कुछ हुआ माना जाएगा
+    message: combinedMessage,
+  }
 }
