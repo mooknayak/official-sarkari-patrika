@@ -18,6 +18,12 @@ type ApplicationFeeType = {
   paymentMode?: string
 }
 
+type SalaryType = {
+  minAmount?: number
+  maxAmount?: number
+  payScaleText?: string
+}
+
 type SchemaProps = {
   title: string
   status: string
@@ -32,6 +38,8 @@ type SchemaProps = {
   description?: string
   breadcrumb?: { name: string; url: string }[]
   imageUrl?: string
+  jobLocation?: string
+  salary?: SalaryType
 }
 
 function formatDate(dateStr?: string) {
@@ -100,6 +108,8 @@ export default function SchemaMarkup({
   description,
   breadcrumb,
   imageUrl,
+  jobLocation,
+  salary,
 }: SchemaProps) {
   // Google को हर JobPosting में "description" अनिवार्य चाहिए - खाली होने पर
   // Rich Result "invalid" मान लिया जाता है। इसलिए हमेशा एक भरोसेमंद
@@ -110,6 +120,42 @@ export default function SchemaMarkup({
       : `${title} - ${organization?.name || 'संबंधित सरकारी विभाग'} द्वारा जारी अधिसूचना। ${
           totalVacancies ? `कुल ${totalVacancies} पदों पर भर्ती। ` : ''
         }पूरी जानकारी, पात्रता, महत्वपूर्ण तिथियों और आवेदन प्रक्रिया के लिए Official Sarkari Patrika पर यह पोस्ट देखें।`
+
+  // 🌍 Job Location — अगर Editor ने Location भरी है तो असली State/City Google को
+  // दिखाएँगे, वरना सिर्फ़ Country-level (India) पर वापस चले जाएँगे। Google Jobs में
+  // बिना सही Location के Listing दिखने की संभावना बहुत कम हो जाती है।
+  const buildJobLocation = () => {
+    const trimmed = jobLocation?.trim()
+    const isAllIndia = !trimmed || /all india|पूरे भारत|भारत भर/i.test(trimmed)
+    return {
+      '@type': 'Place',
+      address: {
+        '@type': 'PostalAddress',
+        addressCountry: 'IN',
+        ...(!isAllIndia && { addressRegion: trimmed }),
+      },
+    }
+  }
+
+  // 💰 Salary — अगर Editor ने न्यूनतम/अधिकतम राशि भरी है तो सही Structured Data
+  // (baseSalary) भेजा जाएगा। सिर्फ़ Text (जैसे "Pay Level 4") भरने पर वह पेज पर
+  // दिखेगा, पर तब Structured Data में नहीं जाएगा क्योंकि Google को इसके लिए ठोस
+  // संख्या चाहिए, सिर्फ़ टेक्स्ट काफ़ी नहीं है।
+  const buildBaseSalary = () => {
+    if (!salary?.minAmount && !salary?.maxAmount) return null
+    return {
+      '@type': 'MonetaryAmount',
+      currency: 'INR',
+      value: {
+        '@type': 'QuantitativeValue',
+        ...(salary.minAmount && { minValue: salary.minAmount }),
+        ...(salary.maxAmount && { maxValue: salary.maxAmount }),
+        unitText: 'MONTH',
+      },
+    }
+  }
+
+  const baseSalary = buildBaseSalary()
 
   const mainSchema =
     status === 'job'
@@ -127,10 +173,8 @@ export default function SchemaMarkup({
             name: organization?.name || 'Government of India',
             sameAs: organization?.website,
           },
-          jobLocation: {
-            '@type': 'Place',
-            address: { '@type': 'PostalAddress', addressCountry: 'IN' },
-          },
+          jobLocation: buildJobLocation(),
+          ...(baseSalary && { baseSalary }),
         }
       : {
           '@context': 'https://schema.org',
