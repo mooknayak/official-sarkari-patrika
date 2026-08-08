@@ -12,7 +12,19 @@ export const SITE_SETTINGS_QUERY = groq`
   adsensePublisherId,
   googleNewsPublicationName,
   enableNewsSitemap,
-  socialLinks
+  socialLinks,
+  postBottomBanner {
+    "imageUrl": image.asset->url,
+    link,
+    altText
+  },
+  discoverMorePanels,
+  teamMembers[] {
+    name,
+    role,
+    bio,
+    "photoUrl": photo.asset->url
+  }
 }
 `
 
