@@ -338,6 +338,36 @@ export const jobPost = defineType({
       hidden: ({ document }) => document?.status !== 'job',
     }),
 
+    // 🆕 Google Jobs (और Search Result) में सही तरीके से दिखने के लिए यह 2 फ़ील्ड
+    // बहुत ज़रूरी मानी जाती हैं - बिना Location के कई बार Job Listing Google Jobs
+    // में दिखती ही नहीं, और Salary भरने से Listing ज़्यादा भरोसेमंद लगती है।
+    defineField({
+      name: 'jobLocation',
+      title: '🌍 Job Location (Google Jobs के लिए ज़रूरी)',
+      type: 'string',
+      group: 'details',
+      description:
+        'उदाहरण: "All India / पूरे भारत में", "Uttar Pradesh", "Delhi", "Bihar" - जहाँ यह भर्ती/पद लागू होता है',
+      hidden: ({ document }) => document?.status !== 'job',
+    }),
+    defineField({
+      name: 'salary',
+      title: '💰 Salary / Pay Scale (Google Jobs के लिए अनुशंसित)',
+      type: 'object',
+      group: 'details',
+      fields: [
+        { name: 'minAmount', type: 'number', title: 'न्यूनतम राशि (₹ प्रति माह)' },
+        { name: 'maxAmount', type: 'number', title: 'अधिकतम राशि (₹ प्रति माह)' },
+        {
+          name: 'payScaleText',
+          type: 'string',
+          title: 'Pay Scale (दिखाने के लिए टेक्स्ट)',
+          description: 'उदाहरण: "Pay Level 4 (₹25,500 - ₹81,100)" - यह पेज पर वैसे ही दिखेगा',
+        },
+      ],
+      hidden: ({ document }) => document?.status !== 'job',
+    }),
+
     defineField({
       name: 'admitCardInfo',
       title: 'Admit Card Info',
