@@ -108,6 +108,8 @@ export const SINGLE_POST_QUERY = groq`
   vacancyDetails,
   categoryWiseVacancy,
   applicationFee,
+  jobLocation,
+  salary,
   admitCardInfo,
   resultInfo,
   importantLinks,
