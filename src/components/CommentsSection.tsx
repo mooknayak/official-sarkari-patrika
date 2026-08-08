@@ -1,35 +1,23 @@
-// 🆕 नई फ़ाइल — इसे इसी पाथ पर बनाएं: src/components/CommentsSection.tsx
-//
-// पोस्ट पेज के नीचे यह दिखेगा - विज़िटर यहाँ Comment कर सकते हैं, और यह
-// Real-time अपडेट होता है (किसी और का Comment आते ही, बिना Refresh किए दिखेगा)।
-// डेटा Sanity में नहीं, बल्कि Firebase Firestore में Store होता है।
+// ✏️ एडिट फ़ाइल — अब यह Firebase Firestore नहीं, बल्कि Sanity (हमारे /api/comments
+// रूट के ज़रिए) इस्तेमाल करता है। पूरी Real-time जैसी Firestore listener की जगह
+// यह हर 8 सेकंड में हल्के से नए Comments चेक करता रहता है — बिना किसी Extra
+// Service के, Sanity के अंदर ही सब कुछ रहता है।
 
 'use client'
 
-import { useEffect, useState } from 'react'
-import {
-  collection,
-  query,
-  where,
-  orderBy,
-  onSnapshot,
-  addDoc,
-  serverTimestamp,
-  Timestamp,
-} from 'firebase/firestore'
-import { getFirestoreDb } from '@/lib/firebaseClientDb'
+import { useEffect, useRef, useState } from 'react'
 
 type CommentDoc = {
-  id: string
+  _id: string
   name?: string
   message: string
-  createdAt?: Timestamp
-  reply?: { message: string; repliedAt?: Timestamp } | null
+  createdAt?: string
+  reply?: { message: string; repliedAt?: string } | null
 }
 
-function formatTime(ts?: Timestamp) {
-  if (!ts) return ''
-  return ts.toDate().toLocaleString('hi-IN', { dateStyle: 'medium', timeStyle: 'short' })
+function formatTime(iso?: string) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleString('hi-IN', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
 export default function CommentsSection({
@@ -46,75 +34,55 @@ export default function CommentsSection({
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState('')
   const [loadError, setLoadError] = useState('')
-  const [dbReady, setDbReady] = useState(false)
+  const pollRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  const fetchComments = async (showLoading = false) => {
+    if (showLoading) setLoading(true)
+    try {
+      const res = await fetch(`/api/comments?slug=${encodeURIComponent(postSlug)}`)
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Comments लोड नहीं हो पाए')
+      setComments(data.comments || [])
+      setLoadError('')
+    } catch (err) {
+      setLoadError((err as Error).message || 'Comments लोड नहीं हो पाए')
+    } finally {
+      setLoading(false)
+    }
+  }
 
   useEffect(() => {
-    const db = getFirestoreDb()
-    if (!db) {
-      setLoading(false)
-      return
+    fetchComments(true)
+    // हर 8 सेकंड में नए Comments/जवाब खुद-ब-खुद चेक होते रहेंगे
+    pollRef.current = setInterval(() => fetchComments(false), 8000)
+    return () => {
+      if (pollRef.current) clearInterval(pollRef.current)
     }
-    setDbReady(true)
-
-    const q = query(
-      collection(db, 'comments'),
-      where('postSlug', '==', postSlug),
-      orderBy('createdAt', 'desc')
-    )
-
-    // 🔴 Real-time Listener - जैसे ही Firestore में कोई नया Comment या Reply आता है,
-    // यह तुरंत यहाँ अपने-आप अपडेट हो जाता है, बिना Page Refresh किए
-    const unsubscribe = onSnapshot(
-      q,
-      (snapshot) => {
-        setComments(
-          snapshot.docs.map((d) => ({ id: d.id, ...(d.data() as Omit<CommentDoc, 'id'>) }))
-        )
-        setLoading(false)
-        setLoadError('')
-      },
-      (err) => {
-        // ⚠️ यहीं वह असली वजह दिखती है (जैसे "Missing or insufficient permissions" -
-        // मतलब Firestore Rules Publish नहीं हुई हैं)
-        console.error('[Comments] Firestore Error:', err.message)
-        setLoadError(err.message || 'Comments लोड नहीं हो पाए')
-        setLoading(false)
-      }
-    )
-
-    return () => unsubscribe()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [postSlug])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!message.trim()) return
 
-    const db = getFirestoreDb()
-    if (!db) {
-      setError('Comment System अभी उपलब्ध नहीं है')
-      return
-    }
-
     setSubmitting(true)
     setError('')
     try {
-      await addDoc(collection(db, 'comments'), {
-        postSlug,
-        postTitle,
-        name: name.trim() || 'अज्ञात',
-        message: message.trim().slice(0, 1000),
-        createdAt: serverTimestamp(),
-        reply: null,
+      const res = await fetch('/api/comments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ postSlug, postTitle, name, message }),
       })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.message || 'Comment भेजने में समस्या हुई')
       setMessage('')
+      fetchComments(false)
     } catch (err) {
       setError((err as Error).message || 'Comment भेजने में समस्या हुई')
     } finally {
       setSubmitting(false)
     }
   }
-
-  if (!dbReady && !loading) return null // Firebase सेट नहीं है तो यह Section दिखेगा ही नहीं
 
   return (
     <section className="mt-10 border-t border-blue-100 pt-6">
@@ -155,18 +123,13 @@ export default function CommentsSection({
         <div className="text-sm text-red-700 bg-red-50 border border-red-200 rounded-md p-3">
           <p className="font-semibold">⚠️ Comments लोड नहीं हो पाए</p>
           <p className="text-xs mt-1 break-words">{loadError}</p>
-          <p className="text-xs mt-2 text-red-500">
-            आमतौर पर यह तब होता है जब Firebase Console → Firestore Database → Rules में
-            "firestore.rules" वाला Content Publish न किया गया हो, या Firestore Database
-            बनाई ही न गई हो।
-          </p>
         </div>
       ) : comments.length === 0 ? (
         <p className="text-sm text-slate-400">अभी तक कोई Comment नहीं है - सबसे पहले आप करें!</p>
       ) : (
         <ul className="space-y-4">
           {comments.map((c) => (
-            <li key={c.id} className="border border-slate-100 rounded-lg p-3 bg-slate-50">
+            <li key={c._id} className="border border-slate-100 rounded-lg p-3 bg-slate-50">
               <div className="flex justify-between items-baseline">
                 <span className="font-semibold text-sm text-brand-blueDark">{c.name || 'अज्ञात'}</span>
                 <span className="text-[11px] text-slate-400">{formatTime(c.createdAt)}</span>
