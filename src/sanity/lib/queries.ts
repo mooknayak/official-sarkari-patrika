@@ -13,6 +13,7 @@ export const SITE_SETTINGS_QUERY = groq`
   googleNewsPublicationName,
   enableNewsSitemap,
   socialLinks,
+  footerLinks,
   postBottomBanner {
     "imageUrl": image.asset->url,
     link,
