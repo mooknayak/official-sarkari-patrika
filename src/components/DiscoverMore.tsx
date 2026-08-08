@@ -25,7 +25,8 @@ const DEFAULT_PANELS: Panel[] = [
   },
 ]
 
-export default function DiscoverMore({ panels = DEFAULT_PANELS }: { panels?: Panel[] }) {
+export default function DiscoverMore({ panels }: { panels?: Panel[] }) {
+  const activePanels = panels && panels.length > 0 ? panels : DEFAULT_PANELS
   const [openIndex, setOpenIndex] = useState<number | null>(null)
 
   return (
@@ -34,7 +35,7 @@ export default function DiscoverMore({ panels = DEFAULT_PANELS }: { panels?: Pan
         <h2 className="font-bold text-brand-blueDark text-sm">Discover more</h2>
       </div>
       <div className="divide-y divide-blue-50">
-        {panels.map((panel, idx) => (
+        {activePanels.map((panel, idx) => (
           <div key={idx}>
             <button
               onClick={() => setOpenIndex(openIndex === idx ? null : idx)}
