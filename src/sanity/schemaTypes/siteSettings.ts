@@ -19,6 +19,7 @@ export const siteSettings = defineType({
     { name: 'ads', title: '💰 AdSense' },
     { name: 'news', title: '📰 Google News / Discover' },
     { name: 'social', title: '🔗 Social Links' },
+    { name: 'footer', title: '📄 Footer Links (Privacy, Terms, About वगैरह)' },
     { name: 'engagement', title: '📌 Post के नीचे Banner / Discover More' },
   ],
   fields: [
@@ -120,6 +121,39 @@ export const siteSettings = defineType({
       ],
       description:
         'यह सब Organization Schema के "sameAs" में जाएँगे — Google को साइट की पहचान (Knowledge Panel) बनाने में मदद करता है।',
+    }),
+
+    // ---------- 🆕 Footer के सारे Links (Privacy, Terms, About, Contact वगैरह) ----------
+    defineField({
+      name: 'footerLinks',
+      title: '📄 Footer में दिखने वाले सभी Links',
+      type: 'array',
+      group: 'footer',
+      description:
+        'Website के सबसे नीचे (Footer) में जो भी Links दिखते हैं (Privacy Policy, Terms, Disclaimer, About Us, Contact Us वगैरह) - सब यहीं से Add/Edit/Delete/Reorder कर सकते हैं। कोई दिक्कत हो तो यहीं से ठीक करके Publish कर दें, कोई Code बदलने की ज़रूरत नहीं। क्रम वैसा ही रहेगा जैसा नीचे लिस्ट में है (ऊपर-नीचे खींचकर क्रम बदल सकते हैं)।',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', type: 'string', title: 'Link का नाम (जो दिखेगा)', validation: (Rule: any) => Rule.required() },
+            {
+              name: 'href',
+              type: 'string',
+              title: 'Link कहाँ जाए',
+              description: 'साइट के अंदर के पेज के लिए: /privacy-policy जैसा लिखें। बाहर के लिंक के लिए पूरा URL लिखें: https://...',
+              validation: (Rule: any) => Rule.required(),
+            },
+          ],
+          preview: { select: { title: 'title', subtitle: 'href' } },
+        },
+      ],
+      initialValue: [
+        { title: 'Privacy Policy', href: '/privacy-policy' },
+        { title: 'Terms & Conditions', href: '/terms-and-conditions' },
+        { title: 'Disclaimer', href: '/disclaimer' },
+        { title: 'About Us', href: '/about-us' },
+        { title: 'Contact Us', href: '/contact-us' },
+      ],
     }),
 
     // ---------- 🆕 Post के नीचे Banner (वैकल्पिक) ----------
