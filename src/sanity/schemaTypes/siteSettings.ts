@@ -19,6 +19,7 @@ export const siteSettings = defineType({
     { name: 'ads', title: '💰 AdSense' },
     { name: 'news', title: '📰 Google News / Discover' },
     { name: 'social', title: '🔗 Social Links' },
+    { name: 'engagement', title: '📌 Post के नीचे Banner / Discover More' },
   ],
   fields: [
     // ---------- Branding / Photos ----------
@@ -119,6 +120,83 @@ export const siteSettings = defineType({
       ],
       description:
         'यह सब Organization Schema के "sameAs" में जाएँगे — Google को साइट की पहचान (Knowledge Panel) बनाने में मदद करता है।',
+    }),
+
+    // ---------- 🆕 Post के नीचे Banner (वैकल्पिक) ----------
+    defineField({
+      name: 'postBottomBanner',
+      title: '🖼️ हर Post के नीचे दिखने वाला Banner (वैकल्पिक)',
+      type: 'object',
+      group: 'engagement',
+      description:
+        'जब चाहें तब यहाँ कोई भी Banner/Logo/Ad Photo अपलोड कर दें - जैसे AdSense अप्रूवल के बाद कोई Ad Banner, या किसी की Sponsorship/प्रचार की फ़ोटो। खाली रहने पर पेज पर कुछ नहीं दिखेगा, कोई नुकसान नहीं - जब मन करे तभी लगाएँ या हटाएँ।',
+      fields: [
+        {
+          name: 'image',
+          type: 'image',
+          title: 'Banner Photo',
+          options: { hotspot: true },
+        },
+        {
+          name: 'link',
+          type: 'url',
+          title: 'Banner पर Click होने पर कहाँ जाए (वैकल्पिक)',
+          description: 'खाली छोड़ने पर Banner सिर्फ़ दिखेगा, Click करने योग्य नहीं होगा।',
+        },
+        {
+          name: 'altText',
+          type: 'string',
+          title: 'Alt Text (फ़ोटो में क्या है, संक्षेप में)',
+        },
+      ],
+    }),
+
+    // ---------- 🆕 Discover More (हर Post में, आपकी अपनी लिखी Guidelines) ----------
+    defineField({
+      name: 'discoverMorePanels',
+      title: '🔎 Discover More Section (हर Post के नीचे दिखेगा)',
+      type: 'array',
+      group: 'engagement',
+      description:
+        'यहाँ अपनी मर्ज़ी से Title + Content के Panel जोड़ें (जितने चाहें उतने) - यह हर Post के नीचे "Discover More" के नाम से दिखेंगे। खाली छोड़ने पर पहले जैसा Default Content दिख जाएगा, कोई नुकसान नहीं।',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', type: 'string', title: 'Panel Title', validation: (Rule: any) => Rule.required() },
+            { name: 'content', type: 'text', title: 'Panel Content (Guidelines)', validation: (Rule: any) => Rule.required() },
+          ],
+          preview: { select: { title: 'title', subtitle: 'content' } },
+        },
+      ],
+    }),
+
+    // 🆕 Team / Masthead (Founder, Editorial, Legal)
+    defineField({
+      name: 'teamMembers',
+      title: '👥 हमारी टीम (Founder, Editorial, Legal वगैरह)',
+      type: 'array',
+      group: 'engagement',
+      description:
+        'यहाँ Founder, Editor-in-Chief, Legal Advisor जैसे लोगों के नाम जोड़ें - यह "About Us" पेज पर एक Team सेक्शन के तौर पर दिखेगा। Google इसे साइट की विश्वसनीयता (E-E-A-T) परखने के लिए देखता है, और AdSense व Google News Approval में भी मदद करता है।',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'name', type: 'string', title: 'नाम', validation: (Rule: any) => Rule.required() },
+            {
+              name: 'role',
+              type: 'string',
+              title: 'पद (Role)',
+              description: 'उदाहरण: Founder & Editor-in-Chief, Legal Advisor, Content Editor',
+              validation: (Rule: any) => Rule.required(),
+            },
+            { name: 'photo', type: 'image', title: 'फ़ोटो (वैकल्पिक)', options: { hotspot: true } },
+            { name: 'bio', type: 'text', title: 'संक्षिप्त परिचय (वैकल्पिक)' },
+          ],
+          preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
+        },
+      ],
     }),
   ],
   preview: {
