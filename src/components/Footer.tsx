@@ -1,9 +1,13 @@
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/Footer.tsx
+// 🆕 अब Footer के सभी Links Sanity (Website Settings → "📄 Footer Links") से
+// आते हैं - Add/Edit/Delete/Reorder सब वहीं से हो सकता है, Code बदलने की ज़रूरत
+// नहीं। अगर Sanity में कभी कुछ Link न मिले (जैसे पहली बार Save न हुआ हो), तो यह
+// नीचे वाला Default इस्तेमाल होगा, ताकि Footer कभी खाली न दिखे।
 import Link from 'next/link'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
-const LEGAL_LINKS = [
+const DEFAULT_FOOTER_LINKS = [
   { title: 'Privacy Policy', href: '/privacy-policy' },
   { title: 'Terms & Conditions', href: '/terms-and-conditions' },
   { title: 'Disclaimer', href: '/disclaimer' },
@@ -23,6 +27,8 @@ export default async function Footer() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
   const socialLinks: Record<string, string> = settings?.socialLinks || {}
   const activeSocial = Object.entries(socialLinks).filter(([, url]) => Boolean(url))
+  const footerLinks: { title: string; href: string }[] =
+    settings?.footerLinks && settings.footerLinks.length > 0 ? settings.footerLinks : DEFAULT_FOOTER_LINKS
 
   return (
     <footer className="bg-brand-blueDark text-blue-100 mt-12">
@@ -48,11 +54,23 @@ export default async function Footer() {
         )}
 
         <nav className="flex flex-wrap justify-center gap-4 text-sm mb-4">
-          {LEGAL_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className="hover:text-brand-pinkAccent transition">
-              {link.title}
-            </Link>
-          ))}
+          {footerLinks.map((link) =>
+            link.href?.startsWith('http') ? (
+              <a
+                key={link.href}
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-brand-pinkAccent transition"
+              >
+                {link.title}
+              </a>
+            ) : (
+              <Link key={link.href} href={link.href} className="hover:text-brand-pinkAccent transition">
+                {link.title}
+              </Link>
+            )
+          )}
         </nav>
 
         <p className="text-center text-xs text-blue-200">
