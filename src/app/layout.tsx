@@ -34,6 +34,19 @@ export async function generateMetadata(): Promise<Metadata> {
         'application/rss+xml': [{ url: '/rss.xml', title: 'Official Sarkari Patrika RSS Feed' }],
       },
     },
+    // 🆕 पूरी साइट के लिए Default Open Graph/Twitter Image - Homepage, Category
+    // पेज, या कोई भी पेज जहाँ अपनी खुद की Metadata सेट नहीं है, उसे शेयर करने पर
+    // अब हमेशा यह Branded Thumbnail दिखेगा (WhatsApp, Facebook, Telegram वगैरह में)
+    openGraph: {
+      siteName: settings?.publisherName || 'Official Sarkari Patrika',
+      locale: 'hi_IN',
+      type: 'website',
+      images: [{ url: '/og-default.png', width: 1200, height: 630, alt: settings?.publisherName || 'Official Sarkari Patrika' }],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      images: ['/og-default.png'],
+    },
     // Website Settings में अपलोड किया Favicon/Logo - Search Result और Browser Tab दोनों में दिखेगा
     ...(faviconUrl && {
       icons: {
