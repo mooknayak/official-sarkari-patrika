@@ -123,6 +123,12 @@ export const SINGLE_POST_QUERY = groq`
   applicationFee,
   jobLocation,
   salary,
+  postBanner {
+    "imageUrl": image.asset->url,
+    link,
+    altText
+  },
+  discoverMorePanels,
   admitCardInfo,
   resultInfo,
   importantLinks,
