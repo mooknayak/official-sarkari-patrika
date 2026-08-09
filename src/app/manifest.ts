@@ -20,7 +20,10 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
         { src: `${iconSource}?w=192&h=192&fit=max&auto=format`, sizes: '192x192', type: 'image/png', purpose: 'maskable' as const },
         { src: `${iconSource}?w=512&h=512&fit=max&auto=format`, sizes: '512x512', type: 'image/png', purpose: 'maskable' as const },
       ]
-    : []
+    // 🆕 Sanity में अभी तक कोई Favicon अपलोड नहीं हुआ - तब तक कोड में मौजूद Default
+    // Icon (src/app/icon.svg) ही "Add to Home Screen" के लिए इस्तेमाल होगा, ताकि
+    // कभी भी खाली/टूटा हुआ Icon न दिखे
+    : [{ src: '/icon.svg', sizes: 'any', type: 'image/svg+xml', purpose: 'any' as const }]
 
   return {
     name: settings?.publisherName
