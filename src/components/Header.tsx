@@ -23,8 +23,8 @@ export default async function Header() {
     <header className="sticky top-0 z-50 shadow-md">
       {/* Hero बैंड - Logo और नाम अब बाईं तरफ़, एक साथ (Sarkari Result जैसा) */}
       <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white py-4 px-4">
-        <div className="max-w-5xl mx-auto flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+        <div className="max-w-5xl mx-auto flex items-center justify-center gap-3">
+          <Link href="/" className="flex items-center gap-3">
             {iconUrl ? (
               <Image
                 src={`${iconUrl}?w=140&h=140&fit=max&auto=format`}
