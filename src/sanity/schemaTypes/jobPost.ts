@@ -424,6 +424,43 @@ export const jobPost = defineType({
       hidden: ({ document }) => document?.status !== 'job',
     }),
 
+    // 🆕 इसी Post के नीचे दिखने वाला अपना Banner (Website Settings वाले Global
+    // Banner से अलग है - यह सिर्फ़ इसी एक Post पर लागू होगा, बाकी सब पर नहीं)
+    defineField({
+      name: 'postBanner',
+      title: '🖼️ सिर्फ़ इस Post का अपना Banner (वैकल्पिक)',
+      type: 'object',
+      group: 'details',
+      description:
+        'यहाँ Banner डालेंगे तो वह सिर्फ़ इसी Post के नीचे दिखेगा (Website Settings वाला Common Banner नहीं दिखेगा)। खाली छोड़ने पर Website Settings वाला Common Banner (अगर लगा है) दिखता रहेगा।',
+      fields: [
+        { name: 'image', type: 'image', title: 'Banner Photo', options: { hotspot: true } },
+        { name: 'link', type: 'url', title: 'Banner पर Click होने पर कहाँ जाए (वैकल्पिक)' },
+        { name: 'altText', type: 'string', title: 'Alt Text (वैकल्पिक)' },
+      ],
+    }),
+
+    // 🆕 इसी Post के नीचे "Discover More" - Website Settings वाले Global Discover
+    // More (जो Homepage पर दिखता है) से बिल्कुल अलग और स्वतंत्र
+    defineField({
+      name: 'discoverMorePanels',
+      title: '🔎 सिर्फ़ इस Post का अपना Discover More (वैकल्पिक)',
+      type: 'array',
+      group: 'details',
+      description:
+        'यहाँ Panel जोड़ेंगे तो वह सिर्फ़ इसी Post के नीचे दिखेंगे। यह Website Settings वाले Discover More (जो सिर्फ़ Homepage पर दिखता है) से अलग है - दोनों एक-दूसरे को प्रभावित नहीं करते।',
+      of: [
+        {
+          type: 'object',
+          fields: [
+            { name: 'title', type: 'string', title: 'Panel Title', validation: (Rule: any) => Rule.required() },
+            { name: 'content', type: 'text', title: 'Panel Content', validation: (Rule: any) => Rule.required() },
+          ],
+          preview: { select: { title: 'title', subtitle: 'content' } },
+        },
+      ],
+    }),
+
     defineField({
       name: 'admitCardInfo',
       title: 'Admit Card Info',
