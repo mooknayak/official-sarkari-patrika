@@ -252,15 +252,17 @@ export default async function JobPostPage({ params }: Props) {
 
       <CommentsSection postSlug={post.slug} postTitle={post.title} />
 
-      {/* 🆕 Post के नीचे वैकल्पिक Banner - खाली होने पर कुछ नहीं दिखेगा */}
+      {/* 🆕 Post के नीचे Banner — पहले इसी Post का अपना Banner चेक करता है, अगर वह
+          खाली है तो Website Settings वाला Common (Global) Banner दिखाता है */}
       <PostBottomBanner
-        imageUrl={siteSettings?.postBottomBanner?.imageUrl}
-        link={siteSettings?.postBottomBanner?.link}
-        altText={siteSettings?.postBottomBanner?.altText}
+        imageUrl={post.postBanner?.imageUrl || siteSettings?.postBottomBanner?.imageUrl}
+        link={post.postBanner?.imageUrl ? post.postBanner?.link : siteSettings?.postBottomBanner?.link}
+        altText={post.postBanner?.imageUrl ? post.postBanner?.altText : siteSettings?.postBottomBanner?.altText}
       />
 
-      {/* 🆕 Discover More - अब हर Post में, आपकी अपनी लिखी Guidelines के साथ */}
-      <DiscoverMore panels={siteSettings?.discoverMorePanels} />
+      {/* 🆕 Discover More — यह पूरी तरह इसी Post का अपना है (Website Settings वाले
+          Discover More से बिल्कुल अलग, जो सिर्फ़ Homepage पर दिखता है) */}
+      <DiscoverMore panels={post.discoverMorePanels} />
     </article>
   )
 }
