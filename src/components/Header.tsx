@@ -17,31 +17,38 @@ const NAV_ITEMS = [
 
 export default async function Header() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
-  const logoUrl = settings?.siteLogoUrl
+  const iconUrl = settings?.faviconUrl || settings?.siteLogoUrl
 
   return (
     <header className="sticky top-0 z-50 shadow-md">
-      {/* बड़ा Hero बैंड - नाम व डोमेन */}
-      <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white text-center py-6 px-4">
-        <Link href="/" className="inline-flex flex-col items-center">
-          {logoUrl ? (
-            <Image
-              src={`${logoUrl}?w=600&h=140&fit=max&auto=format`}
-              alt={settings?.publisherName || 'Official Sarkari Patrika'}
-              width={220}
-              height={52}
-              priority
-              className="h-12 md:h-14 w-auto object-contain mb-1"
-            />
-          ) : (
-            <h1 className="text-2xl md:text-4xl font-extrabold tracking-wide">
-              Official <span className="text-brand-pink">Sarkari</span> Patrika
-            </h1>
-          )}
-        </Link>
-        <p className="text-xs md:text-sm text-blue-100 mt-1 tracking-widest uppercase">
-          officialsarkaripatrika.com
-        </p>
+      {/* Hero बैंड - Logo और नाम अब बाईं तरफ़, एक साथ (Sarkari Result जैसा) */}
+      <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white py-4 px-4">
+        <div className="max-w-5xl mx-auto flex items-center gap-3">
+          <Link href="/" className="flex items-center gap-3 flex-shrink-0">
+            {iconUrl ? (
+              <Image
+                src={`${iconUrl}?w=140&h=140&fit=max&auto=format`}
+                alt={settings?.publisherName || 'Official Sarkari Patrika'}
+                width={64}
+                height={64}
+                priority
+                className="h-12 w-12 md:h-16 md:w-16 rounded-full object-contain bg-white p-1 flex-shrink-0"
+              />
+            ) : (
+              <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                <span className="text-brand-blue font-extrabold text-sm md:text-lg">OSP</span>
+              </div>
+            )}
+            <div>
+              <h1 className="text-lg md:text-3xl font-extrabold tracking-wide leading-tight">
+                Official <span className="text-brand-pink">Sarkari</span> Patrika
+              </h1>
+              <p className="text-[10px] md:text-sm text-blue-100 tracking-widest uppercase">
+                officialsarkaripatrika.com
+              </p>
+            </div>
+          </Link>
+        </div>
       </div>
 
       {/* Menu Bar - Nav एक तरफ, Search दूसरी तरफ */}
