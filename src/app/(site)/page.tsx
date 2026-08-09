@@ -1,5 +1,5 @@
 import { client } from '@/sanity/lib/client'
-import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TRENDING_POSTS_QUERY } from '@/sanity/lib/queries'
+import { HOMEPAGE_LATEST_QUERY, CATEGORY_LISTING_QUERY, STATUS_LISTING_QUERY, TRENDING_POSTS_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
 import TrendingBoxes from '@/components/TrendingBoxes'
@@ -39,10 +39,11 @@ async function getBoxData() {
 }
 
 export default async function HomePage() {
-  const [posts, boxes, trendingPosts]: [Post[], any[], any[]] = await Promise.all([
+  const [posts, boxes, trendingPosts, siteSettings]: [Post[], any[], any[], any] = await Promise.all([
     client.fetch(HOMEPAGE_LATEST_QUERY),
     getBoxData(),
     client.fetch(TRENDING_POSTS_QUERY),
+    client.fetch(SITE_SETTINGS_QUERY).catch(() => null),
   ])
 
   return (
@@ -57,7 +58,9 @@ export default async function HomePage() {
         </p>
       </div>
 
-      <DiscoverMore />
+      {/* 🆕 यह Website Settings वाला Discover More है - सिर्फ़ Homepage (Header
+          Section) पर दिखता है, Post वाले Discover More से बिल्कुल अलग */}
+      <DiscoverMore panels={siteSettings?.discoverMorePanels} />
 
       <TrendingBoxes posts={trendingPosts} />
 
