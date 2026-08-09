@@ -66,13 +66,27 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : { index: true, follow: true },
     openGraph: {
       title: post.title,
+      description: post.seo?.metaDescription,
+      url: `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}/${params.slug}`,
+      siteName: 'Official Sarkari Patrika',
+      locale: 'hi_IN',
       type: 'article',
       publishedTime: post.publishedAt,
       modifiedTime: post.updatedAt,
-      // पोस्ट में अपलोड की गई असली फ़ोटो हो तो वही दिखेगी, वरना पहले जैसा auto-generated बैनर
-      ...(post.featuredImageUrl && {
-        images: [{ url: post.featuredImageUrl, width: 1200, height: 675, alt: post.featuredImageAlt || post.title }],
-      }),
+      // 🆕 पोस्ट में अपलोड की गई असली फ़ोटो हो तो वही दिखेगी, वरना अब कभी भी
+      // खाली/बिना-Thumbnail Preview नहीं जाएगा - Default OSP Banner हमेशा दिखेगा
+      // (WhatsApp, Facebook, Telegram जहाँ भी Link शेयर करें)
+      images: [
+        post.featuredImageUrl
+          ? { url: post.featuredImageUrl, width: 1200, height: 675, alt: post.featuredImageAlt || post.title }
+          : { url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.png`, width: 1200, height: 630, alt: 'Official Sarkari Patrika' },
+      ],
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: post.title,
+      description: post.seo?.metaDescription,
+      images: [post.featuredImageUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.png`],
     },
   }
 }
