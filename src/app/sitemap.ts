@@ -1,5 +1,10 @@
 import { client } from '@/sanity/lib/client'
 
+// 🆕 Safety-Net: भले ही हर नई Post पर Revalidate Webhook अब Sitemap को Refresh
+// करे, फिर भी अगर कभी कोई Webhook Fail हो जाए, तो यह Sitemap खुद-ब-खुद हर 1 घंटे
+// में ताज़ा हो जाएगी - ताकि कोई भी नई Post कभी 1 घंटे से ज़्यादा Sitemap से बाहर न रहे।
+export const revalidate = 3600
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://officialsarkaripatrika.com'
 
 export default async function sitemap() {
