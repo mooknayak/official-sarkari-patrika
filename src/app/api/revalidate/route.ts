@@ -29,6 +29,11 @@ export async function POST(req: NextRequest) {
     revalidatePath(`/${body.category}/${body.slug}`)
     revalidatePath(`/${body.category}`)
     revalidatePath('/')
+    // 🐛 FIX: पहले यहाँ Sitemap कभी Refresh नहीं होता था - इसलिए Google को Sitemap
+    // के ज़रिए नई Post का कभी पता ही नहीं चलता था (भले ही Indexing API अलग से
+    // "Success" बता रही हो)। अब हर नई/अपडेट हुई Post पर Sitemap भी साथ में Refresh होगी।
+    revalidatePath('/sitemap.xml')
+    revalidatePath('/news-sitemap.xml')
 
     const postUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/${body.category}/${body.slug}`
 
