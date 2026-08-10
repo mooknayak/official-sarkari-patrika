@@ -76,9 +76,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       // 🆕 पोस्ट में अपलोड की गई असली फ़ोटो हो तो वही दिखेगी, वरना अब कभी भी
       // खाली/बिना-Thumbnail Preview नहीं जाएगा - Default OSP Banner हमेशा दिखेगा
       // (WhatsApp, Facebook, Telegram जहाँ भी Link शेयर करें)
+      //
+      // 🐛 FIX: पहले यहाँ सिर्फ Original (बिना-Resize/बिना-Compress) फ़ोटो का Link जाता
+      // था, जो अक्सर बहुत बड़ी (कई MB की PNG) होती थी। WhatsApp खुद की सख़्त Size-Limit
+      // की वजह से ऐसी भारी फ़ोटो को Preview में दिखाने से मना कर देता था (Facebook/
+      // Telegram ज़्यादा Flexible हैं, इसलिए वहाँ चलती थी)। अब इसे हमेशा छोटे, दबे हुए
+      // (Compressed) JPEG के तौर पर भेजते हैं - सभी जगह भरोसे के साथ चलेगा।
       images: [
         post.featuredImageUrl
-          ? { url: post.featuredImageUrl, width: 1200, height: 675, alt: post.featuredImageAlt || post.title }
+          ? {
+              url: `${post.featuredImageUrl}?w=1200&h=675&fit=max&fm=jpg&q=70`,
+              width: 1200,
+              height: 675,
+              alt: post.featuredImageAlt || post.title,
+            }
           : { url: `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.png`, width: 1200, height: 630, alt: 'Official Sarkari Patrika' },
       ],
     },
@@ -86,7 +97,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: 'summary_large_image',
       title: post.title,
       description: post.seo?.metaDescription,
-      images: [post.featuredImageUrl || `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.png`],
+      images: [
+        post.featuredImageUrl
+          ? `${post.featuredImageUrl}?w=1200&h=675&fit=max&fm=jpg&q=70`
+          : `${process.env.NEXT_PUBLIC_SITE_URL}/og-default.png`,
+      ],
     },
   }
 }
