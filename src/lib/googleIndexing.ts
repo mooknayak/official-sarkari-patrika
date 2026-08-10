@@ -18,8 +18,10 @@ function loadCredentials(): { clientEmail?: string; privateKey?: string; source:
       console.error('[GoogleIndexing] base64 decode विफल:', (e as Error).message)
     }
   }
+
   const clientEmail = process.env.GOOGLE_INDEXING_CLIENT_EMAIL
-  const privateKey = process.env.GOOGLE_INDEXING_PRIVATE_KEY?.replace(/\\n/g, '\n')
+  const rawKey = process.env.GOOGLE_INDEXING_PRIVATE_KEY
+  const privateKey = rawKey?.includes('\\n') ? rawKey.replace(/\\n/g, '\n') : rawKey
   return { clientEmail, privateKey, source: 'separate-vars' }
 }
 
@@ -32,6 +34,7 @@ async function getAccessToken(clientEmail: string, privateKeyPem: string): Promi
   const jwt = await new SignJWT({ scope: 'https://www.googleapis.com/auth/indexing' })
     .setProtectedHeader({ alg: 'RS256', typ: 'JWT' })
     .setIssuer(clientEmail)
+    .setSubject(clientEmail)
     .setAudience(TOKEN_URL)
     .setIssuedAt(now)
     .setExpirationTime(now + 3600)
