@@ -4,6 +4,12 @@
 import { client } from '@/sanity/lib/client'
 import { NEWS_SITEMAP_QUERY, SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
+// 🆕 Google News को हर 48 घंटे के अंदर की Post दिखानी होती है, इसलिए इसे बहुत बार-बार
+// ताज़ा (Refresh) होना चाहिए - सिर्फ़ Deploy के समय एक बार बनकर रह जाना यहाँ सबसे ज़्यादा
+// नुकसानदेह होता। हर 5 मिनट में खुद-ब-खुद Refresh होगी, revalidate Webhook अलग से भी
+// इसे तुरंत Refresh करेगा।
+export const revalidate = 300
+
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://officialsarkaripatrika.com'
 
 function escapeXml(value: unknown) {
