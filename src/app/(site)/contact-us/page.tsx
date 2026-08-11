@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import ContactForm from '@/components/ContactForm'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Contact Us',
   description: 'Get in touch with Official Sarkari Patrika',
