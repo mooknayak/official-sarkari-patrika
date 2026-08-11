@@ -4,6 +4,12 @@ import Script from 'next/script'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
+
+// 🐛 FIX: Root Layout में Revalidate न होने से कुछ Static Page (Privacy, Terms,
+// Disclaimer वगैरह) पर Header/Footer का Logo, Favicon, Social Links जैसा Sanity
+// डेटा बहुत पुराना (सिर्फ़ आख़िरी Deploy के समय का) दिख सकता था। अब यह हर 1 घंटे
+// में खुद ताज़ा होगा - यह सभी Pages के लिए एक बुनियादी Safety-Net है।
+export const revalidate = 3600
 import './globals.css'
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://officialsarkaripatrika.com'
