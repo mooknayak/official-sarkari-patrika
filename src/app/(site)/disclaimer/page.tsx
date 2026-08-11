@@ -4,6 +4,8 @@
 // नज़र आता है और भरोसा बनाता है। "Last updated" अब असली आज की तारीख दिखाएगा।
 import type { Metadata } from 'next'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Disclaimer',
   description: 'Disclaimer and Data Privacy Commitment of Official Sarkari Patrika',
