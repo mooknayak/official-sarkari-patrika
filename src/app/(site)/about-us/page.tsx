@@ -7,6 +7,11 @@ import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
+// 🐛 FIX: पहले यह पेज हमेशा के लिए Static रहता था (सिर्फ़ Deploy के समय बनता था) -
+// इसलिए Sanity में Team Members बदलने पर भी यह पेज नए Deploy तक पुराना ही दिखता
+// रहता। अब हर 1 घंटे में खुद ताज़ा हो जाएगा।
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'About Us',
   description: 'About Official Sarkari Patrika — our mission and commitment',
