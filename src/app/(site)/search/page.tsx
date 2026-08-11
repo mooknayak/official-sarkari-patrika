@@ -3,6 +3,8 @@ import { SEARCH_QUERY } from '@/sanity/lib/queries'
 import ExpandableGrid from '@/components/ExpandableGrid'
 import type { Metadata } from 'next'
 
+export const revalidate = 3600
+
 type Props = {
   searchParams: { q?: string }
 }
