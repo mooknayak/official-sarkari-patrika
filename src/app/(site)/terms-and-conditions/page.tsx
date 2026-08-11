@@ -4,6 +4,8 @@
 // आज की तारीख अपने-आप दिखाएगा।
 import type { Metadata } from 'next'
 
+export const revalidate = 3600
+
 export const metadata: Metadata = {
   title: 'Terms & Conditions',
   description: 'Terms & Conditions of Official Sarkari Patrika',
