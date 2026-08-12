@@ -149,6 +149,9 @@ export default async function JobPostPage({ params }: Props) {
         description={bestDescription}
         imageUrl={post.featuredImageUrl}
         jobLocation={post.jobLocation}
+        jobCity={post.jobCity}
+        jobPostalCode={post.jobPostalCode}
+        jobStreetAddress={post.jobStreetAddress}
         salary={post.salary}
         publisherName={siteSettings?.publisherName}
         publisherLogoUrl={siteSettings?.faviconUrl || siteSettings?.siteLogoUrl}
