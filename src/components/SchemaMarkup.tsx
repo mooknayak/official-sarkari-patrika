@@ -40,6 +40,8 @@ type SchemaProps = {
   imageUrl?: string
   jobLocation?: string
   salary?: SalaryType
+  publisherName?: string
+  publisherLogoUrl?: string
 }
 
 function formatDate(dateStr?: string) {
@@ -110,6 +112,8 @@ export default function SchemaMarkup({
   imageUrl,
   jobLocation,
   salary,
+  publisherName,
+  publisherLogoUrl,
 }: SchemaProps) {
   // Google को हर JobPosting में "description" अनिवार्य चाहिए - खाली होने पर
   // Rich Result "invalid" मान लिया जाता है। इसलिए हमेशा एक भरोसेमंद
@@ -157,6 +161,23 @@ export default function SchemaMarkup({
 
   const baseSalary = buildBaseSalary()
 
+  // 📰 Admit Card, Answer Key, Result, Final Selection — यह सभी असल में
+  // "समय-संवेदनशील सूचना" (Time-Sensitive News) होती हैं, बिल्कुल वैसी ही जैसी
+  // Google News में दिखती हैं। पहले यह सब एक साधारण "Article" के तौर पर भेजी
+  // जाती थीं - अब इन्हें खास "NewsArticle" Schema मिलेगी, जो हमारे पहले से बने
+  // Google News Sitemap के साथ मिलकर Fast Indexing की संभावना काफ़ी बढ़ा देती है।
+  // (NewsArticle को Google एक ज़रूरी शर्त के तौर पर "publisher" यानी असली नाम +
+  // Logo माँगता है, इसलिए वह भी यहाँ जोड़ा गया है)
+  const NEWS_LIKE_STATUSES = ['admit_card', 'answer_key', 'result', 'final_selection']
+
+  const publisherSchema = {
+    '@type': 'Organization',
+    name: publisherName || 'Official Sarkari Patrika',
+    ...(publisherLogoUrl && {
+      logo: { '@type': 'ImageObject', url: publisherLogoUrl },
+    }),
+  }
+
   const mainSchema =
     status === 'job'
       ? {
@@ -176,20 +197,33 @@ export default function SchemaMarkup({
           jobLocation: buildJobLocation(),
           ...(baseSalary && { baseSalary }),
         }
-      : {
-          '@context': 'https://schema.org',
-          '@type': 'Article',
-          headline: title,
-          description: jobDescription,
-          datePublished: publishedAt,
-          dateModified: updatedAt,
-          mainEntityOfPage: url,
-          ...(imageUrl && { image: [imageUrl] }),
-          author: {
-            '@type': 'Organization',
-            name: 'Official Sarkari Patrika',
-          },
-        }
+      : NEWS_LIKE_STATUSES.includes(status)
+        ? {
+            '@context': 'https://schema.org',
+            '@type': 'NewsArticle',
+            headline: title,
+            description: jobDescription,
+            datePublished: publishedAt,
+            dateModified: updatedAt || publishedAt,
+            mainEntityOfPage: { '@type': 'WebPage', '@id': url },
+            ...(imageUrl && { image: [imageUrl] }),
+            author: { '@type': 'Organization', name: publisherName || 'Official Sarkari Patrika' },
+            publisher: publisherSchema,
+          }
+        : {
+            '@context': 'https://schema.org',
+            '@type': 'Article',
+            headline: title,
+            description: jobDescription,
+            datePublished: publishedAt,
+            dateModified: updatedAt,
+            mainEntityOfPage: url,
+            ...(imageUrl && { image: [imageUrl] }),
+            author: {
+              '@type': 'Organization',
+              name: publisherName || 'Official Sarkari Patrika',
+            },
+          }
 
   const faqs = buildFAQEntities(title, organization?.name || '', importantDates, applicationFee, totalVacancies)
 
