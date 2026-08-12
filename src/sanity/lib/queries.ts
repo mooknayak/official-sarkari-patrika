@@ -122,6 +122,9 @@ export const SINGLE_POST_QUERY = groq`
   categoryWiseVacancy,
   applicationFee,
   jobLocation,
+  jobCity,
+  jobPostalCode,
+  jobStreetAddress,
   salary,
   postBanner {
     "imageUrl": image.asset->url,
