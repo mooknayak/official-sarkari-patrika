@@ -150,6 +150,8 @@ export default async function JobPostPage({ params }: Props) {
         imageUrl={post.featuredImageUrl}
         jobLocation={post.jobLocation}
         salary={post.salary}
+        publisherName={siteSettings?.publisherName}
+        publisherLogoUrl={siteSettings?.faviconUrl || siteSettings?.siteLogoUrl}
         breadcrumb={[
           { name: 'होम', url: process.env.NEXT_PUBLIC_SITE_URL || '' },
           {
