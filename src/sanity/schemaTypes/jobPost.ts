@@ -406,6 +406,35 @@ export const jobPost = defineType({
         'उदाहरण: "All India / पूरे भारत में", "Uttar Pradesh", "Delhi", "Bihar" - जहाँ यह भर्ती/पद लागू होता है',
       hidden: ({ document }) => document?.status !== 'job',
     }),
+    // 🆕 Google Rich Results Test में "streetAddress / addressLocality / postalCode"
+    // Missing (optional) दिखाता है - यह ज़रूरी नहीं है (Listing फिर भी Valid रहती है),
+    // पर भरने पर Google को थोड़ी और सटीक जानकारी मिलती है। यह सिर्फ़ तभी भरें जब
+    // Notification में साफ़ पता (जैसे "53, University Road") मौजूद हो - न मिले तो
+    // खाली छोड़ना बिल्कुल ठीक है।
+    defineField({
+      name: 'jobCity',
+      title: '🏙️ शहर (City) - वैकल्पिक (Google Rich Results के लिए)',
+      type: 'string',
+      group: 'details',
+      description: 'उदाहरण: "Lucknow" - सिर्फ़ शहर का नाम, State यहाँ नहीं',
+      hidden: ({ document }) => document?.status !== 'job',
+    }),
+    defineField({
+      name: 'jobPostalCode',
+      title: '📮 पिन कोड (Postal Code) - वैकल्पिक',
+      type: 'string',
+      group: 'details',
+      description: 'उदाहरण: "226007"',
+      hidden: ({ document }) => document?.status !== 'job',
+    }),
+    defineField({
+      name: 'jobStreetAddress',
+      title: '🏢 पूरा पता (Street Address) - वैकल्पिक',
+      type: 'string',
+      group: 'details',
+      description: 'उदाहरण: "53, University Road" - Notification में जो पता लिखा हो',
+      hidden: ({ document }) => document?.status !== 'job',
+    }),
     defineField({
       name: 'salary',
       title: '💰 Salary / Pay Scale (Google Jobs के लिए अनुशंसित)',
