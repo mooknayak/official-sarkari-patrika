@@ -39,6 +39,9 @@ type SchemaProps = {
   breadcrumb?: { name: string; url: string }[]
   imageUrl?: string
   jobLocation?: string
+  jobCity?: string
+  jobPostalCode?: string
+  jobStreetAddress?: string
   salary?: SalaryType
   publisherName?: string
   publisherLogoUrl?: string
@@ -111,6 +114,9 @@ export default function SchemaMarkup({
   breadcrumb,
   imageUrl,
   jobLocation,
+  jobCity,
+  jobPostalCode,
+  jobStreetAddress,
   salary,
   publisherName,
   publisherLogoUrl,
@@ -137,6 +143,11 @@ export default function SchemaMarkup({
         '@type': 'PostalAddress',
         addressCountry: 'IN',
         ...(!isAllIndia && { addressRegion: trimmed }),
+        // 🆕 Google Rich Results Test में यह 3 Fields "Missing (optional)" दिखाती थी -
+        // Editor ने भरा हो तभी भेजते हैं, वरना पूरी तरह छोड़ देते हैं (कोई नुकसान नहीं)
+        ...(jobCity && { addressLocality: jobCity }),
+        ...(jobPostalCode && { postalCode: jobPostalCode }),
+        ...(jobStreetAddress && { streetAddress: jobStreetAddress }),
       },
     }
   }
