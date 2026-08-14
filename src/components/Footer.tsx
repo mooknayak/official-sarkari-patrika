@@ -6,6 +6,7 @@
 import Link from 'next/link'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
+import LegalPanel from '@/components/LegalPanel'
 
 const DEFAULT_FOOTER_LINKS = [
   { title: 'Privacy Policy', href: '/privacy-policy' },
@@ -77,6 +78,9 @@ export default async function Footer() {
           © {new Date().getFullYear()} {settings?.publisherName || 'Official Sarkari Patrika'}. यह एक
           स्वतंत्र सूचना पोर्टल है और किसी भी सरकारी विभाग से संबद्ध नहीं है।
         </p>
+
+        {/* 🆕 Legal Panel - Court जैसा Organization Chart (Founder → Departments) */}
+        <LegalPanel founder={settings?.legalPanel?.founder} departments={settings?.legalPanel?.departments} />
       </div>
     </footer>
   )
