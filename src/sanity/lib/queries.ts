@@ -25,6 +25,25 @@ export const SITE_SETTINGS_QUERY = groq`
     role,
     bio,
     "photoUrl": photo.asset->url
+  },
+  legalPanel {
+    founder {
+      name,
+      role,
+      "photoUrl": photo.asset->url
+    },
+    departments[] {
+      departmentName,
+      head {
+        name,
+        role,
+        "photoUrl": photo.asset->url
+      },
+      members[] {
+        name,
+        role
+      }
+    }
   }
 }
 `
