@@ -212,7 +212,7 @@ export const siteSettings = defineType({
       type: 'array',
       group: 'engagement',
       description:
-        'यहाँ Founder, Editor-in-Chief, Legal Advisor जैसे लोगों के नाम जोड़ें - यह "About Us" पेज पर एक Team सेक्शन के तौर पर दिखेगा। Google इसे साइट की विश्वसनीयता (E-E-A-T) परखने के लिए देखता है, और AdSense व Google News Approval में भी मदद करता है।',
+        '⚠️ पुराना Field है, अब इसकी जगह नीचे "⚖️ Legal Panel" (Organization Chart) इस्तेमाल करें। यह सिर्फ़ पुराने Data के लिए रखा गया है।',
       of: [
         {
           type: 'object',
@@ -229,6 +229,84 @@ export const siteSettings = defineType({
             { name: 'bio', type: 'text', title: 'संक्षिप्त परिचय (वैकल्पिक)' },
           ],
           preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
+        },
+      ],
+    }),
+
+    // 🆕 Legal Panel - Court/Judiciary जैसा Organization Chart (Vanshavali Style)
+    // Founder सबसे ऊपर, उसके नीचे 3 Vibhag (Technical, Editorial, Legal) - हर
+    // Vibhag का एक Head (जिसकी Photo लग सकती है) और बाकी Members (सिर्फ़ नाम+पद)
+    defineField({
+      name: 'legalPanel',
+      title: '⚖️ Legal Panel (Organization Chart)',
+      type: 'object',
+      group: 'engagement',
+      description:
+        'यह Footer में एक Court/Judiciary जैसा Hierarchy Chart दिखाएगा - सबसे ऊपर Founder, उसके नीचे Technical/Editorial/Legal विभाग। सिर्फ़ मुख्य पदाधिकारी (Founder + हर विभाग का Head) की फ़ोटो लगती है, बाकी सदस्यों का सिर्फ़ नाम और पद दिखता है।',
+      fields: [
+        {
+          name: 'founder',
+          title: '👑 प्रमुख (Founder)',
+          type: 'object',
+          description: 'सबसे ऊपर, बीच में दिखेगा - सबसे बड़ा और सबसे पहला पद',
+          fields: [
+            { name: 'name', type: 'string', title: 'नाम' },
+            { name: 'role', type: 'string', title: 'पद', initialValue: 'Founder & Editor-in-Chief' },
+            { name: 'photo', type: 'image', title: 'फ़ोटो', options: { hotspot: true } },
+          ],
+        },
+        {
+          name: 'departments',
+          title: '🏛️ विभाग (Departments)',
+          type: 'array',
+          description: 'जैसे "Technical Department", "Editorial Department", "Legal Panel" - जितने चाहें उतने जोड़ें',
+          of: [
+            {
+              type: 'object',
+              fields: [
+                {
+                  name: 'departmentName',
+                  type: 'string',
+                  title: 'विभाग का नाम',
+                  description: 'उदाहरण: Technical Department, Editorial Department, Legal Panel',
+                  validation: (Rule: any) => Rule.required(),
+                },
+                {
+                  name: 'head',
+                  title: '👤 विभाग प्रमुख (Head) - इनकी फ़ोटो लगेगी',
+                  type: 'object',
+                  fields: [
+                    { name: 'name', type: 'string', title: 'नाम' },
+                    {
+                      name: 'role',
+                      type: 'string',
+                      title: 'पद',
+                      description: 'उदाहरण: CTO (Chief Technical Officer), Editor-in-Chief, Chief Legal Advisor',
+                    },
+                    { name: 'photo', type: 'image', title: 'फ़ोटो', options: { hotspot: true } },
+                  ],
+                },
+                {
+                  name: 'members',
+                  title: '👥 बाकी सदस्य (सिर्फ़ नाम + पद, फ़ोटो नहीं)',
+                  type: 'array',
+                  of: [
+                    {
+                      type: 'object',
+                      fields: [
+                        { name: 'name', type: 'string', title: 'नाम', validation: (Rule: any) => Rule.required() },
+                        { name: 'role', type: 'string', title: 'पद', validation: (Rule: any) => Rule.required() },
+                      ],
+                      preview: { select: { title: 'name', subtitle: 'role' } },
+                    },
+                  ],
+                },
+              ],
+              preview: {
+                select: { title: 'departmentName', subtitle: 'head.name' },
+              },
+            },
+          ],
         },
       ],
     }),
