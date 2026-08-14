@@ -18,36 +18,53 @@ const NAV_ITEMS = [
 export default async function Header() {
   const settings = await client.fetch(SITE_SETTINGS_QUERY).catch(() => null)
   const iconUrl = settings?.faviconUrl || settings?.siteLogoUrl
+  const publisherName = settings?.publisherName || 'Official Sarkari Patrika'
 
   return (
     <header className="sticky top-0 z-50 shadow-md">
-      {/* Hero बैंड - Logo और नाम अब बाईं तरफ़, एक साथ (Sarkari Result जैसा) */}
-      <div className="bg-gradient-to-b from-brand-blue to-brand-blueDark text-white py-4 px-4">
-        <div className="max-w-5xl mx-auto flex items-center justify-center gap-3">
-          <Link href="/" className="flex items-center gap-3">
+      {/* 🆕 Hero बैंड - अब बिल्कुल Reference Banner जैसा: Gradient Background,
+          Decorative Circles, बड़ा Seal, Domain Badge, नीचे Disclosure Strip */}
+      <div className="relative overflow-hidden bg-gradient-to-br from-brand-blue via-brand-blue to-brand-pinkAccent">
+        {/* Decorative background circles */}
+        <div className="absolute -top-10 right-10 w-40 h-40 rounded-full bg-white/5" />
+        <div className="absolute bottom-0 left-0 w-52 h-52 rounded-full bg-white/5 -translate-x-1/3 translate-y-1/3" />
+
+        <div className="relative max-w-5xl mx-auto px-4 py-5 md:py-7">
+          <Link href="/" className="flex items-center gap-4 md:gap-6">
+            {/* Seal Logo */}
             {iconUrl ? (
               <Image
-                src={`${iconUrl}?w=140&h=140&fit=max&auto=format`}
-                alt={settings?.publisherName || 'Official Sarkari Patrika'}
-                width={64}
-                height={64}
+                src={`${iconUrl}?w=200&h=200&fit=max&auto=format`}
+                alt={publisherName}
+                width={96}
+                height={96}
                 priority
-                className="h-12 w-12 md:h-16 md:w-16 rounded-full object-contain bg-white p-1 flex-shrink-0"
+                className="h-16 w-16 md:h-24 md:w-24 rounded-full object-contain bg-white p-1 flex-shrink-0 shadow-lg"
               />
             ) : (
-              <div className="h-12 w-12 md:h-16 md:w-16 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                <span className="text-brand-blue font-extrabold text-sm md:text-lg">OSP</span>
+              <div className="h-16 w-16 md:h-24 md:w-24 rounded-full bg-white flex items-center justify-center flex-shrink-0 shadow-lg">
+                <span className="text-brand-blue font-extrabold text-base md:text-xl">OSP</span>
               </div>
             )}
-            <div>
-              <h1 className="text-lg md:text-3xl font-extrabold tracking-wide leading-tight">
+
+            <div className="min-w-0">
+              <h1 className="text-xl md:text-4xl font-extrabold tracking-wide leading-tight text-white">
                 Official <span className="text-brand-pink">Sarkari</span> Patrika
               </h1>
-              <p className="text-[10px] md:text-sm text-blue-100 tracking-widest uppercase">
-                officialsarkaripatrika.com
+              <p className="text-xs md:text-lg text-blue-50 mt-1 mb-2 md:mb-3">
+                Sarkari Naukri, Admit Card &amp; Result Updates
               </p>
+              {/* Domain badge */}
+              <span className="inline-block bg-white text-brand-pinkAccent font-bold text-xs md:text-base px-3 py-1 md:px-4 md:py-1.5 rounded-full truncate max-w-full">
+                {(process.env.NEXT_PUBLIC_SITE_URL || 'officialsarkaripatrika.com').replace(/^https?:\/\//, '')}
+              </span>
             </div>
           </Link>
+        </div>
+
+        {/* Disclosure strip */}
+        <div className="relative bg-brand-blueDark/80 text-center py-1.5 text-[10px] md:text-xs text-blue-100 font-medium tracking-wide">
+          Independent Platform <span className="text-brand-pinkAccent">•</span> Not a Government Website
         </div>
       </div>
 
