@@ -2,6 +2,7 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
+import ThirdPartyAdScript from '@/components/ThirdPartyAdScript'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
@@ -84,6 +85,14 @@ export default async function RootLayout({
 }) {
   const settings = await getSiteSettings()
   const adsenseId = settings?.adsensePublisherId || process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID
+  const hasSecondaryAds = Boolean(settings?.secondaryAdNetworkCode)
+
+  // ⚖️ Priority Switch - दोनों Network Approved हों तभी यह मायने रखता है।
+  // अगर सिर्फ़ एक ही Approved है (दूसरे का Code खाली है), वही अपने-आप दिखेगा -
+  // Priority Setting का कोई असर नहीं पड़ेगा।
+  const priority = settings?.adPriority || 'both'
+  const showAdsense = Boolean(adsenseId) && (priority !== 'microsoft_first' || !hasSecondaryAds)
+  const showSecondary = hasSecondaryAds && (priority !== 'google_first' || !adsenseId)
 
   // 🌐 पूरी साइट के लिए एक बार Organization Schema - Google Knowledge Panel,
   // Search Result में Logo और Sitelinks Search Box दिखाने में मदद करता है।
@@ -124,8 +133,9 @@ export default async function RootLayout({
         <GoogleAnalytics />
         {children}
 
-        {/* AdSense Script - सिर्फ तभी लोड होगी जब Client ID (Studio या env) सेट हो */}
-        {adsenseId && (
+        {/* AdSense Script - सिर्फ तभी लोड होगी जब Client ID (Studio या env) सेट हो
+            AND Priority Switch इसे इजाज़त दे */}
+        {showAdsense && (
           <Script
             async
             src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsenseId}`}
@@ -133,6 +143,9 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
+
+        {/* 🆕 दूसरा Ad Network (जैसे Media.net) - Priority Switch के हिसाब से चलेगा */}
+        {showSecondary && <ThirdPartyAdScript code={settings?.secondaryAdNetworkCode} />}
       </body>
     </html>
   )
