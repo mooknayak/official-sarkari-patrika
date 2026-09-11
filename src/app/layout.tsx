@@ -2,7 +2,6 @@
 import type { Metadata } from 'next'
 import Script from 'next/script'
 import GoogleAnalytics from '@/components/GoogleAnalytics'
-import ThirdPartyAdScript from '@/components/ThirdPartyAdScript'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 
@@ -122,6 +121,14 @@ export default async function RootLayout({
   return (
     <html lang="hi">
       <body>
+        {/* 🆕 दूसरा Ad Network (जैसे Ezoic/Media.net) - Page के सबसे ऊपर, सीधे
+            Server-Rendered HTML में डाला जाता है (Client-side JavaScript से नहीं),
+            ताकि Ezoic जैसे Platform का "Detect Integration" Checker इसे तुरंत पहचान
+            सके - वह सीधे Page का Raw HTML Source देखता है, Browser नहीं चलाता। */}
+        {showSecondary && (
+          <div dangerouslySetInnerHTML={{ __html: settings?.secondaryAdNetworkCode || '' }} />
+        )}
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationSchema) }}
@@ -143,9 +150,6 @@ export default async function RootLayout({
             strategy="afterInteractive"
           />
         )}
-
-        {/* 🆕 दूसरा Ad Network (जैसे Media.net) - Priority Switch के हिसाब से चलेगा */}
-        {showSecondary && <ThirdPartyAdScript code={settings?.secondaryAdNetworkCode} />}
       </body>
     </html>
   )
