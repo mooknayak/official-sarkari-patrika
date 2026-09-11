@@ -86,6 +86,50 @@ export const siteSettings = defineType({
         'AdSense अप्रूवल के बाद यहाँ डालें (Vercel के Environment Variable NEXT_PUBLIC_ADSENSE_CLIENT_ID से भी सेट हो सकता है — दोनों जगह डालने की ज़रूरत नहीं, कोई एक काफ़ी है; यहाँ डाला हुआ हमेशा प्राथमिकता में रहेगा)।',
     }),
 
+    // 🆕 Google AdSense के अलावा कोई और Ad Network (जैसे Media.net - जो Microsoft/Bing
+    // के Advertisers से Ad दिखाता है) - दोनों एक साथ भी चल सकते हैं, यह Google की
+    // Policy के खिलाफ नहीं है। जो भी Ad Network आपको Code दे, उसे यहाँ ज्यों-का-त्यों
+    // Paste कर दें (पूरा <script>...</script> सहित) - बाकी Website खुद संभाल लेगी।
+    defineField({
+      name: 'secondaryAdNetworkName',
+      title: '🖥️ दूसरे Ad Network का नाम (सिर्फ़ याद रखने के लिए)',
+      type: 'string',
+      group: 'ads',
+      description: 'उदाहरण: "Media.net", "Ezoic" - यह सिर्फ़ लेबल है, कोड में इस्तेमाल नहीं होता',
+    }),
+    defineField({
+      name: 'secondaryAdNetworkCode',
+      title: '🖥️ दूसरे Ad Network का Ad Code (जैसा वो दें, वैसा ही Paste करें)',
+      type: 'text',
+      rows: 6,
+      group: 'ads',
+      description:
+        'जो भी Ad Network (Media.net/Microsoft/Ezoic वगैरह) Site Verification/Ad Script का Code दे, उसे पूरा (<script> टैग सहित) यहाँ Paste कर दें। खाली रहने पर कुछ नहीं लगेगा, कोई नुकसान नहीं।',
+    }),
+
+    // 🆕 "Priority Switch" - असली Real-Time Bidding (जो बड़ी Sites इस्तेमाल करती हैं)
+    // बहुत जटिल Ad-Tech System है, अभी हमारी साइट के लिए ज़रूरत से ज़्यादा भारी होगा।
+    // इसकी जगह एक Simple, आपके हाथ में रहने वाला Switch है - जब आप देखें कि कौन ज़्यादा
+    // कमाई दे रहा है (हर एक-दो हफ़्ते में दोनों के Dashboard Earnings देखकर), तब यहाँ से
+    // बदल दें - Code छूने की कोई ज़रूरत नहीं।
+    defineField({
+      name: 'adPriority',
+      title: '⚖️ किसे प्राथमिकता दें (जब दोनों Approved हों)',
+      type: 'string',
+      group: 'ads',
+      options: {
+        list: [
+          { title: '✅ दोनों साथ-साथ चलाएँ (अलग-अलग जगह)', value: 'both' },
+          { title: '🟦 Google AdSense को पहले दिखाएँ', value: 'google_first' },
+          { title: '🟨 Microsoft/Media.net को पहले दिखाएँ', value: 'microsoft_first' },
+        ],
+        layout: 'radio',
+      },
+      initialValue: 'both',
+      description:
+        'जब तक सिर्फ़ एक ही Network Approved है, वही अपने-आप दिखेगा। दोनों Approved होने पर यह Setting तय करेगी कि प्राथमिकता किसे मिले। जिसकी Earning ज़्यादा दिखे, हर हफ़्ते-दो हफ़्ते में यहाँ आकर बदल सकते हैं।',
+    }),
+
     // ---------- News / Discover ----------
     defineField({
       name: 'googleNewsPublicationName',
@@ -212,7 +256,7 @@ export const siteSettings = defineType({
       type: 'array',
       group: 'engagement',
       description:
-        '⚠️ पुराना Field है, अब इसकी जगह नीचे "⚖️ Legal Panel" (Organization Chart) इस्तेमाल करें। यह सिर्फ़ पुराने Data के लिए रखा गया है।',
+        'यहाँ Founder, Editor-in-Chief, Legal Advisor जैसे लोगों के नाम जोड़ें - यह "About Us" पेज पर एक Team सेक्शन के तौर पर दिखेगा। Google इसे साइट की विश्वसनीयता (E-E-A-T) परखने के लिए देखता है, और AdSense व Google News Approval में भी मदद करता है।',
       of: [
         {
           type: 'object',
@@ -229,84 +273,6 @@ export const siteSettings = defineType({
             { name: 'bio', type: 'text', title: 'संक्षिप्त परिचय (वैकल्पिक)' },
           ],
           preview: { select: { title: 'name', subtitle: 'role', media: 'photo' } },
-        },
-      ],
-    }),
-
-    // 🆕 Legal Panel - Court/Judiciary जैसा Organization Chart (Vanshavali Style)
-    // Founder सबसे ऊपर, उसके नीचे 3 Vibhag (Technical, Editorial, Legal) - हर
-    // Vibhag का एक Head (जिसकी Photo लग सकती है) और बाकी Members (सिर्फ़ नाम+पद)
-    defineField({
-      name: 'legalPanel',
-      title: '⚖️ Legal Panel (Organization Chart)',
-      type: 'object',
-      group: 'engagement',
-      description:
-        'यह Footer में एक Court/Judiciary जैसा Hierarchy Chart दिखाएगा - सबसे ऊपर Founder, उसके नीचे Technical/Editorial/Legal विभाग। सिर्फ़ मुख्य पदाधिकारी (Founder + हर विभाग का Head) की फ़ोटो लगती है, बाकी सदस्यों का सिर्फ़ नाम और पद दिखता है।',
-      fields: [
-        {
-          name: 'founder',
-          title: '👑 प्रमुख (Founder)',
-          type: 'object',
-          description: 'सबसे ऊपर, बीच में दिखेगा - सबसे बड़ा और सबसे पहला पद',
-          fields: [
-            { name: 'name', type: 'string', title: 'नाम' },
-            { name: 'role', type: 'string', title: 'पद', initialValue: 'Founder & Editor-in-Chief' },
-            { name: 'photo', type: 'image', title: 'फ़ोटो', options: { hotspot: true } },
-          ],
-        },
-        {
-          name: 'departments',
-          title: '🏛️ विभाग (Departments)',
-          type: 'array',
-          description: 'जैसे "Technical Department", "Editorial Department", "Legal Panel" - जितने चाहें उतने जोड़ें',
-          of: [
-            {
-              type: 'object',
-              fields: [
-                {
-                  name: 'departmentName',
-                  type: 'string',
-                  title: 'विभाग का नाम',
-                  description: 'उदाहरण: Technical Department, Editorial Department, Legal Panel',
-                  validation: (Rule: any) => Rule.required(),
-                },
-                {
-                  name: 'head',
-                  title: '👤 विभाग प्रमुख (Head) - इनकी फ़ोटो लगेगी',
-                  type: 'object',
-                  fields: [
-                    { name: 'name', type: 'string', title: 'नाम' },
-                    {
-                      name: 'role',
-                      type: 'string',
-                      title: 'पद',
-                      description: 'उदाहरण: CTO (Chief Technical Officer), Editor-in-Chief, Chief Legal Advisor',
-                    },
-                    { name: 'photo', type: 'image', title: 'फ़ोटो', options: { hotspot: true } },
-                  ],
-                },
-                {
-                  name: 'members',
-                  title: '👥 बाकी सदस्य (सिर्फ़ नाम + पद, फ़ोटो नहीं)',
-                  type: 'array',
-                  of: [
-                    {
-                      type: 'object',
-                      fields: [
-                        { name: 'name', type: 'string', title: 'नाम', validation: (Rule: any) => Rule.required() },
-                        { name: 'role', type: 'string', title: 'पद', validation: (Rule: any) => Rule.required() },
-                      ],
-                      preview: { select: { title: 'name', subtitle: 'role' } },
-                    },
-                  ],
-                },
-              ],
-              preview: {
-                select: { title: 'departmentName', subtitle: 'head.name' },
-              },
-            },
-          ],
         },
       ],
     }),
