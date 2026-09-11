@@ -10,6 +10,9 @@ export const SITE_SETTINGS_QUERY = groq`
   googleSiteVerification,
   bingSiteVerification,
   adsensePublisherId,
+  secondaryAdNetworkName,
+  secondaryAdNetworkCode,
+  adPriority,
   googleNewsPublicationName,
   enableNewsSitemap,
   socialLinks,
@@ -25,25 +28,6 @@ export const SITE_SETTINGS_QUERY = groq`
     role,
     bio,
     "photoUrl": photo.asset->url
-  },
-  legalPanel {
-    founder {
-      name,
-      role,
-      "photoUrl": photo.asset->url
-    },
-    departments[] {
-      departmentName,
-      head {
-        name,
-        role,
-        "photoUrl": photo.asset->url
-      },
-      members[] {
-        name,
-        role
-      }
-    }
   }
 }
 `
@@ -141,9 +125,6 @@ export const SINGLE_POST_QUERY = groq`
   categoryWiseVacancy,
   applicationFee,
   jobLocation,
-  jobCity,
-  jobPostalCode,
-  jobStreetAddress,
   salary,
   postBanner {
     "imageUrl": image.asset->url,
