@@ -86,10 +86,69 @@ export const siteSettings = defineType({
         'AdSense अप्रूवल के बाद यहाँ डालें (Vercel के Environment Variable NEXT_PUBLIC_ADSENSE_CLIENT_ID से भी सेट हो सकता है — दोनों जगह डालने की ज़रूरत नहीं, कोई एक काफ़ी है; यहाँ डाला हुआ हमेशा प्राथमिकता में रहेगा)।',
     }),
 
+    // 🆕🆕🆕 ================= प्रोफेशनल Banner Ad Placements ================= 🆕🆕🆕
+    // हर जगह की अपनी अलग जगह (Slot), अपना तय साइज़ और अपना अलग Sandbox (iframe) है।
+    // हर Ad अपने ही डिब्बे के अंदर isolate रहता है - इसलिए साइट पर कहीं भी क्लिक
+    // करने पर Ad अपने-आप नहीं खुलेगा (जो पहले "MultiTag/Popunder" वाले Global Code
+    // से हो रहा था)। Monetag Dashboard से हर Placement के लिए अलग "Banner" Zone
+    // बनाएँ (Push/Popunder/OnClick/SmartLink टाइप नहीं - सिर्फ़ Banner टाइप कोड
+    // यहाँ डालें) और नीचे सही जगह Paste करें - साइज़ हमने पहले से Professional
+    // (SarkariResult जैसा) सेट कर दिया है, आपको साइज़ की चिंता नहीं करनी।
+    defineField({
+      name: 'headerBannerCode',
+      title: '1️⃣ Header Banner (लोगो/मेनू के ठीक नीचे)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description:
+        'साइज़: 728×90 (Desktop) / 320×50 (Mobile) - अपने-आप Responsive। Monetag से "Banner" Zone का कोड यहाँ डालें।',
+    }),
+    defineField({
+      name: 'contentBannerLeft',
+      title: '2️⃣ Important Links के ऊपर - बायाँ Banner (1 of 3)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description:
+        'साइज़: 300×100। SarkariResult जैसे एक-साथ 3 Banner की Row बनाने के लिए - यह पहला (बायाँ) Banner है।',
+    }),
+    defineField({
+      name: 'contentBannerCenter',
+      title: '2️⃣ Important Links के ऊपर - बीच वाला Banner (2 of 3)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description: 'साइज़: 300×100। तीन Banner वाली Row का बीच वाला (दूसरा) Banner।',
+    }),
+    defineField({
+      name: 'contentBannerRight',
+      title: '2️⃣ Important Links के ऊपर - दायाँ Banner (3 of 3)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description: 'साइज़: 300×100। तीन Banner वाली Row का आख़िरी (तीसरा) Banner।',
+    }),
+    defineField({
+      name: 'stickyBottomBannerCode',
+      title: '3️⃣ Sticky Bottom Banner (स्क्रीन के सबसे नीचे चिपका हुआ)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description:
+        'साइज़: 320×50 (Mobile Sticky Banner)। User के पास एक छोटा ✕ Close बटन भी रहेगा - यह पूरे पेज को कवर नहीं करेगा, सिर्फ़ नीचे एक पतली पट्टी में रहेगा।',
+    }),
+    defineField({
+      name: 'footerBannerCode',
+      title: '4️⃣ Footer Banner (Footer से ठीक ऊपर)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description: 'साइज़: 728×90 (Desktop) / 320×50 (Mobile) - अपने-आप Responsive।',
+    }),
+
     // 🆕 Google AdSense के अलावा कोई और Ad Network (जैसे Media.net - जो Microsoft/Bing
     // के Advertisers से Ad दिखाता है) - दोनों एक साथ भी चल सकते हैं, यह Google की
-    // Policy के खिलाफ नहीं है। जो भी Ad Network आपको Code दे, उसे यहाँ ज्यों-का-त्यों
-    // Paste कर दें (पूरा <script>...</script> सहित) - बाकी Website खुद संभाल लेगी।
+    // Policy के खिलाफ नहीं है।
     defineField({
       name: 'secondaryAdNetworkName',
       title: '🖥️ दूसरे Ad Network का नाम (सिर्फ़ याद रखने के लिए)',
@@ -99,12 +158,12 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'secondaryAdNetworkCode',
-      title: '🖥️ दूसरे Ad Network का Ad Code (जैसा वो दें, वैसा ही Paste करें)',
+      title: '⚠️ सिर्फ़ Site-Verification Script (Ad/Banner Code नहीं)',
       type: 'text',
       rows: 6,
       group: 'ads',
       description:
-        'जो भी Ad Network (Media.net/Microsoft/Ezoic वगैरह) Site Verification/Ad Script का Code दे, उसे पूरा (<script> टैग सहित) यहाँ Paste कर दें। खाली रहने पर कुछ नहीं लगेगा, कोई नुकसान नहीं।',
+        '⚠️ ज़रूरी: यहाँ सिर्फ़ Ezoic/Media.net जैसे Network का "Site Verification" Script डालें (वो कोड जो कोई Ad नहीं दिखाता, सिर्फ़ Ownership साबित करता है)। किसी भी तरह का Popunder / MultiTag / OnClick / Push Ad Code यहाँ कभी न डालें - यह पूरी साइट पर हर जगह Click Hijack करके Ad खोल देगा (पहले यही समस्या थी)। असली Ad Banner ऊपर वाले 4 Placement Fields में डालें, वहाँ हर Ad अपने Sandbox (iframe) में सुरक्षित रहता है।',
     }),
 
     // 🆕 "Priority Switch" - असली Real-Time Bidding (जो बड़ी Sites इस्तेमाल करती हैं)
@@ -128,6 +187,78 @@ export const siteSettings = defineType({
       initialValue: 'both',
       description:
         'जब तक सिर्फ़ एक ही Network Approved है, वही अपने-आप दिखेगा। दोनों Approved होने पर यह Setting तय करेगी कि प्राथमिकता किसे मिले। जिसकी Earning ज़्यादा दिखे, हर हफ़्ते-दो हफ़्ते में यहाँ आकर बदल सकते हैं।',
+    }),
+
+    // 🆕🆕🆕 ============ 5️⃣ Important Links Ad Stack (SarkariResult वाला "कई Banner एक साथ" Pattern) ============ 🆕🆕🆕
+    // SarkariResult पर जो एक साथ 3-4 Banner एक के नीचे एक दिखते हैं, वह असल में
+    // एक ही बड़ा Banner नहीं है — हर "Important Link" Row के साथ एक अलग Ad Unit
+    // जुड़ा है। जितनी ज़्यादा Link Rows, उतने ही ज़्यादा Ad एक साथ दिख जाते हैं।
+    // यहाँ जितने चाहें उतने Ad (Monetag भी, AdSense भी, दोनों मिलाकर भी) जोड़ें -
+    // यह अपने-आप हर Link Row के साथ बारी-बारी (Round-Robin) लग जाएँगे।
+    defineField({
+      name: 'importantLinksAds',
+      title: '5️⃣ Important Links Ad Stack (हर Link Row के साथ एक Ad)',
+      type: 'array',
+      group: 'ads',
+      description:
+        'SarkariResult जैसा Look - Important Links Table के हर Row के बगल में एक Banner। Monetag और AdSense दोनों के Ad यहाँ मिला-जुलाकर जोड़ सकते हैं - दोनों Network एक साथ, अलग-अलग Row पर चलेंगे। ज़्यादा Ad जोड़ेंगे तो उतना ही सघन (dense) दिखेगा, बिल्कुल Reference जैसा।',
+      of: [
+        {
+          type: 'object',
+          name: 'adUnit',
+          fields: [
+            {
+              name: 'network',
+              title: 'Network',
+              type: 'string',
+              options: {
+                list: [
+                  { title: '🖥️ Monetag / अन्य Custom Ad Code', value: 'custom' },
+                  { title: '🟦 Google AdSense (Real Ad Unit)', value: 'adsense' },
+                ],
+                layout: 'radio',
+              },
+              initialValue: 'custom',
+            },
+            {
+              name: 'code',
+              title: 'Ad Code (Monetag/Custom के लिए - पूरा Code Paste करें)',
+              type: 'text',
+              rows: 4,
+              hidden: ({ parent }: any) => parent?.network === 'adsense',
+            },
+            {
+              name: 'adSenseSlotId',
+              title: 'AdSense Ad Slot ID',
+              type: 'string',
+              description:
+                'AdSense Dashboard → Ads → By ad unit → कोई भी Display Ad Unit बनाएँ, वहाँ से सिर्फ़ data-ad-slot वाला नंबर (जैसे 1234567890) यहाँ डालें - पूरा Publisher ID ऊपर वाले फ़ील्ड से अपने-आप जुड़ जाएगा।',
+              hidden: ({ parent }: any) => parent?.network !== 'adsense',
+            },
+          ],
+          preview: {
+            select: { network: 'network', code: 'code', slot: 'adSenseSlotId' },
+            prepare({ network, code, slot }: any) {
+              return {
+                title: network === 'adsense' ? '🟦 AdSense Ad Unit' : '🖥️ Monetag / Custom Banner',
+                subtitle: network === 'adsense' ? `Slot: ${slot || '—'}` : (code ? code.slice(0, 50) : ''),
+              }
+            },
+          },
+        },
+      ],
+    }),
+
+    // 🆕 Video Ads - VAST Tag आधारित (Google IMA SDK) - Monetag Video/AdSense for
+    // Video दोनों में जो भी "VAST Tag URL" मिले, वह सीधे यहाँ पेस्ट कर दें, कोई
+    // Extra Library Install करने की ज़रूरत नहीं - Player पहले से बना हुआ है।
+    defineField({
+      name: 'videoAdVastTagUrl',
+      title: '🎬 Video Ad - VAST Tag URL',
+      type: 'url',
+      group: 'ads',
+      description:
+        'Monetag (Video Ad ज़ोन) या Google AdSense for Video से मिलने वाला VAST Tag Link यहाँ पेस्ट करें। खाली छोड़ने पर Video Ad Player साइट पर कहीं नहीं दिखेगा, कोई नुकसान नहीं।',
     }),
 
     // ---------- News / Discover ----------
