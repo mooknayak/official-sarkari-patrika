@@ -3,6 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
+import AdSlot from './AdSlot'
 
 const NAV_ITEMS = [
   { title: 'होम', href: '/' },
@@ -93,6 +94,13 @@ export default async function Header() {
               </svg>
             </button>
           </form>
+        </div>
+      </div>
+
+      {/* 1️⃣ Header Banner - Sanity → Website Settings → 💰 AdSense → Header Banner से मैनेज होता है */}
+      <div className="bg-white">
+        <div className="max-w-5xl mx-auto px-4">
+          <AdSlot code={settings?.headerBannerCode} width={728} height={90} className="py-2" />
         </div>
       </div>
     </header>
