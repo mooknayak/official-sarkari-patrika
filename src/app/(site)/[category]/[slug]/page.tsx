@@ -11,6 +11,8 @@ import ImportantDates from '@/components/ImportantDates'
 import ApplicationFeeTable from '@/components/ApplicationFeeTable'
 import CategoryWiseVacancy from '@/components/CategoryWiseVacancy'
 import ImportantLinks from '@/components/ImportantLinks'
+import TripleAdBanner from '@/components/TripleAdBanner'
+import VideoAdPlayer from '@/components/VideoAdPlayer'
 import StatusTimeline from '@/components/StatusTimeline'
 import SchemaMarkup from '@/components/SchemaMarkup'
 import JobCard from '@/components/JobCard'
@@ -193,6 +195,9 @@ export default async function JobPostPage({ params }: Props) {
 
       <ShareButtons title={post.title} url={pageUrl} />
 
+      {/* 🎬 Video Ad - सिर्फ़ तभी दिखेगा जब Sanity में VAST Tag URL डाला गया हो */}
+      <VideoAdPlayer vastTagUrl={siteSettings?.videoAdVastTagUrl} />
+
       {/* Post Info Block - मार्कशीट स्टाइल */}
       <PostInfoBlock
         title={post.title}
@@ -256,7 +261,19 @@ export default async function JobPostPage({ params }: Props) {
 
       <CustomSectionsList sections={post.customSectionsBeforeLinks} />
 
-      <ImportantLinks links={post.importantLinks} />
+      {/* 2️⃣ Important Links के ठीक ऊपर - SarkariResult जैसी 3-Banner Row
+          Sanity → Website Settings → 💰 AdSense से मैनेज होता है */}
+      <TripleAdBanner
+        left={siteSettings?.contentBannerLeft}
+        center={siteSettings?.contentBannerCenter}
+        right={siteSettings?.contentBannerRight}
+      />
+
+      <ImportantLinks
+        links={post.importantLinks}
+        ads={siteSettings?.importantLinksAds}
+        adsenseClientId={siteSettings?.adsensePublisherId || process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
+      />
       <StatusTimeline timeline={post.statusTimeline} />
 
       <CustomSectionsList sections={post.customSectionsAfterLinks} />
