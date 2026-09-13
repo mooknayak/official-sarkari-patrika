@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 import LegalPanel from '@/components/LegalPanel'
+import AdSlot from '@/components/AdSlot'
 
 const DEFAULT_FOOTER_LINKS = [
   { title: 'Privacy Policy', href: '/privacy-policy' },
@@ -33,6 +34,15 @@ export default async function Footer() {
 
   return (
     <footer className="bg-brand-blueDark text-blue-100 mt-12">
+      {/* 4️⃣ Footer Banner - Footer के ठीक ऊपर, सफ़ेद पट्टी पर (गहरे Background पर Ad ठीक से नहीं दिखता) */}
+      {settings?.footerBannerCode && (
+        <div className="bg-white py-3">
+          <div className="max-w-5xl mx-auto px-4">
+            <AdSlot code={settings.footerBannerCode} width={728} height={90} />
+          </div>
+        </div>
+      )}
+
       <div className="max-w-5xl mx-auto px-4 py-8">
         <div className="bg-brand-pink border border-brand-pinkAccent rounded-lg p-3 text-center text-sm text-brand-blueDark font-medium mb-6">
           🔒 हम कभी भी Aadhaar, बैंक विवरण या OTP नहीं माँगते - 100% Free & No Document Upload Required
