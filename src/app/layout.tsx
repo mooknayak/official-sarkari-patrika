@@ -121,10 +121,13 @@ export default async function RootLayout({
   return (
     <html lang="hi">
       <body>
-        {/* 🆕 दूसरा Ad Network (जैसे Ezoic/Media.net) - Page के सबसे ऊपर, सीधे
-            Server-Rendered HTML में डाला जाता है (Client-side JavaScript से नहीं),
-            ताकि Ezoic जैसे Platform का "Detect Integration" Checker इसे तुरंत पहचान
-            सके - वह सीधे Page का Raw HTML Source देखता है, Browser नहीं चलाता। */}
+        {/* ⚠️ यह सिर्फ़ Ezoic/Media.net जैसे Network के "Site Verification" Script
+            के लिए है (Studio में सख़्त वॉर्निंग के साथ) - Page के सबसे ऊपर, सीधे
+            Server-Rendered HTML में, ताकि Verification Checker इसे पहचान सके।
+            🚫 असली Ad Banner यहाँ नहीं आते - वो अब हर Placement पर अपने अलग
+            <AdSlot> (iframe sandbox) में, Header/Content/Sticky-Bottom/Footer
+            Component्स में अलग-अलग रेंडर होते हैं, ताकि कोई भी Ad Script पूरे
+            पेज पर Click Hijack न कर सके। */}
         {showSecondary && (
           <div dangerouslySetInnerHTML={{ __html: settings?.secondaryAdNetworkCode || '' }} />
         )}
