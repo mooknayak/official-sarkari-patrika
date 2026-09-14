@@ -94,23 +94,31 @@ export const siteSettings = defineType({
     // बनाएँ (Push/Popunder/OnClick/SmartLink टाइप नहीं - सिर्फ़ Banner टाइप कोड
     // यहाँ डालें) और नीचे सही जगह Paste करें - साइज़ हमने पहले से Professional
     // (SarkariResult जैसा) सेट कर दिया है, आपको साइज़ की चिंता नहीं करनी।
+    // 🆕🆕🆕 ============ Rotation Pool सिस्टम (CPM Comparison के लिए) ============ 🆕🆕🆕
+    // हर Placement में अब सिर्फ़ 1 Code नहीं, बल्कि कई Network के Code एक साथ
+    // "Pool" में डाल सकते हैं (Adsterra, Monetag, AdSense - जितने चाहें उतने)।
+    // हर बार Page Load होने पर हमारा Code इस Pool में से बारी-बारी अलग-अलग एक
+    // Code को Random तरीके से चुनकर दिखाता है। कुछ दिन बाद हर Network की अपनी
+    // Dashboard (Adsterra/Monetag वग़ैरह) में जाकर CPM/Earning देखिए - जो सबसे
+    // कम कमाए उसे Pool से हटा दीजिए, बाकी बेहतर वाले अपने-आप ज़्यादा Traffic
+    // पाते रहेंगे। नोट: चूँकि Page कुछ समय (लगभग 1 घंटे) के लिए Cache होता है,
+    // Rotation हर Visitor पर नहीं बल्कि हर Cache-Refresh (लगभग हर घंटे) पर
+    // बदलती है - एक दिन/हफ़्ते में यह अच्छे से सबको बराबर मौक़ा दे देता है।
+    //
+    // 🔧 सुधार (14 सितंबर, Desktop/Mobile Mismatch के बाद): पहले Desktop और
+    // Mobile के लिए अलग-अलग Pool थे - इससे कभी-कभी एक भर दिया जाता था, दूसरा
+    // खाली रह जाता था, और एक Screen पर Ad दिखता था दूसरी पर नहीं। अब सिर्फ़
+    // *एक* ही Pool है - हमारा AdSlot Component खुद Screen की चौड़ाई नापकर
+    // Ad को अपने-आप Proportionally छोटा/बड़ा कर देता है, इसलिए एक ही Code
+    // हर तरह की Screen (Mobile, Tablet, Desktop, Desktop-Mode) पर सही दिखेगा।
     defineField({
-      name: 'headerBannerCode',
-      title: '1️⃣ Header Banner - Desktop (728×90)',
-      type: 'text',
-      rows: 5,
+      name: 'headerBannerCodes',
+      title: '1️⃣ Header Banner Pool (728×90 - हर Screen पर अपने-आप Fit होगा)',
+      type: 'array',
       group: 'ads',
+      of: [{ type: 'text', rows: 4 }],
       description:
-        'सिर्फ़ Ad Network का दिया हुआ सीधा (Plain) Code Paste करें - जैसा-का-तैसा, कोई खुद से जोड़-तोड़ (window.innerWidth वाली Custom Script) न करें। साइज़ हमारा Code अपने-आप संभालता है। यह सिर्फ़ Desktop/Tablet Screen (768px से बड़ी) पर दिखेगा।',
-    }),
-    defineField({
-      name: 'headerBannerCodeMobile',
-      title: '1️⃣ Header Banner - Mobile (320×50)',
-      type: 'text',
-      rows: 5,
-      group: 'ads',
-      description:
-        'सिर्फ़ Mobile Screen (768px से छोटी) पर यह दिखेगा। यहाँ सिर्फ़ Mobile Size (320×50) का Plain Ad Code डालें। खाली रखेंगे तो ऊपर वाला Desktop Code ही Mobile पर भी अपने-आप छोटा होकर दिखेगा।',
+        'यहाँ "+ Add item" से Adsterra, Monetag, AdSense जैसे कई Network का 728×90 Code एक साथ जोड़ें - सिर्फ़ Plain Code, कोई Custom Window-Width Script नहीं। एक ही Pool Mobile और Desktop दोनों पर अपने-आप सही Size में दिखेगा।',
     }),
     defineField({
       name: 'contentBannerLeft',
@@ -138,32 +146,33 @@ export const siteSettings = defineType({
       description: 'साइज़: 300×100। तीन Banner वाली Row का आख़िरी (तीसरा) Banner।',
     }),
     defineField({
-      name: 'stickyBottomBannerCode',
-      title: '3️⃣ Sticky Bottom Banner (स्क्रीन के सबसे नीचे चिपका हुआ)',
-      type: 'text',
-      rows: 5,
+      name: 'stickyBottomBannerCodes',
+      title: '3️⃣ Sticky Bottom Banner Pool (स्क्रीन के सबसे नीचे)',
+      type: 'array',
       group: 'ads',
+      of: [{ type: 'text', rows: 4 }],
       description:
-        'साइज़: 320×50 (Mobile Sticky Banner)। User के पास एक छोटा ✕ Close बटन भी रहेगा - यह पूरे पेज को कवर नहीं करेगा, सिर्फ़ नीचे एक पतली पट्टी में रहेगा।',
+        'साइज़: 320×50। यहाँ भी कई Network के Code जोड़ सकते हैं, बारी-बारी Random दिखेंगे। User के पास हमेशा एक छोटा ✕ Close बटन रहेगा।',
     }),
     defineField({
-      name: 'footerBannerCode',
-      title: '4️⃣ Footer Banner - Desktop (728×90)',
-      type: 'text',
-      rows: 5,
+      name: 'footerBannerCodes',
+      title: '4️⃣ Footer Banner Pool (728×90 - हर Screen पर अपने-आप Fit होगा)',
+      type: 'array',
       group: 'ads',
+      of: [{ type: 'text', rows: 4 }],
       description:
-        'सिर्फ़ Ad Network का दिया हुआ सीधा (Plain) Code Paste करें - कोई खुद से जोड़-तोड़ की Script नहीं। सिर्फ़ Desktop/Tablet Screen पर दिखेगा।',
+        'सिर्फ़ Plain Code (कोई Custom Script नहीं) - कई Network एक साथ जोड़ सकते हैं। एक ही Pool Mobile और Desktop दोनों पर अपने-आप सही Size में दिखेगा।',
     }),
     defineField({
-      name: 'footerBannerCodeMobile',
-      title: '4️⃣ Footer Banner - Mobile (320×50)',
+      name: 'interstitialAdCode',
+      title: '6️⃣ Interstitial / Vignette Ad (पेज बदलने के बीच में)',
       type: 'text',
       rows: 5,
       group: 'ads',
       description:
-        'सिर्फ़ Mobile Screen पर दिखेगा। खाली रखेंगे तो Desktop Code ही Mobile पर छोटा होकर दिखेगा।',
+        'यहाँ सिर्फ़ Monetag के "Vignette Banner" (या AdSense के Interstitial) Zone का Plain Code डालें - Multitag/Popunder नहीं। यह किसी डिब्बे में नहीं, बल्कि पूरी स्क्रीन पर, User के एक पेज से दूसरे पेज पर जाने के दौरान थोड़ी देर के लिए अपने-आप दिखता है, फिर ख़ुद Skip हो जाता है (SarkariResult जैसा)। खाली रखने पर कुछ नहीं दिखेगा।',
     }),
+
 
     // 🆕 Google AdSense के अलावा कोई और Ad Network (जैसे Media.net - जो Microsoft/Bing
     // के Advertisers से Ad दिखाता है) - दोनों एक साथ भी चल सकते हैं, यह Google की
