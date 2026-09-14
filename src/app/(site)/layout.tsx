@@ -3,6 +3,7 @@ import Footer from '@/components/Footer'
 import CookieConsent from '@/components/CookieConsent'
 import PushNotificationPrompt from '@/components/PushNotificationPrompt'
 import StickyBottomAd from '@/components/StickyBottomAd'
+import InterstitialAd from '@/components/InterstitialAd'
 
 export default function SiteLayout({
   children,
@@ -19,6 +20,8 @@ export default function SiteLayout({
       <PushNotificationPrompt />
       {/* 3️⃣ Sticky Bottom Banner - Sanity → Website Settings → 💰 AdSense से मैनेज होता है */}
       <StickyBottomAd />
+      {/* 6️⃣ Interstitial/Vignette Ad - पूरी स्क्रीन, पेज बदलने के दौरान (Network की अपनी Frequency-Capping से) */}
+      <InterstitialAd />
     </>
   )
 }
