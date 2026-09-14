@@ -7,8 +7,7 @@ import Link from 'next/link'
 import { client } from '@/sanity/lib/client'
 import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries'
 import LegalPanel from '@/components/LegalPanel'
-import AdSlot from '@/components/AdSlot'
-import ResponsiveAdSlot from '@/components/ResponsiveAdSlot'
+import AdPoolSlot from '@/components/AdPoolSlot'
 
 const DEFAULT_FOOTER_LINKS = [
   { title: 'Privacy Policy', href: '/privacy-policy' },
@@ -35,14 +34,11 @@ export default async function Footer() {
 
   return (
     <footer className="bg-brand-blueDark text-blue-100 mt-12">
-      {/* 4️⃣ Footer Banner - Footer के ठीक ऊपर, सफ़ेद पट्टी पर (गहरे Background पर Ad ठीक से नहीं दिखता) */}
-      {(settings?.footerBannerCode || settings?.footerBannerCodeMobile) && (
+      {/* 4️⃣ Footer Banner - किनारे तक (Edge-to-Edge), गहरे Background पर Ad ठीक से नहीं दिखता इसलिए सफ़ेद पट्टी */}
+      {settings?.footerBannerCodes?.length > 0 && (
         <div className="bg-white py-3">
-          <div className="max-w-5xl mx-auto px-4">
-            <ResponsiveAdSlot
-              desktopCode={settings.footerBannerCode}
-              mobileCode={settings.footerBannerCodeMobile}
-            />
+          <div className="max-w-5xl mx-auto">
+            <AdPoolSlot codes={settings.footerBannerCodes} width={728} height={90} />
           </div>
         </div>
       )}
