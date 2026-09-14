@@ -1,4 +1,12 @@
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/api/revalidate/route.ts
+//
+// 🔧 ज़रूरी सुधार: पहले अगर Slug/Category न मिले (जैसे "Website Settings"
+// वाला Document Publish होने पर - उसमें कोई Slug/Category होता ही नहीं),
+// यह Function सीधे 400 Error देकर रुक जाता था और कुछ भी Refresh नहीं करता
+// था। मतलब Ad Code/Settings में किया कोई भी बदलाव कभी तुरंत नहीं दिखता था -
+// हमेशा 1 घंटे के पुराने Cache का इंतज़ार करना पड़ता था। अब चाहे Post हो या
+// Website Settings या कोई और Document, Publish होते ही पूरी Site हमेशा
+// तुरंत Refresh होगी।
 import { revalidatePath } from 'next/cache'
 import { parseBody } from 'next-sanity/webhook'
 import { NextRequest, NextResponse } from 'next/server'
@@ -22,8 +30,21 @@ export async function POST(req: NextRequest) {
     if (!isValidSignature) {
       return NextResponse.json({ message: 'Invalid signature' }, { status: 401 })
     }
+
+    // 🆕 सबसे पहले, हमेशा पूरी Site Refresh कर दें (Header/Footer/Homepage/
+    // हर Post - सब कुछ) - चाहे Document किसी भी तरह का हो। इससे Website
+    // Settings (Ad Code) में किया कोई भी बदलाव भी अब तुरंत असर दिखाएगा।
+    revalidatePath('/', 'layout')
+
+    // अगर यह किसी Post का Webhook नहीं था (जैसे Website Settings), तो यहीं
+    // रुक जाएँ - ऊपर वाला Refresh काफ़ी है, आगे की (Google Indexing, Push
+    // Notification वाली) Logic सिर्फ़ असली Post Publish होने पर ही चलनी चाहिए
     if (!body?.slug || !body?.category) {
-      return NextResponse.json({ message: 'Missing slug or category' }, { status: 400 })
+      return NextResponse.json({
+        revalidated: true,
+        scope: 'पूरी Site (Settings या अन्य बदलाव)',
+        now: Date.now(),
+      })
     }
 
     revalidatePath(`/${body.category}/${body.slug}`)
@@ -67,3 +88,4 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ message: (err as Error).message }, { status: 500 })
   }
 }
+
