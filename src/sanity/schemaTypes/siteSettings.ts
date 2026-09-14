@@ -96,12 +96,21 @@ export const siteSettings = defineType({
     // (SarkariResult जैसा) सेट कर दिया है, आपको साइज़ की चिंता नहीं करनी।
     defineField({
       name: 'headerBannerCode',
-      title: '1️⃣ Header Banner (लोगो/मेनू के ठीक नीचे)',
+      title: '1️⃣ Header Banner - Desktop (728×90)',
       type: 'text',
       rows: 5,
       group: 'ads',
       description:
-        'साइज़: 728×90 (Desktop) / 320×50 (Mobile) - अपने-आप Responsive। Monetag से "Banner" Zone का कोड यहाँ डालें।',
+        'सिर्फ़ Ad Network का दिया हुआ सीधा (Plain) Code Paste करें - जैसा-का-तैसा, कोई खुद से जोड़-तोड़ (window.innerWidth वाली Custom Script) न करें। साइज़ हमारा Code अपने-आप संभालता है। यह सिर्फ़ Desktop/Tablet Screen (768px से बड़ी) पर दिखेगा।',
+    }),
+    defineField({
+      name: 'headerBannerCodeMobile',
+      title: '1️⃣ Header Banner - Mobile (320×50)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description:
+        'सिर्फ़ Mobile Screen (768px से छोटी) पर यह दिखेगा। यहाँ सिर्फ़ Mobile Size (320×50) का Plain Ad Code डालें। खाली रखेंगे तो ऊपर वाला Desktop Code ही Mobile पर भी अपने-आप छोटा होकर दिखेगा।',
     }),
     defineField({
       name: 'contentBannerLeft',
@@ -139,11 +148,21 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'footerBannerCode',
-      title: '4️⃣ Footer Banner (Footer से ठीक ऊपर)',
+      title: '4️⃣ Footer Banner - Desktop (728×90)',
       type: 'text',
       rows: 5,
       group: 'ads',
-      description: 'साइज़: 728×90 (Desktop) / 320×50 (Mobile) - अपने-आप Responsive।',
+      description:
+        'सिर्फ़ Ad Network का दिया हुआ सीधा (Plain) Code Paste करें - कोई खुद से जोड़-तोड़ की Script नहीं। सिर्फ़ Desktop/Tablet Screen पर दिखेगा।',
+    }),
+    defineField({
+      name: 'footerBannerCodeMobile',
+      title: '4️⃣ Footer Banner - Mobile (320×50)',
+      type: 'text',
+      rows: 5,
+      group: 'ads',
+      description:
+        'सिर्फ़ Mobile Screen पर दिखेगा। खाली रखेंगे तो Desktop Code ही Mobile पर छोटा होकर दिखेगा।',
     }),
 
     // 🆕 Google AdSense के अलावा कोई और Ad Network (जैसे Media.net - जो Microsoft/Bing
