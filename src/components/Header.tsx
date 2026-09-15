@@ -1,5 +1,3 @@
-  )
-}
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/Header.tsx
 import Link from 'next/link'
 import Image from 'next/image'
