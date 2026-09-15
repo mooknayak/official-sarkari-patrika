@@ -17,6 +17,7 @@ export const SITE_SETTINGS_QUERY = groq`
   stickyBottomBannerCodes,
   footerBannerCodes,
   interstitialAdCode,
+  toolsPageAdCodes,
   secondaryAdNetworkName,
   secondaryAdNetworkCode,
   adPriority,
