@@ -33,4 +33,10 @@ export const TOOLS: ToolMeta[] = [
     description: 'फॉर्म में Upload करने के लिए Photo/Document की Image को PDF में बदलें',
     icon: '📄',
   },
+  {
+    slug: 'resume-builder',
+    title: 'Resume / CV Builder',
+    description: 'अपनी जानकारी भरिए, प्रोफेशनल Resume तुरंत बन जाएगा - सीधे PDF में Download कीजिए',
+    icon: '📝',
+  },
 ]
