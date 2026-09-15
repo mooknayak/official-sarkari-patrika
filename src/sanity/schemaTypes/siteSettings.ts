@@ -173,6 +173,16 @@ export const siteSettings = defineType({
         'यहाँ सिर्फ़ Monetag के "Vignette Banner" (या AdSense के Interstitial) Zone का Plain Code डालें - Multitag/Popunder नहीं। यह किसी डिब्बे में नहीं, बल्कि पूरी स्क्रीन पर, User के एक पेज से दूसरे पेज पर जाने के दौरान थोड़ी देर के लिए अपने-आप दिखता है, फिर ख़ुद Skip हो जाता है (SarkariResult जैसा)। खाली रखने पर कुछ नहीं दिखेगा।',
     }),
 
+    defineField({
+      name: 'toolsPageAdCodes',
+      title: '7️⃣ Tools Pages Ad Pool (/tools वाले सभी पेज)',
+      type: 'array',
+      group: 'ads',
+      of: [{ type: 'text', rows: 4 }],
+      description:
+        'Photo Resizer, Age Calculator जैसे सभी Tool Pages पर ऊपर यही Ad दिखेगा - कई Network का Code एक साथ जोड़ सकते हैं, Round-Robin चलेंगे।',
+    }),
+
 
     // 🆕 Google AdSense के अलावा कोई और Ad Network (जैसे Media.net - जो Microsoft/Bing
     // के Advertisers से Ad दिखाता है) - दोनों एक साथ भी चल सकते हैं, यह Google की
