@@ -4,6 +4,7 @@ import JobCard from '@/components/JobCard'
 import CategoryBox from '@/components/CategoryBox'
 import TrendingBoxes from '@/components/TrendingBoxes'
 import DiscoverMore from '@/components/DiscoverMore'
+import ToolsSection from '@/components/ToolsSection'
 
 export const revalidate = 3600
 
@@ -57,6 +58,9 @@ export default async function HomePage() {
           समय पर जानकारी मिलेगी।
         </p>
       </div>
+
+      {/* 🆕 Official Tools - Intro Box के ठीक नीचे */}
+      <ToolsSection />
 
       {/* 🆕 यह Website Settings वाला Discover More है - सिर्फ़ Homepage (Header
           Section) पर दिखता है, Post वाले Discover More से बिल्कुल अलग */}
