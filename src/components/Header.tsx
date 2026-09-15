@@ -1,3 +1,5 @@
+  )
+}
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/components/Header.tsx
 import Link from 'next/link'
 import Image from 'next/image'
@@ -22,7 +24,7 @@ export default async function Header() {
   const publisherName = settings?.publisherName || 'Official Sarkari Patrika'
 
   return (
-    <header className="sticky top-0 z-50 shadow-md">
+    <header className="shadow-md">
       {/* 🆕 Hero बैंड - अब बिल्कुल Reference Banner जैसा: Gradient Background,
           Decorative Circles, बड़ा Seal, Domain Badge, नीचे Disclosure Strip */}
       <div className="relative overflow-hidden bg-gradient-to-br from-brand-blue via-brand-blue to-brand-pinkAccent">
