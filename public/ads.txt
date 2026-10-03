@@ -1,3 +1,3 @@
 # AdSense अप्रूवल मिलने के बाद Google आपको जो asd.txt लाइन देगा उसे यहाँ paste करें
 # उदाहरण: google.com, pub-0000000000000000, DIRECT, f08c47fec0942fa0
-google.com, pub-3859330537221497, DIRECT, f08c47fec0942fa0
+google.com, pub-1247625335902562, DIRECT, f08c47fec0942fa0
