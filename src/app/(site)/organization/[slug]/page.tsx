@@ -20,6 +20,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/organization/${params.slug}`,
     },
+    // 🔒 Organization पेज Google में नहीं दिखने चाहिए - वहाँ सिर्फ़ आपकी पोस्ट और सेक्शन ही दिखें।
+    // follow: true रखा है ताकि अंदर की पोस्ट के लिंक Google फिर भी पढ़ सके।
+    robots: { index: false, follow: true },
   }
 }
 
