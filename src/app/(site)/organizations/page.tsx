@@ -8,6 +8,8 @@ export const revalidate = 3600
 export const metadata: Metadata = {
   title: 'सभी सरकारी संगठन (Organizations)',
   description: 'UPSC, SSC, Railway, Banking जैसे सभी सरकारी विभागों की भर्ती सूची एक ही जगह।',
+  // 🔒 यह पेज Google में नहीं दिखना चाहिए (सिर्फ़ आपके 6 सेक्शन और पोस्ट दिखें)
+  robots: { index: false, follow: true },
 }
 
 export default async function OrganizationsIndexPage() {
