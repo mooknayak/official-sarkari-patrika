@@ -1,7 +1,7 @@
 // 🆕 नई फ़ाइल — इसे इसी पाथ पर बनाएं: src/sanity/schemaTypes/siteSettings.ts
 // (यह फ़ाइल पहले गलती से डिलीट हो गई थी, अब वापस बनाई गई है)
 
-import { defineField, defineType } from 'sanity'
+import { defineField, defineType, defineArrayMember } from 'sanity'
 import { CogIcon } from '@sanity/icons'
 
 // ⚙️ यह एक "Singleton" है — पूरी साइट में इसका सिर्फ 1 ही Document रहेगा।
@@ -21,6 +21,7 @@ export const siteSettings = defineType({
     { name: 'social', title: '🔗 Social Links' },
     { name: 'footer', title: '📄 Footer Links (Privacy, Terms, About वगैरह)' },
     { name: 'engagement', title: '📌 Post के नीचे Banner / Discover More' },
+    { name: 'about', title: 'ℹ️ Homepage - हमारे बारे में' },
   ],
   fields: [
     // ---------- Branding / Photos ----------
@@ -233,6 +234,62 @@ export const siteSettings = defineType({
     // जुड़ा है। जितनी ज़्यादा Link Rows, उतने ही ज़्यादा Ad एक साथ दिख जाते हैं।
     // यहाँ जितने चाहें उतने Ad (Monetag भी, AdSense भी, दोनों मिलाकर भी) जोड़ें -
     // यह अपने-आप हर Link Row के साथ बारी-बारी (Round-Robin) लग जाएँगे।
+    // ℹ️ =================== Homepage "हमारे बारे में" सेक्शन ===================
+    // Homepage की सूचियों के नीचे दिखता है। सब कुछ खाली छोड़ेंगे तो एक सही, सामान्य
+    // Default परिचय दिखेगा। यहाँ सिर्फ़ टेक्स्ट लिखिए (कोई Link/HTML/Script नहीं) और वही लिखिए जो सच हो।
+    defineField({
+      name: 'aboutEnabled',
+      title: 'ℹ️ "हमारे बारे में" सेक्शन दिखाएँ',
+      type: 'boolean',
+      group: 'about',
+      initialValue: true,
+      description: 'Off करने पर Homepage से यह सेक्शन पूरी तरह छुप जाएगा।',
+    }),
+    defineField({
+      name: 'aboutHeading',
+      title: 'शीर्षक',
+      type: 'string',
+      group: 'about',
+      validation: (Rule) => Rule.max(90),
+      description: 'खाली = "Official Sarkari Patrika के बारे में"',
+    }),
+    defineField({
+      name: 'aboutIntro',
+      title: 'परिचय (साइट क्या देती है, किसके लिए है)',
+      type: 'text',
+      rows: 6,
+      group: 'about',
+      validation: (Rule) => Rule.max(900),
+      description: '100-250 शब्द, सरल हिंदी में, सच्ची बातें। अलग पैराग्राफ़ के लिए एक खाली लाइन छोड़िए। कीवर्ड की सूची या एक ही शब्द बार-बार मत लिखिए।',
+    }),
+    defineField({
+      name: 'aboutPoints',
+      title: 'मुख्य बातें (कार्ड के रूप में, अधिकतम 6)',
+      type: 'array',
+      group: 'about',
+      validation: (Rule) => Rule.max(6),
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({ name: 'icon', type: 'string', title: 'Emoji (वैकल्पिक)', validation: (Rule) => Rule.max(4) }),
+            defineField({ name: 'title', type: 'string', title: 'छोटा शीर्षक', validation: (Rule) => Rule.required().max(60) }),
+            defineField({ name: 'text', type: 'text', rows: 3, title: 'एक-दो वाक्य', validation: (Rule) => Rule.required().max(220) }),
+          ],
+          preview: { select: { title: 'title', subtitle: 'text', media: 'icon' }, prepare: ({ title, subtitle }: any) => ({ title, subtitle }) },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'aboutNote',
+      title: 'ज़रूरी सूचना (Disclaimer)',
+      type: 'text',
+      rows: 3,
+      group: 'about',
+      validation: (Rule) => Rule.max(400),
+      description: 'खाली = सामान्य सूचना (स्वतंत्र पोर्टल, आधिकारिक अधिसूचना जाँचें)।',
+    }),
+
     defineField({
       name: 'importantLinksAds',
       title: '5️⃣ Important Links Ad Stack (हर Link Row के साथ एक Ad)',
