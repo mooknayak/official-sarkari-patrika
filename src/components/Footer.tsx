@@ -22,6 +22,7 @@ const SOCIAL_LABELS: Record<string, string> = {
   twitter: 'Twitter / X',
   youtube: 'YouTube',
   telegram: 'Telegram',
+  whatsapp: 'WhatsApp',
   instagram: 'Instagram',
 }
 
