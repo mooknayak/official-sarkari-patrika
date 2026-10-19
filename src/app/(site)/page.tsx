@@ -5,6 +5,7 @@ import CategoryBox from '@/components/CategoryBox'
 import TrendingBoxes from '@/components/TrendingBoxes'
 import DiscoverMore from '@/components/DiscoverMore'
 import ToolsSection from '@/components/ToolsSection'
+import AboutSection from '@/components/AboutSection'
 
 export const revalidate = 3600
 
@@ -105,6 +106,15 @@ export default async function HomePage() {
           />
         </div>
       )}
+
+      {/* ℹ️ हमारे बारे में - Sanity → Website Settings → "ℹ️ Homepage - हमारे बारे में" से बदलें */}
+      <AboutSection
+        enabled={siteSettings?.aboutEnabled}
+        heading={siteSettings?.aboutHeading}
+        intro={siteSettings?.aboutIntro}
+        points={siteSettings?.aboutPoints}
+        note={siteSettings?.aboutNote}
+      />
     </div>
   )
 }
