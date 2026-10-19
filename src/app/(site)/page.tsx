@@ -113,7 +113,9 @@ export default async function HomePage() {
         heading={siteSettings?.aboutHeading}
         intro={siteSettings?.aboutIntro}
         points={siteSettings?.aboutPoints}
+        faqs={siteSettings?.aboutFaqs}
         note={siteSettings?.aboutNote}
+        socialLinks={siteSettings?.socialLinks}
       />
     </div>
   )
