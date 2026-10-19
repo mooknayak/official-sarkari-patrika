@@ -20,6 +20,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import CommentsSection from '@/components/CommentsSection'
 import PostBottomBanner from '@/components/PostBottomBanner'
+import PostSummaryBox from '@/components/PostSummaryBox'
 import DiscoverMore from '@/components/DiscoverMore'
 import type { Metadata } from 'next'
 // ✏️ एडिट फ़ाइल — मौजूदा फाइल में बदलें: src/app/(site)/[category]/[slug]/page.tsx
@@ -57,9 +58,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const realCategorySlug = post.category?.slug || params.category
 
+  // 📝 Meta Description: पहले SEO वाला खाना, वरना "संक्षिप्त जानकारी" के शुरुआती ~155 अक्षर
+  const summaryDesc = post.shortSummary
+    ? String(post.shortSummary).replace(/\s+/g, ' ').trim().slice(0, 157)
+    : undefined
+  const metaDesc = post.seo?.metaDescription || summaryDesc
+
   return {
-    title: post.seo?.metaTitle || `${post.title} - Apply Online, Dates, Eligibility`,
-    description: post.seo?.metaDescription,
+    // शीर्षक में अब अपने-आप कोई "Apply Online..." नहीं जुड़ता - Sanity का Meta Title या सीधा पोस्ट का शीर्षक
+    title: post.seo?.metaTitle || post.title,
+    description: metaDesc,
     alternates: {
       canonical: `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}/${params.slug}`,
     },
@@ -68,7 +76,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       : { index: true, follow: true },
     openGraph: {
       title: post.title,
-      description: post.seo?.metaDescription,
+      description: metaDesc,
       url: `${process.env.NEXT_PUBLIC_SITE_URL}/${realCategorySlug}/${params.slug}`,
       siteName: 'Official Sarkari Patrika',
       locale: 'hi_IN',
@@ -130,6 +138,7 @@ export default async function JobPostPage({ params }: Props) {
   // Priority: SEO meta description > Full Description से निकाला टेक्स्ट > Result/Admit Card जानकारी
   const bestDescription =
     post.seo?.metaDescription ||
+    (post.shortSummary ? String(post.shortSummary).trim() : '') ||
     extractPlainText(post.description) ||
     post.resultInfo ||
     post.admitCardInfo ||
@@ -181,6 +190,9 @@ export default async function JobPostPage({ params }: Props) {
         <StatusBadge status={post.status} />
       </div>
       <h1 className="text-2xl font-bold text-brand-blueDark mb-4">{post.title}</h1>
+
+      {/* 📝 संक्षिप्त जानकारी - शीर्षक के ठीक नीचे (Sanity में खाली हो तो कुछ नहीं दिखता) */}
+      <PostSummaryBox text={post.shortSummary} />
 
       {post.featuredImageUrl && (
         <Image
