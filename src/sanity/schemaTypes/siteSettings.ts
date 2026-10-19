@@ -264,10 +264,10 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'aboutPoints',
-      title: 'मुख्य बातें (कार्ड के रूप में, अधिकतम 6)',
+      title: 'मुख्य बातें (शीर्षक + जानकारी, अधिकतम 8)',
       type: 'array',
       group: 'about',
-      validation: (Rule) => Rule.max(6),
+      validation: (Rule) => Rule.max(8),
       of: [
         defineArrayMember({
           type: 'object',
@@ -277,6 +277,24 @@ export const siteSettings = defineType({
             defineField({ name: 'text', type: 'text', rows: 3, title: 'एक-दो वाक्य', validation: (Rule) => Rule.required().max(220) }),
           ],
           preview: { select: { title: 'title', subtitle: 'text', media: 'icon' }, prepare: ({ title, subtitle }: any) => ({ title, subtitle }) },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'aboutFaqs',
+      title: 'सवाल-जवाब / FAQ (अधिकतम 10)',
+      type: 'array',
+      group: 'about',
+      validation: (Rule) => Rule.max(10),
+      description: 'छोटे और सच्चे जवाब लिखिए (सिर्फ़ टेक्स्ट, कोई Link/HTML नहीं)। खाली छोड़ेंगे तो Default सवाल-जवाब दिखेंगे।',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          fields: [
+            defineField({ name: 'question', type: 'string', title: 'सवाल', validation: (Rule) => Rule.required().max(120) }),
+            defineField({ name: 'answer', type: 'text', rows: 3, title: 'जवाब', validation: (Rule) => Rule.required().max(400) }),
+          ],
+          preview: { select: { title: 'question', subtitle: 'answer' } },
         }),
       ],
     }),
@@ -387,6 +405,7 @@ export const siteSettings = defineType({
         { name: 'twitter', type: 'url', title: 'Twitter / X URL' },
         { name: 'youtube', type: 'url', title: 'YouTube Channel URL' },
         { name: 'telegram', type: 'url', title: 'Telegram Channel URL' },
+        { name: 'whatsapp', type: 'url', title: 'WhatsApp Channel URL' },
         { name: 'instagram', type: 'url', title: 'Instagram URL' },
       ],
       description:
