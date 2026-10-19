@@ -31,6 +31,7 @@ export const SITE_SETTINGS_QUERY = groq`
   aboutHeading,
   aboutIntro,
   aboutPoints[] { icon, title, text },
+  aboutFaqs[] { question, answer },
   aboutNote,
   googleNewsPublicationName,
   enableNewsSitemap,
